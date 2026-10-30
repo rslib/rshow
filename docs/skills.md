@@ -4,7 +4,7 @@ rshow ships three skills, so a coding agent can write a page, a deck or a report
 
 ## Install them
 
-With the npm package:
+With the npm package or the single executable:
 
 ```sh
 rshow skills install
@@ -14,6 +14,7 @@ rshow skills install
 Name a target to pick one: `rshow skills install claude`.
 The default is a symlink to the skills folder that ships with rshow, so an upgrade of rshow is nothing to do.
 It copies instead when that folder sits in an npx cache, which npm may delete under a link; `--link` and `--copy` force either one.
+A single executable copies too: it unpacks its skills into `${XDG_CACHE_HOME:-$HOME/.cache}/rshow/<version>/`, a folder the next version does not read, so a link from there would dangle.
 A copy carries a `.rshow-skill` marker with the version, so a newer rshow replaces its own copy and never a folder that is not from rshow.
 
 ```sh

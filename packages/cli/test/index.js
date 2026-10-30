@@ -29,4 +29,5 @@ import './login.test.ts';
 import './themepreset.test.ts';
 import './docs.test.ts';
 import './version.test.ts';
+import './binary.test.ts';
 import './skills.test.ts';

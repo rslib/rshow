@@ -1,6 +1,7 @@
 import { cp, lstat, mkdir, readFile, readdir, readlink, rm, stat, symlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import path from 'node:path';
+import { isBinary } from './binary.ts';
 import type { Env } from './config.ts';
 import { UsageError } from './exit.ts';
 import { builtinSkillsDir } from './themes.ts';
@@ -111,7 +112,9 @@ export async function skillsSource(env: Env): Promise<SkillsSource | undefined> 
     if (entry.isDirectory() && (await isFile(path.join(dir, entry.name, 'SKILL.md')))) skills.push(entry.name);
   }
   skills.sort();
-  return { dir, mode: defaultModeOf(dir), skills };
+  // A binary unpacks its skills into a folder per version, which the next
+  // version does not read, so a link from there would dangle: copy instead.
+  return { dir, mode: (await isBinary()) ? 'copy' : defaultModeOf(dir), skills };
 }
 
 // A link counts as ours when it points into the skills folder this rshow reads

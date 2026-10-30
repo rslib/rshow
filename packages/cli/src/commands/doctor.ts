@@ -3,6 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { parseCommandArgs } from '../args.ts';
+import { isBinary } from '../binary.ts';
 import { globalConfigPath, localConfigPath } from '../config.ts';
 import type { AppConfig } from '../config.ts';
 import type { Ctx } from '../context.ts';
@@ -36,8 +37,21 @@ async function isFile(file: string): Promise<boolean> {
   return info !== undefined && info.isFile();
 }
 
+// The SEA bundle is CommonJS, where import.meta is empty: a binary has no
+// package.json to read.
+function sourceDir(): string | undefined {
+  try {
+    const url: unknown = import.meta.url;
+    return typeof url === 'string' && url !== '' ? path.dirname(fileURLToPath(url)) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 async function packageJsonPath(): Promise<string | undefined> {
-  let dir = path.dirname(fileURLToPath(import.meta.url));
+  const start = sourceDir();
+  if (start === undefined) return undefined;
+  let dir = start;
   for (let i = 0; i < 6; i += 1) {
     const file = path.join(dir, 'package.json');
     if (await isFile(file)) return file;
@@ -75,7 +89,11 @@ async function nodeCheck(): Promise<Check> {
   const name = 'node';
   const current = process.versions.node;
   const file = await packageJsonPath();
-  if (file === undefined) return { name, status: 'warn', detail: `v${current} (package.json not found)` };
+  if (file === undefined) {
+    // A binary carries its own node, so there is no engines range to compare.
+    if (await isBinary()) return { name, status: 'ok', detail: `v${current} (inside the binary)` };
+    return { name, status: 'warn', detail: `v${current} (package.json not found)` };
+  }
   let range: string;
   try {
     const body = JSON.parse(await readFile(file, 'utf8')) as { engines?: { node?: unknown } };
@@ -222,7 +240,7 @@ export async function run(argv: string[], ctx: Ctx): Promise<ExitCode> {
 
   const token = await tokenOf(config?.url);
   const checks: Check[] = [
-    { name: 'rshow', status: 'ok', detail: VERSION },
+    { name: 'rshow', status: 'ok', detail: (await isBinary()) ? `${VERSION} (binary)` : VERSION },
     await nodeCheck(),
     configCheck(found, config, configError),
     tokenCheck(token),

@@ -38,7 +38,8 @@
     "test": "node --test test/",
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/assemble.mjs"
+    "prepack": "node scripts/assemble.mjs",
+    "sea": "node scripts/sea.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

@@ -5,10 +5,24 @@ Every publish adds an immutable version, so a link you sent keeps working while 
 
 ## Install
 
-rshow needs Node 26 or later.
+With curl, as one file that needs no Node at all (linux-x64, linux-arm64 and macOS on arm64):
+
+```sh
+curl -fsSL https://rslib.github.io/rshow/install.sh | sh
+```
+
+The installer checks the download against the release `SHA256SUMS` and puts `rshow` in `~/.local/bin`; `RSHOW_VERSION`, `RSHOW_INSTALL_DIR` and `RSHOW_DOWNLOAD_BASE` change what it fetches and where it writes.
+
+With npm, which needs Node 22 or later:
 
 ```sh
 npm i -g rshow
+```
+
+From a clone of this repository, which links the CLI and the skills into place:
+
+```sh
+./install.sh
 ```
 
 To try it without installing it:
@@ -20,14 +34,16 @@ npx rshow --help
 ## Quickstart
 
 ```sh
-npm i -g rshow
 rshow init --url https://artd.example.com --art https://art.example.com
-rshow login
+rshow login                          # or RSHOW_TOKEN in CI
+rshow skills install                 # the three skills, for a coding agent
 rshow publish ./hello --slug hello --label "first publish"
 rshow share hello --add a@example.com
+rshow doctor
 ```
 
 `rshow init` writes the global config, `rshow login` saves a token in the macOS Keychain, and `rshow publish` prints the version URL and the live URL of the folder.
+`rshow doctor` then says whether node, the config, the token, the API, the art host, the theme and the skills are in order.
 The [docs site](https://rslib.github.io/rshow) takes it from there.
 
 ## Docs

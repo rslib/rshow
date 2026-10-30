@@ -2,6 +2,7 @@ import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { THEME_NAME_PATTERN, THEME_PREFIX } from 'rshow-shared';
+import { binarySkillBases, binaryThemeBases } from './binary.ts';
 import type { Finding } from './check.ts';
 import { parseColor } from './color.ts';
 import type { Rgba } from './color.ts';
@@ -9,21 +10,31 @@ import { UsageError } from './exit.ts';
 import { extractTokens } from './tokens.ts';
 import type { TokenDecl } from './tokens.ts';
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
+// The SEA bundle is CommonJS, where import.meta is empty, so a binary has no
+// folder of its own to look beside: it reads the unpacked cache instead.
+function sourceDir(): string | undefined {
+  try {
+    const url: unknown = import.meta.url;
+    return typeof url === 'string' && url !== '' ? path.dirname(fileURLToPath(url)) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const HERE = sourceDir();
+
+function nearSource(...segments: string[]): readonly string[] {
+  if (HERE === undefined) return [];
+  return [path.resolve(HERE, '..', '..', '..', ...segments), path.resolve(HERE, '..', ...segments)];
+}
 
 // Running from src in the repo, then from the bundled dist in an installed
 // package, where themes/default sits next to dist.
-export const BUILTIN_BASES: readonly string[] = [
-  path.resolve(HERE, '../../../themes'),
-  path.resolve(HERE, '../themes'),
-];
+export const BUILTIN_BASES: readonly string[] = nearSource('themes');
 
 // The same two places for the skills rshow ships: <repo>/skills from src, and
 // <package>/skills next to dist when installed.
-export const BUILTIN_SKILL_BASES: readonly string[] = [
-  path.resolve(HERE, '../../../skills'),
-  path.resolve(HERE, '../skills'),
-];
+export const BUILTIN_SKILL_BASES: readonly string[] = nearSource('skills');
 
 export const ROLE_TOKENS = ['--bg', '--fg', '--muted', '--accent', '--layer-01'];
 export const TEXT_ROLES = ['--fg', '--muted', '--accent'];
@@ -137,7 +148,7 @@ export async function builtinThemeDir(
   bases: readonly string[] = BUILTIN_BASES,
 ): Promise<string | undefined> {
   if (!THEME_NAME_PATTERN.test(name)) return undefined;
-  for (const base of bases) {
+  for (const base of [...(await binaryThemeBases()), ...bases]) {
     const dir = path.join(base, name);
     if (await isDir(dir)) return dir;
   }
@@ -145,7 +156,7 @@ export async function builtinThemeDir(
 }
 
 export async function builtinSkillsDir(bases: readonly string[] = BUILTIN_SKILL_BASES): Promise<string | undefined> {
-  for (const base of bases) {
+  for (const base of [...(await binarySkillBases()), ...bases]) {
     if (await isDir(base)) return base;
   }
   return undefined;

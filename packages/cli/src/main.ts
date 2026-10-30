@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import path from 'node:path';
 import process from 'node:process';
+import { isBinary } from './binary.ts';
 import { Client } from './client.ts';
 import { loadConfig, readToken, requireUrl } from './config.ts';
 import type { AppConfig } from './config.ts';
@@ -99,7 +100,8 @@ async function main(argv: string[]): Promise<ExitCode> {
   const spec = name === undefined ? undefined : COMMANDS[name];
 
   if (wantsVersion) {
-    process.stdout.write(`rshow ${VERSION}\n`);
+    const suffix = (await isBinary()) ? ' (binary)' : '';
+    process.stdout.write(`rshow ${VERSION}${suffix}\n`);
     return EXIT.ok;
   }
   if (wantsHelp) {
@@ -149,4 +151,13 @@ async function main(argv: string[]): Promise<ExitCode> {
   return code ?? EXIT.ok;
 }
 
-process.exitCode = await main(process.argv.slice(2)).catch(fail);
+// No top-level await, so that the single executable build can bundle this file
+// as CommonJS; the promise keeps the process alive either way.
+main(process.argv.slice(2)).then(
+  (code) => {
+    process.exitCode = code;
+  },
+  (err: unknown) => {
+    process.exitCode = fail(err);
+  },
+);

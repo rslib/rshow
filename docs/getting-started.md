@@ -6,10 +6,28 @@ This page goes from no install to a shared link.
 
 ## Install
 
-rshow needs Node 26 or later.
+Three ways in, and the first three commands of each are the same.
+
+With curl, as one file that carries its own Node, so no Node is needed on the machine (linux-x64, linux-arm64 and macOS on arm64):
+
+```sh
+curl -fsSL https://rslib.github.io/rshow/install.sh | sh
+```
+
+The installer reads `uname` to pick the file, checks it against the `SHA256SUMS` of the release, and writes `rshow` into `~/.local/bin`, mode 755.
+It prints the installed version, and says how to put that folder on `PATH` when it is not there yet.
+`RSHOW_VERSION=0.0.2` installs a named release, `RSHOW_INSTALL_DIR` writes somewhere else, and `RSHOW_DOWNLOAD_BASE` downloads from a mirror.
+
+With npm, which needs Node 22 or later:
 
 ```sh
 npm i -g rshow
+```
+
+From a clone of this repository, which links the CLI into `~/.local/bin` and needs Node 26:
+
+```sh
+./install.sh
 ```
 
 To try it without installing it:
@@ -17,6 +35,9 @@ To try it without installing it:
 ```sh
 npx rshow --help
 ```
+
+A binary says so: `rshow --version` prints `rshow <version> (binary)`, and `rshow doctor` says the same on its `rshow` line.
+It unpacks the built-in theme, the skills and the Worker into `${XDG_CACHE_HOME:-$HOME/.cache}/rshow/<version>/` on first use and reads them from there, so `rshow skills install` copies the skills instead of linking them: the folder changes with the version.
 
 For a coding agent, `rshow skills install` puts the three rshow skills where Claude Code, pi or codex read them; [skills.md](skills.md) has the flags.
 

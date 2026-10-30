@@ -7,6 +7,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ### Added
 
+- Single-executable builds of rshow for linux-x64, linux-arm64 and darwin-arm64, made with `node --build-sea` and attached to every GitHub release with a `SHA256SUMS`; `rshow --version` and `rshow doctor` print `(binary)` after the version, the built-in theme, the skills and the Worker are unpacked once into `${XDG_CACHE_HOME:-$HOME/.cache}/rshow/<version>/`, and `rshow skills install` copies them from there.
+- `https://rslib.github.io/rshow/install.sh`, a curl installer that needs no Node: it picks the binary for the platform, verifies its hash and writes it into `~/.local/bin`.
 - `rshow skills install`, `uninstall` and `status`, which link the three agent skills into `~/.claude/skills`, `~/.pi/agent/skills` and `~/.codex/skills`, or copy them with a `.rshow-skill` marker, and replace only what rshow made; `rshow doctor` reports them on a `skills` line.
 
 ## [0.0.1] - 2026-10-30

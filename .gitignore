@@ -14,6 +14,7 @@ packages/cli/worker/
 packages/cli/skills/
 packages/cli/themes/
 packages/cli/LICENSE
+packages/cli/sea/
 
 # docs site: its own npm project, the fetched theme and the synced docs
 site/node_modules/

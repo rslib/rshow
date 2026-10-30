@@ -247,7 +247,8 @@ Each skill is a symlink to the folder rshow reads it from, so an upgrade of
 rshow is nothing to do. --copy copies the folder and writes a .rshow-skill
 marker in it, {"version": <rshow version>, "source": "rshow"}, which is how a
 newer rshow knows the copy is its own. The default is a link, and a copy when
-that folder sits in an npx cache, which npm may delete under a link.
+that folder sits in an npx cache, which npm may delete under a link, or when
+rshow runs as a single executable, whose files live in a per-version cache.
 A skill that is ours and current prints ok, and one of ours from another path or
 another version is replaced and prints updated. Anything else, a folder, a file
 or a link that rshow did not make, is left alone: skip goes to stderr, the rest
