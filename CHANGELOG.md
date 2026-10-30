@@ -5,11 +5,20 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-10-30
+
+### Changed
+
+- Lower the Node requirement of the npm package from 26 to 22.
+
 ### Added
 
-- Single-executable builds of rshow for linux-x64, linux-arm64 and darwin-arm64, made with `node --build-sea` and attached to every GitHub release with a `SHA256SUMS`; `rshow --version` and `rshow doctor` print `(binary)` after the version, the built-in theme, the skills and the Worker are unpacked once into `${XDG_CACHE_HOME:-$HOME/.cache}/rshow/<version>/`, and `rshow skills install` copies them from there.
-- `https://rslib.github.io/rshow/install.sh`, a curl installer that needs no Node: it picks the binary for the platform, verifies its hash and writes it into `~/.local/bin`.
-- `rshow skills install`, `uninstall` and `status`, which link the three agent skills into `~/.claude/skills`, `~/.pi/agent/skills` and `~/.codex/skills`, or copy them with a `.rshow-skill` marker, and replace only what rshow made; `rshow doctor` reports them on a `skills` line.
+- Add single-file `rshow` binaries for Linux x86-64, Linux arm64 and macOS arm64 to each GitHub release, with a `SHA256SUMS` file.
+  They need no Node and unpack the theme, the skills and the Worker to `~/.cache/rshow/<version>/` on first run.
+- Add a curl installer that picks the binary for your machine, checks its hash and puts it in `~/.local/bin`.
+  Run `curl -fsSL https://rslib.github.io/rshow/install.sh | sh`.
+- Add `rshow skills install`, `uninstall` and `status` to install the agent skills for Claude, pi and Codex.
+- Add a `skills` line to `rshow doctor`.
 
 ## [0.0.1] - 2026-10-30
 
@@ -29,5 +38,6 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - A publish of a folder that did not change adds no version: `publish` and `theme publish` name the version that is already live, and `--force` publishes anyway.
 - `rshow --version` prints the version, and `doctor` opens with it.
 
-[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/rslib/rshow/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/rslib/rshow/releases/tag/v0.0.1
