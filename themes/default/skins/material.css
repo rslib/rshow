@@ -1,0 +1,692 @@
+/*
+ * rshow theme "default": the material skin, layer 3.
+ *
+ * A Material 3 look-alike, CSS only: the design system's public shape, drawn in
+ * this file. No Material Web components are loaded anywhere, on purpose: that
+ * library is in maintenance mode and a mockup should not carry a dependency the
+ * product will not use.
+ *
+ * What makes a drawing read as Material 3 is not a colour, it is the tonal
+ * surface: one ground, and a panel that is the same hue a step lighter, with
+ * elevation expressed as tone first and shadow second. Then: a pill for a
+ * filled button, a 4px corner on an outlined text field with the label in the
+ * notch, 12px on a card, 28px on a dialog, a 3px accent indicator under the
+ * active tab, and a switch that is a 52x32 track with a small handle growing
+ * into a big one.
+ *
+ * Roboto is first in the stack because Android and most Linux images ship it;
+ * the stack falls through to the system UI font, which is what Material 3
+ * itself does on a device without Roboto.
+ *
+ * Knobs: the custom.css set plus --mk-surface, --mk-surface-2, --mk-surface-3,
+ * --mk-on-accent, --mk-accent-soft, --mk-accent-container, --mk-on-container,
+ * --mk-radius-lg, --mk-radius-xl, --mk-radius-pill, --mk-ctl-h, --mk-line-h,
+ * --mk-shadow-1, --mk-shadow-3.
+ */
+
+/* --------------------------------------------------- the screen, light -- */
+
+[data-skin="material"] {
+  --mk-bg: #fef7ff;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #f8f4fb;
+  --mk-chrome-bg-2: #efeaf3;
+  --mk-chrome-line: #d8d3dd;
+  --mk-chrome-fg: #1d1b20;
+  --mk-surface: #ffffff;
+  --mk-surface-2: #f3edf7;
+  --mk-surface-3: #ece6f0;
+  --mk-fg: #1d1b20;
+  --mk-muted: #49454f;
+  --mk-line: #cac4d0;
+  --mk-line-strong: #79747e;
+  --mk-fill: #e8def8;
+
+  /* the primary colour and its container: a filled button is the primary, a
+     tonal button and a selected row are the container */
+  --mk-accent: #6750a4;
+  --mk-accent-hover: #5b4599;
+  --mk-accent-soft: #e8def8;
+  --mk-accent-container: #eaddff;
+  --mk-on-container: #21005d;
+  --mk-on-accent: #ffffff;
+  --mk-focus: #6750a4;
+
+  --mk-radius: 4px;
+  --mk-radius-lg: 12px;
+  --mk-radius-xl: 28px;
+  --mk-radius-pill: 100px;
+
+  --mk-font: Roboto, "Helvetica Neue", system-ui, -apple-system, sans-serif;
+  --mk-size: 14px;
+  --mk-line-h: 20px;
+  --mk-ctl-h: 40px;
+  --mk-gap: 16px;
+  --mk-pad: 16px;
+
+  --mk-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --mk-shadow-3: 0 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+/* ---------------------------------------------------- the screen, dark -- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="material"] {
+    --mk-bg: #141218;
+
+    /* the window chrome the frame draws, in the same two modes */
+    --mk-chrome-bg: #211f26;
+    --mk-chrome-bg-2: #1d1b20;
+    --mk-chrome-line: #49454f;
+    --mk-chrome-fg: #e6e0e9;
+    --mk-surface: #1d1b20;
+    --mk-surface-2: #211f26;
+    --mk-surface-3: #2b2930;
+    --mk-fg: #e6e0e9;
+    --mk-muted: #cac4d0;
+    --mk-line: #49454f;
+    --mk-line-strong: #938f99;
+    --mk-fill: #4a4458;
+    --mk-accent: #d0bcff;
+    --mk-accent-hover: #e0d2ff;
+    --mk-accent-soft: #4a4458;
+    --mk-accent-container: #4f378b;
+    --mk-on-container: #eaddff;
+    --mk-on-accent: #381e72;
+    --mk-focus: #d0bcff;
+    --mk-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --mk-shadow-3: 0 2px 6px rgba(0, 0, 0, 0.55);
+  }
+}
+
+:root[data-mode="dark"] [data-skin="material"] {
+  --mk-bg: #141218;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #211f26;
+  --mk-chrome-bg-2: #1d1b20;
+  --mk-chrome-line: #49454f;
+  --mk-chrome-fg: #e6e0e9;
+  --mk-surface: #1d1b20;
+  --mk-surface-2: #211f26;
+  --mk-surface-3: #2b2930;
+  --mk-fg: #e6e0e9;
+  --mk-muted: #cac4d0;
+  --mk-line: #49454f;
+  --mk-line-strong: #938f99;
+  --mk-fill: #4a4458;
+  --mk-accent: #d0bcff;
+  --mk-accent-hover: #e0d2ff;
+  --mk-accent-soft: #4a4458;
+  --mk-accent-container: #4f378b;
+  --mk-on-container: #eaddff;
+  --mk-on-accent: #381e72;
+  --mk-focus: #d0bcff;
+  --mk-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --mk-shadow-3: 0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+/* --------------------------------------------------------------- screen -- */
+
+[data-skin="material"] .mk-screen {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="material"] .mk-screen {
+    color-scheme: dark;
+  }
+}
+
+:root[data-mode="dark"] [data-skin="material"] .mk-screen {
+  color-scheme: dark;
+}
+
+[data-skin="material"] .mk-screen a {
+  color: var(--mk-accent);
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+[data-skin="material"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+[data-skin="material"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+[data-skin="material"] .wf-row.wf-shell {
+  align-items: stretch;
+  gap: 0;
+}
+
+[data-skin="material"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+[data-skin="material"] .wf-spacer,
+[data-skin="material"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+[data-skin="material"] .wf-heading {
+  display: block;
+  width: 40%;
+  max-width: 20em;
+  height: 0.85em;
+  background: var(--mk-fg);
+  border-radius: 3px;
+  opacity: 0.8;
+}
+
+/* Material 3's title-large is 22px on a 1.27 line height, and its weight is
+   regular: a Material heading is big before it is bold. */
+[data-skin="material"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 28px;
+  background: none;
+  opacity: 1;
+}
+
+[data-skin="material"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * var(--mk-line-h));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--mk-line) 0 7px,
+    transparent 7px var(--mk-line-h)
+  );
+  border-radius: 3px;
+}
+
+[data-skin="material"] .wf-text[data-lines="1"] { --mk-lines: 1; }
+[data-skin="material"] .wf-text[data-lines="2"] { --mk-lines: 2; }
+[data-skin="material"] .wf-text[data-lines="3"] { --mk-lines: 3; }
+[data-skin="material"] .wf-text[data-lines="4"] { --mk-lines: 4; }
+[data-skin="material"] .wf-text[data-lines="5"] { --mk-lines: 5; }
+[data-skin="material"] .wf-text[data-lines="6"] { --mk-lines: 6; }
+[data-skin="material"] .wf-text[data-lines="7"] { --mk-lines: 7; }
+[data-skin="material"] .wf-text[data-lines="8"] { --mk-lines: 8; }
+
+[data-skin="material"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 14px;
+  line-height: var(--mk-line-h);
+  color: var(--mk-muted);
+  background: none;
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+[data-skin="material"] .wf-box {
+  min-height: 56px;
+  padding: 12px;
+  background: var(--mk-surface-2);
+  border-radius: var(--mk-radius-lg);
+}
+
+/* A selected list row in Material 3 is a container tone, not a border and not a
+   shadow: the tone is the selection, and the label moves to the on-container
+   colour because the tone is a surface and not an accent fill. */
+[data-skin="material"] .wf-box.is-active {
+  color: var(--mk-on-container);
+  background: var(--mk-accent-soft);
+}
+
+[data-skin="material"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--mk-surface-2);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-1);
+}
+
+[data-skin="material"] .wf-image {
+  min-height: 120px;
+  background-color: var(--mk-surface-3);
+  background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line) calc(50% - 0.5px),
+      var(--mk-line) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line) calc(50% - 0.5px),
+      var(--mk-line) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="material"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  background: var(--mk-accent-container);
+  border-radius: 50%;
+}
+
+[data-skin="material"] .wf-avatar[data-size="sm"] {
+  width: 28px;
+  height: 28px;
+}
+
+[data-skin="material"] .wf-avatar[data-size="lg"] {
+  width: 56px;
+  height: 56px;
+}
+
+[data-skin="material"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  background: var(--mk-surface-3);
+  border-radius: 50%;
+}
+
+[data-skin="material"] .wf-icon[data-size="lg"] {
+  width: 24px;
+  height: 24px;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+/* A filled button is a pill in the primary colour with a label on it; a tonal
+   button is the same pill in the primary container; an outlined button is the
+   same pill with a 1px outline and no fill. */
+[data-skin="material"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--mk-ctl-h);
+  padding: 0 24px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mk-accent);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: transparent;
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="material"] .wf-button.primary {
+  color: var(--mk-on-accent);
+  background: var(--mk-accent);
+  border-color: transparent;
+  box-shadow: var(--mk-shadow-1);
+}
+
+[data-skin="material"] .wf-button.ghost {
+  color: var(--mk-accent);
+  background: transparent;
+  border-color: transparent;
+  padding: 0 12px;
+}
+
+[data-skin="material"] .wf-button[disabled] {
+  color: var(--mk-muted);
+  opacity: 0.38;
+  box-shadow: none;
+}
+
+[data-skin="material"] .wf-button:focus-visible,
+[data-skin="material"] .wf-button[data-focus] {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 1px;
+}
+
+/* The outlined text field: 1px outline, 4px corner, and the label sits in the
+   notch of the top border, which is the Material 3 shape. */
+[data-skin="material"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 16px;
+  font-size: 16px;
+  color: var(--mk-fg);
+  background: transparent;
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="material"] .wf-input[data-label]::before,
+[data-skin="material"] .wf-select[data-label]::before,
+[data-skin="material"] .wf-label {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+}
+
+[data-skin="material"] .wf-input[data-label]::before,
+[data-skin="material"] .wf-select[data-label]::before {
+  content: attr(data-label);
+}
+
+[data-skin="material"] .wf-input:focus-within {
+  border-color: var(--mk-accent);
+  box-shadow: inset 0 0 0 1px var(--mk-accent);
+}
+
+/* data-variant="filled" is the other text field: a tonal box with a 1px line
+   along the bottom, and no outline. */
+[data-skin="material"] .wf-input[data-variant="filled"] {
+  background: var(--mk-surface-3);
+  border-color: transparent;
+  border-bottom-color: var(--mk-line-strong);
+  border-radius: var(--mk-radius) var(--mk-radius) 0 0;
+}
+
+[data-skin="material"] .wf-input[data-variant="filled"][data-label]::before {
+  background: none;
+}
+
+/* An empty field still says what it is: the drawing's placeholder is read out
+   of the attribute, so a search box in a title bar is not a blank rectangle. */
+[data-skin="material"] .wf-input[data-placeholder]:empty::after {
+  content: attr(data-placeholder);
+  color: var(--mk-muted);
+}
+
+[data-skin="material"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 44px 0 16px;
+  font-size: 16px;
+  color: var(--mk-fg);
+  background: transparent;
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="material"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 0;
+  height: 0;
+  margin-top: -3px;
+  border-top: 5px solid var(--mk-muted);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+}
+
+[data-skin="material"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  border: 2px solid var(--mk-line-strong);
+  border-radius: 2px;
+}
+
+[data-skin="material"] .wf-checkbox[data-checked="true"] {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="material"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 4px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--mk-on-accent);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* The Material 3 switch: a 52x32 track, a 16px handle when off and a 24px one
+   when on, and an outline around the track until it is checked. */
+[data-skin="material"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 32px;
+  background: var(--mk-surface-3);
+  border: 2px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="material"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 16px;
+  height: 16px;
+  background: var(--mk-line-strong);
+  border-radius: 50%;
+}
+
+[data-skin="material"] .wf-toggle.on {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="material"] .wf-toggle.on::after {
+  top: 2px;
+  left: 24px;
+  width: 24px;
+  height: 24px;
+  background: var(--mk-on-accent);
+}
+
+/* A primary tab: the label, then a 3px indicator that runs the width of the
+   tab and is rounded at the top. The bar is the only line in the row. */
+[data-skin="material"] .wf-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--mk-surface-2);
+  border-radius: var(--mk-radius) var(--mk-radius) 0 0;
+}
+
+[data-skin="material"] .wf-tabs > * {
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--mk-muted);
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+[data-skin="material"] .wf-tabs > .is-active,
+[data-skin="material"] .wf-tabs > [aria-selected="true"] {
+  color: var(--mk-accent);
+  border-bottom-color: var(--mk-accent);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+[data-skin="material"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 0 16px;
+  font-size: 22px;
+  font-weight: 400;
+  background: var(--mk-surface-2);
+  border-radius: 0 0 var(--mk-radius-lg) var(--mk-radius-lg);
+}
+
+/* A navigation drawer is the tonal surface with the corners rounded on the
+   side that faces the content. */
+[data-skin="material"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 4px;
+  width: 240px;
+  padding: 12px;
+  background: var(--mk-surface-2);
+  border-radius: 0 var(--mk-radius-lg) var(--mk-radius-lg) 0;
+}
+
+[data-skin="material"] .wf-sidebar > .wf-row {
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="material"] .wf-sidebar > .wf-row.is-active,
+[data-skin="material"] .wf-sidebar > .is-active {
+  color: var(--mk-on-container);
+  background: var(--mk-accent-container);
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+/* A filled list row is the surface container, and the divider between rows is
+   inset instead of full width. */
+[data-skin="material"] .wf-table {
+  --mk-rows: 4;
+  --mk-cols: 3;
+  height: calc(var(--mk-rows) * 52px);
+  background-color: var(--mk-surface);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 51px,
+    var(--mk-line) 51px 52px
+  );
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="material"] .wf-table[data-rows="1"] { --mk-rows: 1; }
+[data-skin="material"] .wf-table[data-rows="2"] { --mk-rows: 2; }
+[data-skin="material"] .wf-table[data-rows="3"] { --mk-rows: 3; }
+[data-skin="material"] .wf-table[data-rows="4"] { --mk-rows: 4; }
+[data-skin="material"] .wf-table[data-rows="5"] { --mk-rows: 5; }
+[data-skin="material"] .wf-table[data-rows="6"] { --mk-rows: 6; }
+[data-skin="material"] .wf-table[data-rows="8"] { --mk-rows: 8; }
+[data-skin="material"] .wf-table[data-rows="10"] { --mk-rows: 10; }
+
+[data-skin="material"] .wf-table[data-cols] {
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 51px,
+      var(--mk-line) 51px 52px
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(100% / var(--mk-cols) - 1px),
+      var(--mk-line) calc(100% / var(--mk-cols) - 1px) calc(100% / var(--mk-cols))
+    );
+}
+
+[data-skin="material"] .wf-table[data-cols="1"] { --mk-cols: 1; }
+[data-skin="material"] .wf-table[data-cols="2"] { --mk-cols: 2; }
+[data-skin="material"] .wf-table[data-cols="3"] { --mk-cols: 3; }
+[data-skin="material"] .wf-table[data-cols="4"] { --mk-cols: 4; }
+[data-skin="material"] .wf-table[data-cols="5"] { --mk-cols: 5; }
+[data-skin="material"] .wf-table[data-cols="6"] { --mk-cols: 6; }
+
+[data-skin="material"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+  padding: 0 0 0 1px;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="material"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 4px;
+  background: var(--mk-accent-container);
+  border-radius: 4px 4px 0 0;
+}
+
+[data-skin="material"] .wf-chart > .is-accent {
+  background: var(--mk-accent);
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+[data-skin="material"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* A Material 3 dialog is a 28px rounded tonal box with a headline, a body and
+   two text buttons at the end of its last row. */
+[data-skin="material"] .wf-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(420px, 86%);
+  max-height: 84%;
+  padding: 24px;
+  overflow: auto;
+  background: var(--mk-surface-2);
+  border-radius: var(--mk-radius-xl);
+  box-shadow: var(--mk-shadow-3);
+  transform: translate(-50%, -50%);
+}
+
+[data-skin="material"] .wf-toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 86%;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--mk-surface-2);
+  background: var(--mk-fg);
+  border-radius: var(--mk-radius);
+  box-shadow: var(--mk-shadow-3);
+  transform: translateX(-50%);
+}

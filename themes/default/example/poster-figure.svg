@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 552" width="720" height="552" role="img" aria-labelledby="fig-title fig-desc">
+  <title id="fig-title">Example data: megabytes uploaded per publish</title>
+  <desc id="fig-desc">Six horizontal bars, one per publish of the same folder: 120, 40, 18, 9, 6 and 6 megabytes. The first publish sends the whole folder and every later one sends the files that changed. Example data, not a measurement.</desc>
+  <style>
+    text {
+      font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+    .panel { fill: #f4f4f4; }
+    .title { font-size: 26px; font-weight: 600; fill: #161616; }
+    .sub { font-size: 18px; fill: #525252; }
+    .rule { stroke: #8d8d8d; stroke-width: 1; }
+    .label { font-size: 20px; fill: #525252; }
+    .value { font-size: 20px; fill: #161616; font-variant-numeric: tabular-nums; }
+    .bar { fill: #0f62fe; }
+    .note { font-size: 17px; fill: #525252; }
+    .note-strong { font-size: 17px; font-weight: 600; fill: #161616; }
+    @media (prefers-color-scheme: dark) {
+      .panel { fill: #262626; }
+      .title { fill: #f4f4f4; }
+      .sub { fill: #c6c6c6; }
+      .rule { stroke: #8d8d8d; }
+      .label { fill: #c6c6c6; }
+      .value { fill: #f4f4f4; }
+      .bar { fill: #78a9ff; }
+      .note { fill: #c6c6c6; }
+      .note-strong { fill: #f4f4f4; }
+    }
+  </style>
+  <rect class="panel" width="720" height="552"/>
+  <text class="title" x="32" y="62">Megabytes uploaded per publish</text>
+  <text class="sub" x="32" y="94">Six publishes of the same folder.</text>
+  <line class="rule" x1="196" y1="118" x2="196" y2="528"/>
+  <g class="label" text-anchor="end" font-variant-numeric="tabular-nums">
+    <text x="180" y="156">publish 1</text>
+    <text x="180" y="226">publish 2</text>
+    <text x="180" y="296">publish 3</text>
+    <text x="180" y="366">publish 4</text>
+    <text x="180" y="436">publish 5</text>
+    <text x="180" y="506">publish 6</text>
+  </g>
+  <g class="bar">
+    <rect x="196" y="130" width="400" height="40"/>
+    <rect x="196" y="200" width="133" height="40"/>
+    <rect x="196" y="270" width="60" height="40"/>
+    <rect x="196" y="340" width="30" height="40"/>
+    <rect x="196" y="410" width="20" height="40"/>
+    <rect x="196" y="480" width="20" height="40"/>
+  </g>
+  <g class="value">
+    <text x="610" y="156">120</text>
+    <text x="343" y="226">40</text>
+    <text x="270" y="296">18</text>
+    <text x="240" y="366">9</text>
+    <text x="230" y="436">6</text>
+    <text x="230" y="506">6</text>
+  </g>
+</svg>

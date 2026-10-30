@@ -1,0 +1,480 @@
+/*
+ * rshow theme "default": poster layout
+ *
+ * A conference poster that prints from the browser. Link order: fonts.css,
+ * tokens.css, poster.css, then mode.js in <head>, then the qrcode-generator
+ * script and poster.js (both deferred, in that order).
+ *
+ *   <div class="poster-toolbar"> size buttons, print, mode toggle </div>
+ *   <div class="poster-stage">
+ *     <div class="poster" data-size="a0">
+ *       <header class="poster-head"> title, authors, logos, QR </header>
+ *       <main class="poster-cols"> one <section> per block </main>
+ *       <footer class="poster-foot"> references </footer>
+ *     </div>
+ *   </div>
+ *
+ * A size is an attribute on the poster, not a second stylesheet. data-size="a0"
+ * (841x1189mm, three columns) is the default and needs no attribute; "a1" is
+ * 594x841mm, three columns; "36x48" is the 3x4ft sheet shown landscape (48in
+ * wide, 36in tall, four columns) and "48x36" is the same sheet stood portrait
+ * (36in wide, 48in tall, three columns). The status line beside the buttons
+ * always names the width and the height, so the sheet a print will use is never
+ * a guess. Each size sets --poster-w and --poster-h, and poster.js copies those two
+ * values into one @page rule so a print is exactly one page of that size with no
+ * margin. The @page rule at the bottom of this file is the a0 default, for a
+ * document that never runs the script.
+ *
+ * On screen the poster keeps its real width in mm and poster.js scales the whole
+ * block down to the width of the window, so a preview is a preview and not a
+ * second, responsive layout. The type is in pt for the same reason: 110pt here
+ * is 110pt on paper. --poster-type carries one multiplier per sheet, because a
+ * 110pt title that fills an A0 line would overflow an A1.
+ *
+ * Same system as the deck, the page and the report: Carbon tokens, Plex Sans,
+ * square corners, no shadow, no card, no eyebrow, no numbered tile, sentence
+ * case. Print is always light; the tokens do that.
+ */
+
+:root {
+  /* Air around the poster on screen. poster.js reads the same number so the
+     scaled width and the stage agree. */
+  --poster-edge: 24px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: var(--color-scheme);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-shell);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- toolbar -- */
+
+.poster-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-03);
+  padding: var(--space-03) var(--space-05);
+  background: var(--bg-shell);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.poster-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-02);
+}
+
+.poster-toolbar button {
+  min-height: 44px;
+  padding: 0 var(--space-05);
+  font: inherit;
+  font-size: var(--text-2xs);
+  line-height: 1;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.poster-toolbar button:hover {
+  color: var(--fg);
+  background: var(--bg);
+  border-color: var(--border-strong);
+}
+
+.poster-toolbar button[aria-pressed="true"] {
+  color: var(--fg);
+  background: var(--bg);
+  border-color: var(--border-strong);
+  font-weight: 600;
+}
+
+.poster-toolbar [data-rshow-mode-toggle] {
+  margin-left: auto;
+}
+
+.poster-status {
+  font-size: var(--text-2xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 671px) {
+  /* Four buttons on a phone would be four rows of chrome above a poster that is
+     already small. The sheet a size means is in the status line once it is
+     pressed, so the orientation word leaves the face of the button. */
+  .poster-size-face {
+    display: none;
+  }
+
+  .poster-toolbar {
+    gap: var(--space-02);
+    padding: var(--space-02) var(--space-04);
+  }
+
+  .poster-toolbar button {
+    padding: 0 var(--space-04);
+  }
+
+  .poster-toolbar [data-rshow-mode-toggle] {
+    margin-left: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- stage -- */
+
+/* The stage is the scaled canvas: poster.js gives it the width and height the
+   transformed poster actually paints, so the page scrolls to the right place
+   and the air around the poster is not 3000px wide. */
+.poster-stage {
+  position: relative;
+  margin: var(--poster-edge) auto;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------- poster -- */
+
+.poster {
+  --poster-type: 1.19;
+  --poster-w: 841mm;
+  --poster-h: 1189mm;
+
+  --poster-pad: calc(34mm * var(--poster-type));
+  --poster-gap: calc(15mm * var(--poster-type));
+  --poster-title: calc(110pt * var(--poster-type));
+  --poster-heading: calc(48pt * var(--poster-type));
+  --poster-subhead: calc(28pt * var(--poster-type));
+  --poster-lead: calc(34pt * var(--poster-type));
+  --poster-body: calc(30pt * var(--poster-type));
+  --poster-small: calc(22pt * var(--poster-type));
+  --poster-refs: calc(20pt * var(--poster-type));
+
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--poster-gap);
+  width: var(--poster-w);
+  height: var(--poster-h);
+  padding: var(--poster-pad);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: var(--poster-body);
+  line-height: 1.4;
+  transform-origin: 0 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.poster[data-size="a1"] {
+  --poster-w: 594mm;
+  --poster-h: 841mm;
+  --poster-type: 0.845;
+}
+
+/* Landscape: 48in wide by 36in tall, four columns. */
+.poster[data-size="36x48"] {
+  --poster-w: 48in;
+  --poster-h: 36in;
+  --poster-type: 1.1;
+}
+
+/* Portrait: 36in wide by 48in tall, three columns. */
+.poster[data-size="48x36"] {
+  --poster-w: 36in;
+  --poster-h: 48in;
+  --poster-type: 1.21;
+}
+
+/* ----------------------------------------------------------- title band -- */
+
+.poster-head {
+  display: grid;
+  gap: calc(9mm * var(--poster-type));
+  min-width: 0;
+}
+
+.poster-title {
+  margin: 0;
+  font-size: var(--poster-title);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.poster-byline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: var(--poster-gap);
+}
+
+.poster-who {
+  min-width: 0;
+}
+
+.poster-authors {
+  margin: 0;
+  font-size: var(--poster-lead);
+  line-height: 1.3;
+}
+
+.poster-affil {
+  margin: calc(2mm * var(--poster-type)) 0 0;
+  font-size: var(--poster-small);
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.poster-venue {
+  margin: calc(3mm * var(--poster-type)) 0 0;
+  font-size: var(--poster-small);
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.poster-logos {
+  margin: 0;
+  font-size: var(--poster-small);
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: right;
+}
+
+.poster-qr {
+  display: grid;
+  gap: calc(3mm * var(--poster-type));
+  width: calc(56mm * var(--poster-type));
+}
+
+/* The generated QR carries white ground and black modules of its own, so it
+   scans on either mode and on paper. */
+.poster-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.poster-qr-url {
+  margin: 0;
+  font-size: var(--poster-small);
+  line-height: 1.3;
+}
+
+.poster-qr-url a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.poster-qr--text .poster-qr-url {
+  font-size: var(--poster-lead);
+}
+
+.poster sup {
+  font-size: 0.62em;
+  line-height: 0;
+  vertical-align: super;
+}
+
+/* ------------------------------------------------------------- columns -- */
+
+.poster-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--poster-gap);
+  align-content: start;
+  min-height: 0;
+}
+
+.poster[data-size="36x48"] .poster-cols {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* The last two sections take the whole second row of a four-column sheet, and
+   each one splits its own text in two, so a line never runs the width of three
+   columns and the foot of the sheet is not left with two empty cells. */
+.poster[data-size="36x48"] .poster-cols > section:nth-last-child(-n + 2) {
+  grid-column: span 2;
+  column-count: 2;
+  column-gap: var(--poster-gap);
+  column-fill: balance;
+}
+
+.poster-cols > section {
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------- prose -- */
+
+.poster h2 {
+  margin: 0 0 calc(6mm * var(--poster-type));
+  font-size: var(--poster-heading);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.poster p {
+  margin: 0 0 calc(5mm * var(--poster-type));
+}
+
+.poster p:last-child,
+.poster section > :last-child,
+.poster figure + p {
+  margin-bottom: 0;
+}
+
+.poster ul,
+.poster ol {
+  margin: 0 0 calc(5mm * var(--poster-type));
+  padding-left: calc(9mm * var(--poster-type));
+}
+
+.poster li {
+  margin: 0 0 calc(3mm * var(--poster-type));
+}
+
+.poster li:last-child {
+  margin-bottom: 0;
+}
+
+.poster li::marker {
+  color: var(--muted);
+}
+
+.poster strong {
+  font-weight: 600;
+}
+
+.poster a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.12em;
+}
+
+.poster code {
+  padding: 0.1em 0.32em;
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--layer-01);
+}
+
+/* -------------------------------------------------------------- figures -- */
+
+.poster figure {
+  margin: 0;
+}
+
+.poster figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.poster figcaption {
+  margin-top: calc(5mm * var(--poster-type));
+  font-size: var(--poster-small);
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------ references -- */
+
+.poster-foot {
+  min-width: 0;
+  font-size: var(--poster-refs);
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.poster-refs-title {
+  margin: 0 0 calc(4mm * var(--poster-type));
+  font-size: var(--poster-subhead);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--fg);
+}
+
+.poster-refs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(4mm * var(--poster-type)) var(--poster-gap);
+  margin: 0;
+  padding-left: calc(7mm * var(--poster-type));
+}
+
+.poster-refs li {
+  margin: 0;
+}
+
+/* --------------------------------------------------------------- paper --- */
+
+@page {
+  size: 841mm 1189mm;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+  }
+
+  .poster-toolbar,
+  .poster-status,
+  .rshow-mode-toggle,
+  .rshow-mode-toggle--fixed {
+    display: none;
+  }
+
+  .poster-stage {
+    width: auto !important;
+    height: auto !important;
+    margin: 0;
+    overflow: visible;
+  }
+
+  .poster {
+    transform: none !important;
+    width: var(--poster-w);
+    height: var(--poster-h);
+  }
+
+  .poster-cols > section,
+  .poster figure {
+    break-inside: avoid;
+  }
+}

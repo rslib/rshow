@@ -1,0 +1,215 @@
+# rshow
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides"]
+prompt = '''
+we finished the q3 latency writeup and it's just index.html plus two svg files in reports/q3. i want to send my manager a link instead of attaching the folder
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides"]
+prompt = '''
+the perf page i put up yesterday needs to be editable by dana and readable by her intern, and i do not want it open to the whole internet
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides"]
+prompt = '''
+the accent colour on my status dashboards washes out on the projector. right now i fix it in five pages and forget one
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides"]
+prompt = '''
+rshow publish ./site just exited 6 and printed a wall of path:line errors about my head tags. did anything get uploaded?
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides"]
+prompt = '''
+my astro site builds into dist and i want it live at art.example.com/status by tomorrow morning. the source is in ~/code/status
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides"]
+prompt = '''
+art.example.com/demo is serving yesterday's broken build and i present in 20 minutes. version 3 from tuesday was fine, how do i put that one back in front
+'''
+
+# rshow-slides
+
+[[case]]
+skill = "rshow-slides"
+forbid = ["slides", "rshow"]
+prompt = '''
+lab meeting friday, 10 minutes on the cache work. i want it as a page i can drop in slack instead of a pptx, and i always forget what i meant to say
+'''
+
+[[case]]
+skill = "rshow-slides"
+forbid = ["rshow"]
+prompt = '''
+add a slide to the deck at art.example.com/xyz with the new latency numbers, it should sit between the method and the results slides
+'''
+
+[[case]]
+skill = "rshow-slides"
+forbid = ["slides", "rshow"]
+prompt = '''
+reading group is my turn next week and it's the raft paper. build me eight slides from scratch that carry leader election and log matching
+'''
+
+[[case]]
+skill = "rshow-slides"
+forbid = ["slides", "rshow"]
+prompt = '''
+the sosp talk i published at art.example.com/sosp-talk has no speaker notes yet and i need a backup slide for the throughput question
+'''
+
+[[case]]
+skill = "rshow-slides"
+forbid = ["slides", "rshow"]
+prompt = '''
+five minute lightning talk at the workshop, seven slides, and the organizers want one link they can email to everyone
+'''
+
+[[case]]
+skill = "rshow-slides"
+forbid = ["slides", "rshow"]
+prompt = '''
+turn the results section of my paper into something i can click through in a browser instead of scrolling a pdf, arrow keys, same look as our group template
+'''
+
+# neither of the rshow skills
+
+[[case]]
+forbid = ["rshow-slides"]
+prompt = '''
+my hpdc talk is a week out and the sponsor wants the powerpoint rebuilt on their master slide, the budget numbers have to stay editable in the deck
+'''
+
+[[case]]
+forbid = ["rshow"]
+prompt = '''
+drop the benchmark table into the chat as an artifact so i can sort it by throughput, we're in claude.ai right now
+'''
+
+[[case]]
+forbid = ["rshow", "rshow-slides"]
+prompt = '''
+i renamed getUser to fetchUser in api/users.ts and updated the four call sites. what do i put in the commit message
+'''
+
+[[case]]
+forbid = ["rshow", "rshow-slides"]
+prompt = '''
+my tikz figure is a bit too wide for the acmart column and pokes past the right margin. how do i scale it down without shrinking the labels
+'''
+
+# rshow, the newer layouts and the grouping
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+i have a poster session at the workshop on thursday and the organizers want an a1 sheet printed from a pdf. the title is about immutable artifacts and i have one bar chart
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+the paper just got accepted and i need a landing page for it at art.example.com with the teaser figure, the author list, a pdf link and the bibtex entry people can copy
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+results.csv from the last sweep has 240 runs and lab meeting keeps asking the same question about throughput per node count. i want something i can filter and sort instead of pasting a table
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+we are three weeks from starting the tauri app and i want wireframes the group can look at and argue about before anyone writes rust, maybe with the empty state and the error state
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+sketch the ratatui tool for me, the pane layout with the log on top and the keys along the bottom, so i can show the team what i mean before i build it
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+rough hand drawing of how the scheduler talks to the storage layer and the client would be enough, boxes and arrows, it does not need to look polished
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+all my hpdc stuff is scattered across five links in my notes. i want one place to send the co-authors so they can see the paper page, the deck and the figures together
+'''
+
+[[case]]
+skill = "rshow"
+forbid = ["rshow-slides", "rshow-implement"]
+prompt = '''
+i recorded a two minute asciinema of the cli and i want it embedded in the tool page with the window frame, plus the actual escape capture of the full screen view
+'''
+
+# rshow-implement
+
+[[case]]
+skill = "rshow-implement"
+forbid = ["rshow", "rshow-slides"]
+prompt = '''
+we approved the mockup at art.example.com/admin-flow and i need it in our react app now, the same screens, the same colors from the design, no drifting
+'''
+
+[[case]]
+skill = "rshow-implement"
+forbid = ["rshow-slides"]
+prompt = '''
+my ratatui app has slowly drifted from the design we handed off in february, the spacing and the accent are both off and i cannot tell where it started
+'''
+
+[[case]]
+skill = "rshow-implement"
+forbid = ["rshow-slides"]
+prompt = '''
+can you check whether art.example.com/admin-flow and the app i just built actually match, side by side, before i show it to anyone
+'''
+
+[[case]]
+skill = "rshow-implement"
+forbid = ["rshow-slides"]
+prompt = '''
+the wireframes are signed off and the tokens are frozen. turn them into working code in our vite app, sidebar, table and the share dialog
+'''
+
+# neither of the rshow skills, the newer layouts and the grouping
+
+[[case]]
+forbid = ["rshow", "rshow-implement", "rshow-slides"]
+prompt = '''
+someone shared a figma file with me and i only need to know how to get the hex values out of a frame, i am not building anything
+'''
+
+[[case]]
+forbid = ["rshow", "rshow-implement", "rshow-slides"]
+prompt = '''
+my matplotlib bars are sorted wrong because the column is read as strings, how do i make it sort by the number
+'''

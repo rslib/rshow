@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rshow: a link that keeps working</title>
+<!--
+  Theme links. A published deck points at the theme artifact with root-relative
+  URLs, one per file, all at the same pinned version:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/deck.css">
+    <script src="/_themes/<name>@<n>/deck.js"></script>
+
+  This copy links the theme folder itself, so it previews from a local checkout
+  with `rshow preview .` from this folder, and no network.
+
+  Twelve slides, one per layout in deck.css, so every class the theme ships is
+  shown here: title, statement, bullets, section, figure, chart, table,
+  two-col, code, figure-two, quote, big-number.
+
+  The numbers on the chart and the table are example data. They are round on
+  purpose and the caption says so, because an example must never read as a
+  measured result.
+
+  Colour of a chart: one series is drawn in --accent, the same blue as a link,
+  because one series is not a category. Two or more series take --chart-1,
+  --chart-2 and so on, in order. Press t in the deck to cycle the mode.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../deck.css">
+</head>
+<body>
+
+<main class="deck">
+
+  <section class="slide title">
+    <h1>rshow: a link that keeps working</h1>
+    <p class="subtitle">Publishing, versions, sharing and caching.</p>
+    <p class="byline">Dana Ruiz, rshow project, weekly research meeting, 14 March</p>
+    <aside class="notes">
+      <p>Say who you are and what the room gets out of this: one command, one
+      link that stays put, no build step to babysit.</p>
+      <p>Promise: by the end they can publish a deck, a report or a demo from a
+      folder on their laptop.</p>
+    </aside>
+  </section>
+
+  <section class="slide statement">
+    <p>Every publish is a version, and a version never changes.</p>
+    <aside class="notes">
+      <p>The whole talk sits in that sentence. Everything after it is a
+      consequence, so give it a moment before moving on.</p>
+    </aside>
+  </section>
+
+  <section class="slide bullets">
+    <h2>Four parts make a link survive an edit</h2>
+    <ul>
+      <li class="step">A publish writes a numbered version and leaves the old ones alone.</li>
+      <li class="step">A pin holds one version in place while the next one is half written.</li>
+      <li class="step">A share decides who may read the link: private, people or public.</li>
+      <li class="step">A content hash means a republish uploads only what changed.</li>
+      <li class="step">The slug stays the same, so the link in the calendar invite still works.</li>
+    </ul>
+    <aside class="notes">
+      <p>Advance one line at a time. Pause after the first: immutability is the
+      part people do not expect.</p>
+    </aside>
+  </section>
+
+  <section class="slide section">
+    <h2>Publishing</h2>
+    <p>From a folder to a live page, in one command.</p>
+    <aside class="notes">
+      <p>Transition. Keep it up for a few seconds and do not read the heading
+      out.</p>
+    </aside>
+  </section>
+
+  <section class="slide figure">
+    <h2>A publish sends only the files the host does not have yet</h2>
+    <figure>
+      <svg viewBox="0 0 1088 390" role="img" aria-label="Publish hashes every file in the folder, compares the hashes with the ones the host already holds, uploads only the missing files and records a numbered version.">
+        <g style="font-family: var(--font-sans); fill: var(--fg)">
+          <g style="fill: var(--layer-01)">
+            <rect x="0" y="70" width="230" height="250"></rect>
+            <rect x="286" y="70" width="230" height="250"></rect>
+            <rect x="572" y="70" width="230" height="250"></rect>
+            <rect x="858" y="70" width="230" height="250"></rect>
+          </g>
+          <g style="font-size: 24px; font-weight: 600">
+            <text x="24" y="186">Publish</text>
+            <text x="310" y="186">Compare</text>
+            <text x="596" y="186">Upload</text>
+            <text x="882" y="186">Record</text>
+          </g>
+          <g style="font-size: 20px; fill: var(--muted)">
+            <text x="24" y="222">every file, hashed</text>
+            <text x="310" y="222">which hashes exist</text>
+            <text x="596" y="222">only what is new</text>
+            <text x="882" y="222">a numbered version</text>
+          </g>
+          <g style="stroke: var(--accent); stroke-width: 2">
+            <line x1="230" y1="195" x2="278" y2="195" marker-end="url(#tip)"></line>
+            <line x1="516" y1="195" x2="564" y2="195" marker-end="url(#tip)"></line>
+            <line x1="802" y1="195" x2="850" y2="195" marker-end="url(#tip)"></line>
+          </g>
+          <defs>
+            <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"></path>
+            </marker>
+          </defs>
+        </g>
+      </svg>
+      <figcaption>Each publish hashes the folder, asks the host what it already holds and sends the difference. The version is recorded with the manifest it was built from.</figcaption>
+    </figure>
+    <aside class="notes">
+      <p>Trace the arrows left to right with a pointer. The compare step is why
+      a republish of a mostly unchanged deck costs almost nothing.</p>
+    </aside>
+  </section>
+
+  <section class="slide chart">
+    <h2>A republish uploads a fraction of the first one</h2>
+    <figure>
+      <svg viewBox="0 0 1088 430" role="img" aria-label="Bar chart of megabytes uploaded per publish over six publishes: 120, 40, 18, 9, 6 and 6 megabytes.">
+        <g style="font-family: var(--font-sans)">
+          <text x="40" y="30" style="font-size: 20px; fill: var(--muted)">Megabytes uploaded per publish</text>
+          <!-- One series, so it takes the interactive blue and not --chart-1. -->
+          <g style="fill: var(--accent)">
+            <rect x="40" y="80" width="88" height="300"></rect>
+            <rect x="216" y="280" width="88" height="100"></rect>
+            <rect x="392" y="335" width="88" height="45"></rect>
+            <rect x="568" y="357" width="88" height="23"></rect>
+            <rect x="744" y="365" width="88" height="15"></rect>
+            <rect x="920" y="365" width="88" height="15"></rect>
+          </g>
+          <g style="font-size: 22px; fill: var(--fg); font-variant-numeric: tabular-nums; text-anchor: middle">
+            <text x="84" y="62">120</text>
+            <text x="260" y="262">40</text>
+            <text x="436" y="317">18</text>
+            <text x="612" y="339">9</text>
+            <text x="788" y="347">6</text>
+            <text x="964" y="347">6</text>
+          </g>
+          <line x1="40" y1="380" x2="1048" y2="380" style="stroke: var(--border-strong); stroke-width: 1"></line>
+          <g style="font-size: 18px; fill: var(--muted); text-anchor: middle">
+            <text x="84" y="412">publish 1</text>
+            <text x="260" y="412">publish 2</text>
+            <text x="436" y="412">publish 3</text>
+            <text x="612" y="412">publish 4</text>
+            <text x="788" y="412">publish 5</text>
+            <text x="964" y="412">publish 6</text>
+          </g>
+        </g>
+      </svg>
+      <figcaption>Example data, not a measurement. The first publish sends the whole folder; every later one sends only the files that changed.</figcaption>
+    </figure>
+    <aside class="notes">
+      <p>Read the labels, not the axis: the bars are labelled at the top so
+      nobody has to trace across to a gridline. The shape is the point, the
+      exact numbers are illustrative.</p>
+    </aside>
+  </section>
+
+  <section class="slide table">
+    <h2>Every version stays reachable at its own path</h2>
+    <div class="table">
+      <table>
+        <caption>Example data: five publishes of one talk folder.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Version</th>
+            <th scope="col">Label</th>
+            <th scope="col" class="num-cell">Files changed</th>
+            <th scope="col" class="num-cell">Uploaded</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>v1</td><td>first draft</td><td class="num-cell">7</td><td class="num-cell">240 KB</td></tr>
+          <tr><td>v2</td><td>fix the chart</td><td class="num-cell">1</td><td class="num-cell">18 KB</td></tr>
+          <tr><td>v3</td><td>add the appendix</td><td class="num-cell">3</td><td class="num-cell">96 KB</td></tr>
+          <tr><td>v4</td><td>tidy the notes</td><td class="num-cell">1</td><td class="num-cell">12 KB</td></tr>
+          <tr><td>v5</td><td>after the dry run</td><td class="num-cell">2</td><td class="num-cell">31 KB</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <aside class="notes">
+      <p>Point at the label column: the label is the only thing a reader needs
+      to pick a version. The old paths keep working while this list grows.</p>
+    </aside>
+  </section>
+
+  <section class="slide two-col">
+    <h2>A pin freezes one version, the newest link keeps moving</h2>
+    <div class="col">
+      <h3>Pinned</h3>
+      <ul>
+        <li>One version, chosen by you.</li>
+        <li>The link in the invite keeps showing it.</li>
+        <li>You publish behind it until the talk is ready.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>Newest</h3>
+      <ul>
+        <li>Whatever was published last.</li>
+        <li>Good for a page you keep editing.</li>
+        <li>Every publish moves it, with no warning.</li>
+      </ul>
+    </div>
+    <aside class="notes">
+      <p>Ask the room which one they would send to a reviewer. Most people want
+      the pin, and then admit they never set one.</p>
+    </aside>
+  </section>
+
+  <section class="slide code">
+    <h2>Publish the folder, then keep the link</h2>
+    <pre><code>rshow publish ./my-talk \
+  --slug my-talk \
+  --label "first draft"</code></pre>
+    <p class="source">The label is what changed. It is the one line a reader uses to pick a version.</p>
+    <aside class="notes">
+      <p>Run the command live if the network allows it, then open the printed
+      link. The token comes from the environment, never from this line.</p>
+    </aside>
+  </section>
+
+  <section class="slide figure-two">
+    <h2>Two links, one folder, different promises</h2>
+    <div class="pair">
+      <figure>
+        <svg viewBox="0 0 460 270" role="img" aria-label="The newest link points at the top version of a stack of three, version 5.">
+          <g style="font-family: var(--font-sans); font-size: 20px; fill: var(--fg)">
+            <g style="fill: var(--layer-01)">
+              <rect x="20" y="0" width="170" height="80"></rect>
+              <rect x="20" y="92" width="170" height="80"></rect>
+              <rect x="20" y="184" width="170" height="80"></rect>
+            </g>
+            <text x="44" y="50">v5</text>
+            <text x="44" y="142">v4</text>
+            <text x="44" y="234">v3</text>
+            <rect x="18" y="-2" width="174" height="84" style="fill: none; stroke: var(--accent); stroke-width: 2"></rect>
+            <line x1="210" y1="40" x2="286" y2="40" style="stroke: var(--accent); stroke-width: 2" marker-end="url(#tip2)"></line>
+            <text x="300" y="48" style="fill: var(--muted)">newest</text>
+            <defs>
+              <marker id="tip2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"></path>
+              </marker>
+            </defs>
+          </g>
+        </svg>
+        <figcaption>The newest link follows the last publish.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 460 270" role="img" aria-label="A pinned link points at version 3, and later versions are still stored.">
+          <g style="font-family: var(--font-sans); font-size: 20px; fill: var(--fg)">
+            <g style="fill: var(--layer-01)">
+              <rect x="20" y="0" width="170" height="80"></rect>
+              <rect x="20" y="92" width="170" height="80"></rect>
+              <rect x="20" y="184" width="170" height="80"></rect>
+            </g>
+            <text x="44" y="50">v5</text>
+            <text x="44" y="142">v4</text>
+            <text x="44" y="234">v3</text>
+            <rect x="18" y="182" width="174" height="84" style="fill: none; stroke: var(--accent); stroke-width: 2"></rect>
+            <line x1="210" y1="224" x2="286" y2="224" style="stroke: var(--accent); stroke-width: 2" marker-end="url(#tip3)"></line>
+            <text x="300" y="232" style="fill: var(--muted)">pinned</text>
+            <defs>
+              <marker id="tip3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"></path>
+              </marker>
+            </defs>
+          </g>
+        </svg>
+        <figcaption>A pinned link stays on the version you chose.</figcaption>
+      </figure>
+    </div>
+    <aside class="notes">
+      <p>Same folder, same storage, two promises. A pin is one line in the
+      artifact record, not a copy of the files.</p>
+    </aside>
+  </section>
+
+  <section class="slide quote">
+    <blockquote>A link that survives the next edit is worth more than a tidy changelog.</blockquote>
+    <cite>Project notes, on why every publish keeps its own version</cite>
+    <aside class="notes">
+      <p>This is the whole pitch. Stop talking for a moment after it.</p>
+    </aside>
+  </section>
+
+  <section class="slide big-number">
+    <p class="value">5 versions, 1 link</p>
+    <p class="caption">Five publishes of one folder, each at its own path, all reachable from the link the first publish printed.</p>
+    <p class="source">Example data, not a measurement. Try it on one folder before the next meeting.</p>
+    <aside class="notes">
+      <p>Close here. Say where the docs are and offer to sit with anyone for
+      their first publish.</p>
+    </aside>
+  </section>
+
+</main>
+
+<script src="../deck.js"></script>
+</body>
+</html>

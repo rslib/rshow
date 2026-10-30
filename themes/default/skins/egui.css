@@ -1,0 +1,639 @@
+/*
+ * rshow theme "default": the egui skin, layer 3.
+ *
+ * egui is an immediate mode toolkit that paints every pixel itself, so its
+ * default look is the opposite of a platform skin: no chrome, no shadow, one
+ * flat gray ground, widgets that are rectangles a shade off it, a 2px corner, a
+ * thin stroke, small text and tight spacing. This skin draws the wf-* kit that
+ * way, and a mockup in a bare frame with it reads as a tool someone built, not
+ * as a window someone shipped.
+ *
+ * Two visual languages, both egui's: dark (its default, gray 27 ground with
+ * gray 60 widgets) and light (its light visuals, gray 248 ground). The dark
+ * values are the default and the light values sit behind the light mode, which
+ * is the reverse of the other skins and is what the toolkit does.
+ *
+ * The one colour is the selection blue, #005c80, because egui has exactly one
+ * accent and it uses it for a selection and for a hyperlink.
+ *
+ * Knobs: the custom.css set plus --mk-surface, --mk-surface-2, --mk-on-accent,
+ * --mk-accent-soft, --mk-radius-lg, --mk-ctl-h, --mk-line-h, --mk-select.
+ */
+
+/* ---------------------------------------------------- the screen, dark -- */
+
+/* egui's dark visuals are the default, so they are also what a page with no
+   mode preference gets: this skin is dark unless the reader chose light. */
+
+[data-skin="egui"] {
+  --mk-bg: #1b1b1b;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #1b1b1b;
+  --mk-chrome-bg-2: #232323;
+  --mk-chrome-line: #3c3c3c;
+  --mk-chrome-fg: #c8c8c8;
+  --mk-surface: #232323;
+  --mk-surface-2: #1b1b1b;
+  --mk-fg: #c8c8c8;
+  --mk-muted: #8c8c8c;
+  --mk-line: #3c3c3c;
+  --mk-line-strong: #4a4a4a;
+  --mk-fill: #2a2a2a;
+
+  --mk-accent: #005c80;
+  --mk-accent-hover: #0072a0;
+  --mk-accent-soft: #16323c;
+  --mk-on-accent: #ffffff;
+  --mk-focus: #5caaff;
+  --mk-select: #5caaff;
+
+  /* egui has no pills and no cards: two pixels on a widget, three on a window */
+  --mk-radius: 2px;
+  --mk-radius-lg: 3px;
+
+  --mk-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mk-size: 12px;
+  --mk-line-h: 16px;
+  --mk-ctl-h: 22px;
+  --mk-gap: 6px;
+  --mk-pad: 8px;
+}
+
+/* --------------------------------------------------- the screen, light -- */
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-mode="dark"]) [data-skin="egui"] {
+    --mk-bg: #f8f8f8;
+
+    /* the window chrome the frame draws, in the same two modes */
+    --mk-chrome-bg: #f0f0f0;
+    --mk-chrome-bg-2: #e6e6e6;
+    --mk-chrome-line: #bdbdbd;
+    --mk-chrome-fg: #1b1b1b;
+    --mk-surface: #ffffff;
+    --mk-surface-2: #f0f0f0;
+    --mk-fg: #1b1b1b;
+    --mk-muted: #5a5a5a;
+    --mk-line: #bdbdbd;
+    --mk-line-strong: #a8a8a8;
+    --mk-fill: #e6e6e6;
+    --mk-accent: #005c80;
+    --mk-accent-hover: #0072a0;
+    --mk-accent-soft: #d8ebf2;
+    --mk-on-accent: #ffffff;
+    --mk-focus: #005c80;
+    --mk-select: #002b3d;
+  }
+}
+
+:root[data-mode="light"] [data-skin="egui"] {
+  --mk-bg: #f8f8f8;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #f0f0f0;
+  --mk-chrome-bg-2: #e6e6e6;
+  --mk-chrome-line: #bdbdbd;
+  --mk-chrome-fg: #1b1b1b;
+  --mk-surface: #ffffff;
+  --mk-surface-2: #f0f0f0;
+  --mk-fg: #1b1b1b;
+  --mk-muted: #5a5a5a;
+  --mk-line: #bdbdbd;
+  --mk-line-strong: #a8a8a8;
+  --mk-fill: #e6e6e6;
+  --mk-accent: #005c80;
+  --mk-accent-hover: #0072a0;
+  --mk-accent-soft: #d8ebf2;
+  --mk-on-accent: #ffffff;
+  --mk-focus: #005c80;
+  --mk-select: #002b3d;
+}
+
+/* --------------------------------------------------------------- screen -- */
+
+[data-skin="egui"] .mk-screen {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-mode="dark"]) [data-skin="egui"] .mk-screen {
+    color-scheme: light;
+  }
+}
+
+:root[data-mode="light"] [data-skin="egui"] .mk-screen {
+  color-scheme: light;
+}
+
+[data-skin="egui"] .mk-screen a {
+  color: var(--mk-select);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+[data-skin="egui"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+[data-skin="egui"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+[data-skin="egui"] .wf-row.wf-shell {
+  align-items: stretch;
+  gap: 0;
+}
+
+[data-skin="egui"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+[data-skin="egui"] .wf-spacer,
+[data-skin="egui"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+[data-skin="egui"] .wf-heading {
+  display: block;
+  width: 34%;
+  max-width: 16em;
+  height: 0.75em;
+  background: var(--mk-fg);
+  border-radius: 1px;
+  opacity: 0.8;
+}
+
+[data-skin="egui"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  background: none;
+  opacity: 1;
+}
+
+[data-skin="egui"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * var(--mk-line-h));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--mk-line-strong) 0 5px,
+    transparent 5px var(--mk-line-h)
+  );
+  opacity: 0.8;
+}
+
+[data-skin="egui"] .wf-text[data-lines="1"] { --mk-lines: 1; }
+[data-skin="egui"] .wf-text[data-lines="2"] { --mk-lines: 2; }
+[data-skin="egui"] .wf-text[data-lines="3"] { --mk-lines: 3; }
+[data-skin="egui"] .wf-text[data-lines="4"] { --mk-lines: 4; }
+[data-skin="egui"] .wf-text[data-lines="5"] { --mk-lines: 5; }
+[data-skin="egui"] .wf-text[data-lines="6"] { --mk-lines: 6; }
+[data-skin="egui"] .wf-text[data-lines="7"] { --mk-lines: 7; }
+[data-skin="egui"] .wf-text[data-lines="8"] { --mk-lines: 8; }
+
+[data-skin="egui"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 12px;
+  line-height: var(--mk-line-h);
+  color: var(--mk-muted);
+  background: none;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+/* An egui group is a rectangle with a 1px stroke and nothing else: no shadow,
+   no translucency, no second layer. */
+[data-skin="egui"] .wf-box {
+  min-height: 32px;
+  padding: 6px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+/* egui paints a selected item with the selection colour and a 1px stroke in the
+   selection stroke, which is inline in the same frame and not an overlay. */
+[data-skin="egui"] .wf-box.is-active {
+  background: var(--mk-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--mk-accent);
+}
+
+[data-skin="egui"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  padding: 8px;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="egui"] .wf-image {
+  min-height: 120px;
+  background-color: var(--mk-fill);
+  background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="egui"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+[data-skin="egui"] .wf-avatar[data-size="sm"] {
+  width: 18px;
+  height: 18px;
+}
+
+[data-skin="egui"] .wf-avatar[data-size="lg"] {
+  width: 32px;
+  height: 32px;
+}
+
+[data-skin="egui"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: 1px;
+}
+
+[data-skin="egui"] .wf-icon[data-size="lg"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+/* egui's inactive widget is a fill one step off the panel with a 1px stroke in
+   the widget stroke grey, and the hovered state is a brighter fill, not a
+   colour change. Nothing is a pill and nothing is round. */
+[data-skin="egui"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: var(--mk-ctl-h);
+  padding: 0 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--mk-fg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="egui"] .wf-button.primary {
+  color: var(--mk-on-accent);
+  background: var(--mk-accent);
+  border-color: var(--mk-accent-hover);
+}
+
+[data-skin="egui"] .wf-button.ghost {
+  color: var(--mk-muted);
+  background: transparent;
+  border-color: var(--mk-line);
+}
+
+[data-skin="egui"] .wf-button[disabled] {
+  color: var(--mk-muted);
+  opacity: 0.5;
+}
+
+[data-skin="egui"] .wf-button:focus-visible,
+[data-skin="egui"] .wf-button[data-focus] {
+  outline: 1px solid var(--mk-focus);
+  outline-offset: 1px;
+}
+
+[data-skin="egui"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 6px;
+  font-size: 12px;
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+/* egui labels a widget above it, in the muted grey, at the same small size. */
+[data-skin="egui"] .wf-input[data-label]::before,
+[data-skin="egui"] .wf-select[data-label]::before,
+[data-skin="egui"] .wf-label {
+  position: absolute;
+  top: -13px;
+  left: 1px;
+  z-index: 1;
+  padding: 0 2px;
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+}
+
+[data-skin="egui"] .wf-input[data-label]::before,
+[data-skin="egui"] .wf-select[data-label]::before {
+  content: attr(data-label);
+}
+
+[data-skin="egui"] .wf-input:focus-within {
+  border-color: var(--mk-focus);
+}
+
+/* An empty field still says what it is: the drawing's placeholder is read out
+   of the attribute, so a search box in a title bar is not a blank rectangle. */
+[data-skin="egui"] .wf-input[data-placeholder]:empty::after {
+  content: attr(data-placeholder);
+  color: var(--mk-muted);
+}
+
+[data-skin="egui"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 22px 0 6px;
+  font-size: 12px;
+  color: var(--mk-fg);
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="egui"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-top: 4px solid var(--mk-muted);
+  border-right: 3px solid transparent;
+  border-left: 3px solid transparent;
+}
+
+[data-skin="egui"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: 2px;
+}
+
+[data-skin="egui"] .wf-checkbox[data-checked="true"] {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="egui"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 3.5px;
+  width: 3px;
+  height: 7px;
+  border: solid var(--mk-on-accent);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+[data-skin="egui"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 14px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: 2px;
+}
+
+[data-skin="egui"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  background: var(--mk-muted);
+  border-radius: 1px;
+}
+
+[data-skin="egui"] .wf-toggle.on {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="egui"] .wf-toggle.on::after {
+  left: 13px;
+  background: var(--mk-on-accent);
+}
+
+/* A selected tab in egui is a selectable label painted with the selection
+   colour, which is the one place the blue shows up in a settled window. */
+[data-skin="egui"] .wf-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="egui"] .wf-tabs > * {
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--mk-fg);
+  white-space: nowrap;
+  border-radius: var(--mk-radius) var(--mk-radius) 0 0;
+}
+
+[data-skin="egui"] .wf-tabs > .is-active,
+[data-skin="egui"] .wf-tabs > [aria-selected="true"] {
+  color: var(--mk-select);
+  background: var(--mk-accent-soft);
+  box-shadow: inset 0 -2px 0 0 var(--mk-accent);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+/* A menu bar is one row of words with no borders and no background, and a side
+ * panel is a plain column split by a 1px line. */
+[data-skin="egui"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+  padding: 0 6px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="egui"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 1px;
+  width: 150px;
+  padding: 4px;
+  border-right: 1px solid var(--mk-line);
+}
+
+[data-skin="egui"] .wf-sidebar > .wf-row {
+  gap: 6px;
+  min-height: 20px;
+  padding: 0 6px;
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="egui"] .wf-sidebar > .wf-row.is-active,
+[data-skin="egui"] .wf-sidebar > .is-active {
+  background: var(--mk-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--mk-accent);
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+[data-skin="egui"] .wf-table {
+  --mk-rows: 4;
+  --mk-cols: 3;
+  height: calc(var(--mk-rows) * 20px);
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 19px,
+      var(--mk-line) 19px 20px
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(100% / var(--mk-cols) - 1px),
+      var(--mk-line) calc(100% / var(--mk-cols) - 1px) calc(100% / var(--mk-cols))
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="egui"] .wf-table[data-rows="1"] { --mk-rows: 1; }
+[data-skin="egui"] .wf-table[data-rows="2"] { --mk-rows: 2; }
+[data-skin="egui"] .wf-table[data-rows="3"] { --mk-rows: 3; }
+[data-skin="egui"] .wf-table[data-rows="4"] { --mk-rows: 4; }
+[data-skin="egui"] .wf-table[data-rows="5"] { --mk-rows: 5; }
+[data-skin="egui"] .wf-table[data-rows="6"] { --mk-rows: 6; }
+[data-skin="egui"] .wf-table[data-rows="8"] { --mk-rows: 8; }
+[data-skin="egui"] .wf-table[data-rows="10"] { --mk-rows: 10; }
+[data-skin="egui"] .wf-table[data-cols="1"] { --mk-cols: 1; }
+[data-skin="egui"] .wf-table[data-cols="2"] { --mk-cols: 2; }
+[data-skin="egui"] .wf-table[data-cols="3"] { --mk-cols: 3; }
+[data-skin="egui"] .wf-table[data-cols="4"] { --mk-cols: 4; }
+[data-skin="egui"] .wf-table[data-cols="5"] { --mk-cols: 5; }
+[data-skin="egui"] .wf-table[data-cols="6"] { --mk-cols: 6; }
+
+/* An egui plot fills columns edge to edge with the plot widget grey. */
+[data-skin="egui"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 120px;
+  padding: 0 0 0 1px;
+  border-bottom: 1px solid var(--mk-line);
+  border-left: 1px solid var(--mk-line);
+}
+
+[data-skin="egui"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 2px;
+  background: var(--mk-line-strong);
+}
+
+[data-skin="egui"] .wf-chart > .is-accent {
+  background: var(--mk-select);
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+[data-skin="egui"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+[data-skin="egui"] .wf-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(360px, 84%);
+  max-height: 84%;
+  padding: 8px;
+  overflow: auto;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius-lg);
+  transform: translate(-50%, -50%);
+}
+
+[data-skin="egui"] .wf-toast {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 84%;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--mk-fg);
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+  transform: translateX(-50%);
+}

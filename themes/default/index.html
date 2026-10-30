@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rshow theme default: preview</title>
+<!--
+  Preview page for the rshow theme "default", which is IBM Carbon v11 in two
+  modes: "white" (light) and "g100" (dark). The mode follows the system and a
+  reader can override it; mode.js does the work and remembers the choice.
+
+  Served at both https://art.example.com/theme-default/ (newest version) and
+  https://art.example.com/_themes/default@<n>/ (one pinned version), so every link in
+  this file is relative: ./fonts.css, ./tokens.css, ./page.css and
+  example/index.html. No leading slash, no remote resource, ASCII only.
+
+  Styled by the theme itself: fonts.css, tokens.css and page.css. The style
+  block below is layout only; it sets no colour and no font face of its own.
+
+  Token values are read at load with
+  getComputedStyle(document.documentElement).getPropertyValue, so a change in
+  tokens.css shows up here without an edit to this page, and the values are read
+  again whenever mode.js reports a change.
+-->
+<link rel="stylesheet" href="./fonts.css">
+<link rel="stylesheet" href="./tokens.css">
+<link rel="stylesheet" href="./page.css">
+<script src="./mode.js"></script>
+<style>
+  /* Layout for the preview. Ground, text, accent, faces, sizes and radius all
+     come from tokens.css. */
+
+  .swatches {
+    display: grid;
+    gap: var(--space-04);
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    margin: 0 0 var(--space-06);
+    padding: 0;
+    list-style: none;
+  }
+
+  .swatch {
+    min-width: 0;
+    margin: 0;
+    padding: var(--space-03) var(--space-04);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .chip {
+    display: block;
+    height: 40px;
+    margin: 0 0 var(--space-03);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .token,
+  .value {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .token {
+    color: var(--fg);
+  }
+
+  .value {
+    color: var(--muted);
+  }
+
+  /* A long token name in running text must wrap instead of widening the page
+     at phone width. Short ones stay in one piece. */
+  main p code,
+  main li code,
+  main footer code {
+    white-space: nowrap;
+  }
+
+  main p code.long {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .spec {
+    margin: 0 0 var(--space-05);
+  }
+
+  .spec-note {
+    max-width: none;
+    margin: 0 0 var(--space-01);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    color: var(--muted);
+  }
+
+  .sample {
+    max-width: none;
+    margin: 0;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    color: var(--fg);
+  }
+
+  .sample.sans {
+    font-family: var(--font-sans);
+  }
+
+  .sample.mono {
+    font-family: var(--font-mono);
+  }
+
+  .s-base {
+    font-size: var(--text-base);
+  }
+
+  .s-md {
+    font-size: var(--text-md);
+  }
+
+  .s-2xl {
+    font-size: var(--text-2xl);
+  }
+
+  .s-3xl {
+    font-size: var(--text-3xl);
+  }
+
+  .s-5xl {
+    font-size: var(--text-5xl);
+  }
+
+  .layouts {
+    display: grid;
+    gap: var(--space-06);
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0 0 var(--space-05);
+  }
+
+  /* Two up only when the frames are wide enough to read a slide in: they ask
+     for more room than the reading measure, so the grid takes it and stays
+     centred on the page. One column on a phone, which is one frame per row. */
+  @media (min-width: 1100px) {
+    .layouts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: min(1040px, calc(100vw - var(--space-08) * 2));
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  .layout {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .layout h3 {
+    margin: 0 0 var(--space-01);
+  }
+
+  .layout p {
+    margin: 0 0 var(--space-02);
+  }
+
+  .layout .open {
+    margin: 0 0 var(--space-03);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .frame {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .frame iframe {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border: 1px solid var(--border-subtle);
+    aspect-ratio: 16 / 9;
+  }
+
+  /* A layout that reads down the page rather than across it gets a taller
+     frame: a report, a project page, a poster, a sketch and a capture. */
+  .frame.report iframe,
+  .frame.project iframe,
+  .frame.poster iframe,
+  .frame.sketch iframe,
+  .frame.terminal iframe {
+    aspect-ratio: 4 / 3;
+  }
+
+  .frame figcaption {
+    margin-top: var(--space-03);
+  }
+
+  /* The usage snippet is the one block of code here, and it must be readable
+     at any width, so it wraps instead of scrolling sideways. */
+  pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 480px) {
+    /* One swatch per row, so a long token name is never broken in two. */
+    .swatches {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>rshow theme default</h1>
+  <p class="lede">IBM Carbon v11 in two modes: <strong>white</strong> (light)
+  and <strong>g100</strong> (dark), system by default. Plex Sans for text, Plex
+  Mono for code and data, square corners, one blue for anything interactive and
+  Carbon's eight colour data palette. A 1280x720 deck canvas with twelve
+  layouts, a prose page, and a report layout with contents and side notes, then
+  the rest of the set: a project page, a poster, a dashboard, mockups in
+  platform skins, sketches, terminal captures and TUIs.</p>
+
+  <h2>Modes</h2>
+  <p>One theme, two modes. The light values sit on <code>:root</code> in
+  <code class="long">tokens.css</code>, the dark values appear under
+  <code class="long">prefers-color-scheme: dark</code> and again under
+  <code class="long">:root[data-mode="dark"]</code>. The attribute wins, so a
+  reader can go against the system. <code>mode.js</code> reads the storage key
+  <code>rshow-mode</code> (values <code>light</code>, <code>dark</code>,
+  <code>system</code>) in the head, before the body paints, and the button in
+  the corner cycles the three. A deck does the same thing on the key
+  <code>t</code>. Print is always light.</p>
+  <p class="small">The chips below follow the mode this page is in. Press the
+  button in the corner, or set your system to dark, and they change.</p>
+
+  <h2>Colour roles</h2>
+  <p>Each colour has one job and only that job. The chips follow
+  <code>tokens.css</code> and the ground <code>page.css</code> picks for your
+  system appearance, and each value under a chip is read from this page at load
+  with <code class="long">getComputedStyle(document.documentElement).getPropertyValue</code>.</p>
+  <ul class="swatches">
+    <li class="swatch">
+      <span class="chip" style="background: var(--bg)" aria-hidden="true"></span>
+      <span class="token">--bg</span>
+      <span class="value" data-token="--bg"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--bg-shell)" aria-hidden="true"></span>
+      <span class="token">--bg-shell</span>
+      <span class="value" data-token="--bg-shell"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--layer-01)" aria-hidden="true"></span>
+      <span class="token">--layer-01</span>
+      <span class="value" data-token="--layer-01"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--layer-02)" aria-hidden="true"></span>
+      <span class="token">--layer-02</span>
+      <span class="value" data-token="--layer-02"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--border-subtle)" aria-hidden="true"></span>
+      <span class="token">--border-subtle</span>
+      <span class="value" data-token="--border-subtle"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--border-strong)" aria-hidden="true"></span>
+      <span class="token">--border-strong</span>
+      <span class="value" data-token="--border-strong"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--fg)" aria-hidden="true"></span>
+      <span class="token">--fg</span>
+      <span class="value" data-token="--fg"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--muted)" aria-hidden="true"></span>
+      <span class="token">--muted</span>
+      <span class="value" data-token="--muted"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--placeholder)" aria-hidden="true"></span>
+      <span class="token">--placeholder</span>
+      <span class="value" data-token="--placeholder"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--accent)" aria-hidden="true"></span>
+      <span class="token">--accent</span>
+      <span class="value" data-token="--accent"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--support-error)" aria-hidden="true"></span>
+      <span class="token">--support-error</span>
+      <span class="value" data-token="--support-error"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--support-success)" aria-hidden="true"></span>
+      <span class="token">--support-success</span>
+      <span class="value" data-token="--support-success"></span>
+    </li>
+  </ul>
+  <p class="small">Contrast on the ground: text 18.1:1, secondary text 7.8:1,
+  accent 5.0:1 in light, and text 16.5:1, secondary 10.6:1, accent 7.7:1 in
+  dark: all above the 4.5:1 floor. The support colours are data marks and never
+  text, because green on white is 3.4:1.</p>
+
+  <h3>Data palette</h3>
+  <p>A categorical series, in Carbon order, for a chart or a diagram, in both
+  modes. Data marks only. A chart with one series draws that series in
+  <code>--accent</code>, the same blue as a link, because one series is not a
+  category.</p>
+  <ul class="swatches">
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-1)" aria-hidden="true"></span>
+      <span class="token">--chart-1</span>
+      <span class="value" data-token="--chart-1"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-2)" aria-hidden="true"></span>
+      <span class="token">--chart-2</span>
+      <span class="value" data-token="--chart-2"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-3)" aria-hidden="true"></span>
+      <span class="token">--chart-3</span>
+      <span class="value" data-token="--chart-3"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-4)" aria-hidden="true"></span>
+      <span class="token">--chart-4</span>
+      <span class="value" data-token="--chart-4"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-5)" aria-hidden="true"></span>
+      <span class="token">--chart-5</span>
+      <span class="value" data-token="--chart-5"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-6)" aria-hidden="true"></span>
+      <span class="token">--chart-6</span>
+      <span class="value" data-token="--chart-6"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-7)" aria-hidden="true"></span>
+      <span class="token">--chart-7</span>
+      <span class="value" data-token="--chart-7"></span>
+    </li>
+    <li class="swatch">
+      <span class="chip" style="background: var(--chart-8)" aria-hidden="true"></span>
+      <span class="token">--chart-8</span>
+      <span class="value" data-token="--chart-8"></span>
+    </li>
+  </ul>
+
+  <h2>Type</h2>
+  <p>One family for text and one for code and data. A display line above 54px
+  uses weight 300 and tightens by 0.02em; everything else is weight 400, and
+  600 belongs to small headings and emphasis.</p>
+
+  <h3>Plex Sans</h3>
+  <p class="spec-note">--font-sans: <span class="value" data-token="--font-sans"></span></p>
+
+  <div class="spec">
+    <p class="spec-note">--text-base at 20px, a line under a bullet</p>
+    <p class="sample sans s-base">Publish the folder, keep the link.</p>
+  </div>
+  <div class="spec">
+    <p class="spec-note">--text-md at 24px, slide prose and table body</p>
+    <p class="sample sans s-md">Publish the folder, keep the link.</p>
+  </div>
+  <div class="spec">
+    <p class="spec-note">--text-lg at 28px, a bullet and a two column body line</p>
+    <p class="sample sans s-md" style="font-size: var(--text-lg)">Publish the folder, keep the link.</p>
+  </div>
+  <div class="spec">
+    <p class="spec-note">--text-2xl at 42px, the title of a content slide</p>
+    <p class="sample sans s-2xl">A republish sends what changed</p>
+  </div>
+  <div class="spec">
+    <p class="spec-note">--text-3xl at 54px, weight 300, a claim set as one sentence</p>
+    <p class="sample sans s-3xl" style="font-weight: 300">A version never changes</p>
+  </div>
+  <div class="spec">
+    <p class="spec-note">--text-5xl at 76px, weight 300, the talk title</p>
+    <p class="sample sans s-5xl" style="font-weight: 300; letter-spacing: -0.02em">rshow</p>
+  </div>
+
+  <h3>Plex Mono</h3>
+  <p class="spec-note">--font-mono: <span class="value" data-token="--font-mono"></span></p>
+
+  <div class="spec">
+    <p class="spec-note">--text-base at 20px, code and data</p>
+    <p class="sample mono s-base">rshow publish ./talk --label "first draft"</p>
+  </div>
+  <div class="spec">
+    <p class="spec-note">--text-md at 24px, code and data</p>
+    <p class="sample mono s-md">art.example.com/slug/</p>
+  </div>
+
+  <h2>Layouts</h2>
+  <p>Every layout the theme ships, one frame each. A frame is lazy loaded, so
+  the page stays light on a phone, and the link under it opens the same example
+  full size. The deck, the page, the report, the project page, the poster and
+  the dashboard are fixed templates with a documented markup. The mockups, the
+  sketches, the terminals and the tuis are guided kits: they give an agent a
+  frame, a floor and a set of rules, and the drawing is the work.</p>
+
+  <div class="layouts">
+    <article class="layout">
+      <h3>Deck</h3>
+      <p>Twelve slide layouts on one 1280x720 canvas, moved with the arrow keys
+      and printed at canvas size.</p>
+      <p class="open"><a href="example/index.html">Open example/index.html</a></p>
+      <figure class="frame deck">
+        <iframe src="example/index.html" title="Deck layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Page</h3>
+      <p>Prose at about 72 characters, with the same table and figure rules as a
+      slide.</p>
+      <p class="open"><a href="example/page.html">Open example/page.html</a></p>
+      <figure class="frame page">
+        <iframe src="example/page.html" title="Page layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Report</h3>
+      <p>A document to read: contents, side notes, generated figure numbers and
+      print rules, in three columns above 1056px.</p>
+      <p class="open"><a href="example/report.html">Open example/report.html</a></p>
+      <figure class="frame report">
+        <iframe src="example/report.html" title="Report layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Project</h3>
+      <p>A project front page: a title block, one wide teaser and one column of
+      prose under it.</p>
+      <p class="open"><a href="example/project.html">Open example/project.html</a></p>
+      <figure class="frame project">
+        <iframe src="example/project.html" title="Project layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Poster</h3>
+      <p>One A0 poster in three columns, with a size switch for 36 x 48 inches
+      and a QR block that a conference wants.</p>
+      <p class="open"><a href="example/poster.html">Open example/poster.html</a></p>
+      <figure class="frame poster">
+        <iframe src="example/poster.html" title="Poster layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Dashboard</h3>
+      <p>A metrics screen: a row of numbers, two charts and a table drawn from
+      data attributes with no chart library.</p>
+      <p class="open"><a href="example/dashboard.html">Open example/dashboard.html</a></p>
+      <figure class="frame dashboard">
+        <iframe src="example/dashboard.html" title="Dashboard layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Mockup</h3>
+      <p>Artboards in browser, phone and desktop frames on a zoomable canvas,
+      with states, notes, comments and a skin switch.</p>
+      <p class="open"><a href="example/mockup.html">Open example/mockup.html</a></p>
+      <figure class="frame mockup">
+        <iframe src="example/mockup.html" title="Mockup layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Mockup, desktop frames</h3>
+      <p>The same settings screen in a mac, a windows and a linux window, and in
+      one frameless window that draws its own chrome.</p>
+      <p class="open"><a href="example/mockup-desktop.html">Open example/mockup-desktop.html</a></p>
+      <figure class="frame mockup">
+        <iframe src="example/mockup-desktop.html" title="Mockup in desktop frames" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Mockup, five platforms</h3>
+      <p>One product in five skins and five frames: fluent, mac, adwaita, egui
+      and material, each pinned on its own artboard.</p>
+      <p class="open"><a href="example/mockup-platforms.html">Open example/mockup-platforms.html</a></p>
+      <figure class="frame mockup">
+        <iframe src="example/mockup-platforms.html" title="Mockup in five platform skins" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Tui</h3>
+      <p>A terminal user interface drawn in a 100x27 cell grid, with one focused
+      pane, a status bar and the key hints.</p>
+      <p class="open"><a href="example/tui.html">Open example/tui.html</a></p>
+      <figure class="frame tui">
+        <iframe src="example/tui.html" title="Tui layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Sketch</h3>
+      <p>A hand drawn Excalidraw figure, read only in the page and edited in
+      place when the reader wants to move a box.</p>
+      <p class="open"><a href="example/sketch.html">Open example/sketch.html</a></p>
+      <figure class="frame sketch">
+        <iframe src="example/sketch.html" title="Sketch layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+    <article class="layout">
+      <h3>Terminal</h3>
+      <p>A terminal in the terminal frame, one ANSI capture of a screen and one
+      asciicast recording of a session.</p>
+      <p class="open"><a href="example/terminal.html">Open example/terminal.html</a></p>
+      <figure class="frame terminal">
+        <iframe src="example/terminal.html" title="Terminal layout" loading="lazy"></iframe>
+      </figure>
+    </article>
+  </div>
+
+  <h2>Usage</h2>
+  <p>A published deck links the theme files at one pinned version, one link per
+  file, then overrides a token in its own later style block:</p>
+  <pre><code>&lt;link rel="stylesheet"
+  href="/_themes/default@&lt;n&gt;/fonts.css"&gt;
+&lt;link rel="stylesheet"
+  href="/_themes/default@&lt;n&gt;/tokens.css"&gt;
+&lt;link rel="stylesheet"
+  href="/_themes/default@&lt;n&gt;/deck.css"&gt;
+&lt;script src="/_themes/default@&lt;n&gt;/deck.js"&gt;&lt;/script&gt;
+&lt;style&gt;:root{--accent: #0f62fe;}&lt;/style&gt;</code></pre>
+  <p>A page uses the same paths with <code>page.css</code> in place of
+  <code>deck.css</code>, adds <code>mode.js</code> in the head and links no
+  other script. A report swaps <code>page.css</code> for
+  <code>report.css</code> and adds <code>report.js</code> with
+  <code>defer</code>. The value in the override above is this theme's accent, so
+  it changes nothing until you give it a colour of your own. Replace
+  <code>@&lt;n&gt;</code> with the version <code>rshow theme list</code> prints.</p>
+
+  <footer>
+    <p>rshow theme default, preview page. Fonts are self hosted from
+    <code>fonts/</code>; this page makes no remote request.</p>
+  </footer>
+
+</main>
+
+<script>
+  /* Fill every [data-token] element with the value this page computes for that
+     custom property. Runs last, so tokens.css and page.css are already in, and
+     runs again when mode.js reports that the mode changed. */
+  (function () {
+    function fill() {
+      var root = getComputedStyle(document.documentElement);
+      var nodes = document.querySelectorAll("[data-token]");
+      for (var i = 0; i < nodes.length; i += 1) {
+        var name = nodes[i].getAttribute("data-token");
+        var value = root.getPropertyValue(name).replace(/\s+/g, " ").trim();
+        nodes[i].textContent = value === "" ? "(not set)" : value;
+      }
+    }
+
+    fill();
+    document.addEventListener("rshowmodechange", fill);
+  })();
+</script>
+</body>
+</html>

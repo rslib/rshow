@@ -1,0 +1,255 @@
+/*
+ * rshow theme "default": tokens
+ *
+ * The design system is IBM Carbon v11. This theme carries two modes: Carbon
+ * "white" (light) and Carbon "g100" (dark). Every value below is copied by
+ * hand from the Carbon source; nothing is fetched from Carbon at runtime and no
+ * Carbon class is used. The shape of the system is Carbon's: square corners,
+ * one thin border per edge, one blue for interactive elements, and a
+ * categorical data palette of eight.
+ *
+ * One theme, two modes, system by default. The light values sit on :root. The
+ * dark values appear twice, on purpose: once for the system preference and once
+ * for an explicit choice, so a reader can override the system.
+ *
+ *   <html>                      follow the system
+ *   <html data-mode="light">    force light
+ *   <html data-mode="dark">     force dark
+ *
+ * mode.js sets that attribute from localStorage key "rshow-mode"; the page
+ * still works with JavaScript off, because the system preference is the
+ * default. Print is always light, so a printed page and a PDF keep one ground.
+ *
+ * Every declaration in this file is a CSS custom property. The only selectors
+ * are :root and :root with a mode attribute, so a page links this file, links
+ * deck.css, page.css or report.css and then restyles the whole thing from its
+ * own <style>:root{...}</style>.
+ *
+ * Roles. Each colour has one job and only that job:
+ *   --bg           the ground of a page, a deck slide, a report
+ *   --bg-shell     the area around the deck canvas
+ *   --layer-01     a filled block inside the ground: code, inset panels
+ *   --layer-02     a second level, used sparingly
+ *   --border-subtle  a row rule in a table, the lightest line
+ *   --border-strong  an axis line, a diagram outline
+ *   --fg           all body and heading text
+ *   --muted        a caption, a source line, a label beside a number
+ *   --placeholder  decorative only. Never text.
+ *   --accent       a link, a focus ring, a single-series chart, the one line
+ *                  that matters in a figure
+ *   --support-*    a data mark. Never text, because they fail 4.5:1 on white.
+ *   --chart-1..8   a categorical series, in Carbon order
+ *
+ * Charts. A figure with one series draws that series in --accent, the same blue
+ * as a link, because one series is not a category. A figure with two or more
+ * series uses --chart-1, --chart-2 and so on, in order, one per series, and
+ * keeps that order across every figure in the document.
+ *
+ * Contrast of text on a ground (WCAG 2.1 AA, needs 4.5:1):
+ *   light ground: --fg 18.1:1, --muted 7.8:1, --accent 5.0:1
+ *   light layer:  --fg 16.5:1, --muted 7.1:1, --accent 4.6:1
+ *   dark ground:  --fg 16.5:1, --muted 10.6:1, --accent 7.7:1
+ *   dark layer:   --fg 13.8:1, --muted 8.9:1, --accent 6.4:1
+ */
+
+:root {
+  /* -------------------------------------------------------- colour scheme --
+   * "light" or "dark". Tells the browser which way to render scrollbars and
+   * form controls. Each mode block below sets it with the rest.
+   */
+  color-scheme: light;
+  --color-scheme: light;
+
+  /* ----------------------------------------------------- ground, Carbon --
+   * Carbon white.
+   */
+  --bg: #ffffff;
+  --bg-shell: #f4f4f4;
+  --layer-01: #f4f4f4;
+  --layer-02: #ffffff;
+  --border-subtle: #e0e0e0;
+  --border-strong: #8d8d8d;
+  --fg: #161616;
+  --muted: #525252;
+  --placeholder: #a8a8a8;
+  --accent: #0f62fe;
+  --focus: #0f62fe;
+  --support-error: #da1e28;
+  --support-success: #24a148;
+  --support-warning: #f1c21b;
+
+  /* -------------------------------------------------- data, categorical ---
+   * Carbon's eight series colours, in Carbon order. Data marks only.
+   */
+  --chart-1: #6929c4;
+  --chart-2: #1192e8;
+  --chart-3: #005d5d;
+  --chart-4: #9f1853;
+  --chart-5: #fa4d56;
+  --chart-6: #570408;
+  --chart-7: #198038;
+  --chart-8: #002d9c;
+
+  /* ------------------------------------------------------------- fonts --
+   * Self hosted, see fonts.css and fonts/OFL.txt. The stacks end in system
+   * fonts so the document still reads if the files do not load.
+   */
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* ------------------------------------------------------- type scale ---
+   * Two scales in one set. The steps up to --text-lg are for running text and
+   * labels. The steps from --text-xl up are Carbon's expressive heading sizes
+   * 32, 42, 54, 60, 76, used for one idea per slide on a 1280x720 canvas.
+   */
+  --text-2xs: 14px;
+  --text-xs: 16px;
+  --text-sm: 18px;
+  --text-base: 20px;
+  --text-md: 24px;
+  --text-lg: 28px;
+  --text-xl: 32px;
+  --text-2xl: 42px;
+  --text-3xl: 54px;
+  --text-4xl: 60px;
+  --text-5xl: 76px;
+
+  /* ---------------------------------------------------- line heights ---- */
+  --lh-flat: 1;
+  --lh-heading: 1.25;
+  --lh-list: 1.4;
+  --lh-body: 1.45;
+  --lh-read: 1.6;
+  --lh-code: 1.6;
+
+  /* --------------------------------------------------------- tracking ---
+   * Zero for body and for headings up to 54px. A display line above 54px
+   * tightens, because Plex Sans opens up as it grows.
+   */
+  --tracking-display: -0.02em;
+
+  /* ----------------------------------------------------------- spacing --
+   * Carbon's spacing scale, in full.
+   */
+  --space-01: 2px;
+  --space-02: 4px;
+  --space-03: 8px;
+  --space-04: 12px;
+  --space-05: 16px;
+  --space-06: 24px;
+  --space-07: 32px;
+  --space-08: 40px;
+  --space-09: 48px;
+  --space-10: 64px;
+  --space-11: 80px;
+  --space-12: 96px;
+  --space-13: 160px;
+
+  /* ----------------------------------------------------------- shape ----
+   * Carbon is square: no radius, no shadow. The tokens stay so a page can
+   * soften a corner on purpose.
+   */
+  --radius: 0;
+  --radius-sm: 0;
+  --pad-x: var(--space-12);
+  --pad-y: var(--space-10);
+}
+
+/* ------------------------------------------------------------ dark mode --
+ * Carbon g100. Two selectors, one body: the system preference (unless the
+ * reader has chosen light) and an explicit choice from mode.js.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    color-scheme: dark;
+    --color-scheme: dark;
+    --bg: #161616;
+    --bg-shell: #262626;
+    --layer-01: #262626;
+    --layer-02: #393939;
+    --border-subtle: #393939;
+    --border-strong: #6f6f6f;
+    --fg: #f4f4f4;
+    --muted: #c6c6c6;
+    --placeholder: #6f6f6f;
+    --accent: #78a9ff;
+    --focus: #ffffff;
+    --support-error: #fa4d56;
+    --support-success: #42be65;
+    --support-warning: #f1c21b;
+
+    --chart-1: #8a3ffc;
+    --chart-2: #33b1ff;
+    --chart-3: #007d79;
+    --chart-4: #ff7eb6;
+    --chart-5: #fa4d56;
+    --chart-6: #fff1f1;
+    --chart-7: #6fdc8c;
+    --chart-8: #4589ff;
+  }
+}
+
+:root[data-mode="dark"] {
+  color-scheme: dark;
+  --color-scheme: dark;
+  --bg: #161616;
+  --bg-shell: #262626;
+  --layer-01: #262626;
+  --layer-02: #393939;
+  --border-subtle: #393939;
+  --border-strong: #6f6f6f;
+  --fg: #f4f4f4;
+  --muted: #c6c6c6;
+  --placeholder: #6f6f6f;
+  --accent: #78a9ff;
+  --focus: #ffffff;
+  --support-error: #fa4d56;
+  --support-success: #42be65;
+  --support-warning: #f1c21b;
+
+  --chart-1: #8a3ffc;
+  --chart-2: #33b1ff;
+  --chart-3: #007d79;
+  --chart-4: #ff7eb6;
+  --chart-5: #fa4d56;
+  --chart-6: #fff1f1;
+  --chart-7: #6fdc8c;
+  --chart-8: #4589ff;
+}
+
+/* --------------------------------------------------------------- print --
+ * Print is always light: black text on white paper, whichever mode the screen
+ * was in. The selectors repeat the mode selectors above so they win on
+ * specificity as well as on order.
+ */
+@media print {
+  :root,
+  :root:not([data-mode="light"]),
+  :root[data-mode="dark"] {
+    color-scheme: light;
+    --color-scheme: light;
+    --bg: #ffffff;
+    --bg-shell: #ffffff;
+    --layer-01: #f4f4f4;
+    --layer-02: #ffffff;
+    --border-subtle: #e0e0e0;
+    --border-strong: #161616;
+    --fg: #161616;
+    --muted: #525252;
+    --placeholder: #a8a8a8;
+    --accent: #0f62fe;
+    --focus: #0f62fe;
+    --support-error: #da1e28;
+    --support-success: #24a148;
+    --support-warning: #f1c21b;
+
+    --chart-1: #6929c4;
+    --chart-2: #1192e8;
+    --chart-3: #005d5d;
+    --chart-4: #9f1853;
+    --chart-5: #fa4d56;
+    --chart-6: #570408;
+    --chart-7: #198038;
+    --chart-8: #002d9c;
+  }
+}

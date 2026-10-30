@@ -1,0 +1,586 @@
+/*
+ * rshow theme "default": deck layout
+ *
+ * Link order: fonts.css, tokens.css, deck.css, then deck.js. This file holds
+ * no colour and no font family of its own: every value comes from a token in
+ * tokens.css, so a deck restyles itself by overriding a token.
+ *
+ * Canvas: 1280 x 720 (16:9), scaled to fit the window by deck.js.
+ * Markup: <main class="deck"><section class="slide">...</section>...</main>
+ *
+ * One slide carries one idea. The title states the claim as a sentence, and
+ * the figure, chart or table under it is the evidence. Nothing on the slide is
+ * decoration: no eyebrow label, no numbering, no edge bar, no hairline rule
+ * that carries no information.
+ *
+ * Balance. A slide fills the 1280 x 720 canvas, so a sparse slide is centred on
+ * the optical centre and not on the geometric one: the block sits a little
+ * above the middle, which is where the eye reads the middle. A slide with a
+ * figure starts at the top and lets the figure take the rest, and a slide with
+ * a title and bullets sets the bullets 28px, directly under the title.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+html {
+  /* Scrollbars and form controls follow the theme, not the browser default. */
+  color-scheme: var(--color-scheme);
+}
+
+body {
+  background: var(--bg-shell);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--lh-body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- canvas */
+
+main.deck {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1280px;
+  height: 720px;
+  transform: translate(-50%, -50%);
+  transform-origin: 0 0;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* No JS: slides flow down the page so the deck is still readable. */
+main.deck > .slide {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  padding: var(--pad-y) var(--pad-x);
+  background: var(--bg);
+  opacity: 1;
+  visibility: visible;
+}
+
+/* JS on: one slide at 0,0 inside the fixed canvas. */
+main.deck.is-ready > .slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+main.deck.is-ready > .slide.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Sparse slides carry one short block, so the air belongs under it. The extra
+   48px at the bottom lifts the block 24px above the geometric centre: a block
+   centred on the middle reads low, a block centred on the optical centre reads
+   centred. The selector matches main.deck > .slide above, which sets the pads. */
+main.deck > .slide.title,
+main.deck > .slide.section,
+main.deck > .slide.statement,
+main.deck > .slide.quote,
+main.deck > .slide.big-number,
+main.deck > .slide.bullets {
+  padding-bottom: calc(var(--pad-y) + var(--space-09));
+}
+
+/* ------------------------------------------------------------ typography */
+
+.slide h1,
+.slide h2,
+.slide h3 {
+  margin: 0;
+  font-weight: 400;
+  line-height: var(--lh-heading);
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+/* Display: the opener, and a claim set as one sentence. */
+.slide h1 {
+  font-size: var(--text-5xl);
+  font-weight: 300;
+  letter-spacing: var(--tracking-display);
+}
+
+/* The title of a content slide. It states the takeaway, not a topic. */
+.slide h2 {
+  margin-bottom: var(--space-07);
+  font-size: var(--text-2xl);
+  max-width: 30ch;
+}
+
+/* A heading inside a column, which counts as small, so it takes the weight. */
+.slide h3 {
+  margin-bottom: var(--space-05);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.slide p {
+  margin: 0 0 var(--space-05);
+  font-size: var(--text-md);
+  max-width: 40ch;
+}
+
+.slide p:last-child {
+  margin-bottom: 0;
+}
+
+.slide strong {
+  font-weight: 600;
+}
+
+.slide em {
+  font-style: italic;
+}
+
+.slide a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.slide ul,
+.slide ol {
+  margin: 0;
+  padding-left: var(--space-07);
+}
+
+.slide li {
+  font-size: var(--text-lg);
+  line-height: var(--lh-list);
+  max-width: 72ch;
+}
+
+.slide li::marker {
+  color: var(--muted);
+}
+
+.slide li > p {
+  margin: var(--space-02) 0 0;
+  font-size: var(--text-base);
+  line-height: var(--lh-list);
+  color: var(--muted);
+}
+
+/* The one small line of text that sits under a figure or a title. */
+.slide .muted,
+.slide figcaption,
+.slide cite,
+.slide .byline,
+.slide .source {
+  color: var(--muted);
+}
+
+/* Mono is for code and for data, never for a label. */
+.slide code,
+.slide kbd,
+.slide pre {
+  font-family: var(--font-mono);
+}
+
+.slide code {
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------- reveal steps */
+
+.step {
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.step.is-revealed,
+main.deck:not(.is-ready) .step {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------- layouts */
+
+/* title: the opener and the closer */
+.slide.title h1 {
+  max-width: 24ch;
+}
+
+.slide.title .subtitle {
+  margin: var(--space-07) 0 0;
+  font-size: var(--text-xl);
+  line-height: 1.3;
+  color: var(--muted);
+  max-width: 44ch;
+}
+
+/* Name, affiliation, venue, date. One line, sentence case, body font. */
+.slide.title .byline {
+  margin: var(--space-06) 0 0;
+  font-size: var(--text-base);
+  max-width: 60ch;
+}
+
+/* section: a divider between parts of the talk */
+.slide.section h2 {
+  margin: 0;
+  max-width: 24ch;
+  font-size: var(--text-3xl);
+  font-weight: 300;
+}
+
+.slide.section p {
+  margin: var(--space-06) 0 0;
+  font-size: var(--text-md);
+  color: var(--muted);
+  max-width: 52ch;
+}
+
+/* statement: one sentence that carries the claim of the slide */
+.slide.statement p {
+  margin: 0;
+  max-width: 28ch;
+  font-size: var(--text-3xl);
+  font-weight: 300;
+  line-height: var(--lh-heading);
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+/* bullets: a takeaway title and at most five short points, 28px body */
+.slide.bullets h2 {
+  margin-bottom: var(--space-05);
+}
+
+.slide.bullets ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-05);
+}
+
+/* figure: one image or diagram, as large as the canvas allows */
+.slide.figure,
+.slide.chart,
+.slide.figure-two {
+  justify-content: flex-start;
+}
+
+.slide.figure figure,
+.slide.chart figure {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+}
+
+.slide.figure figure img,
+.slide.figure figure svg,
+.slide.chart figure svg {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  object-fit: contain;
+  border: 0;
+  background: none;
+}
+
+.slide figcaption {
+  margin: var(--space-05) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  max-width: 80ch;
+}
+
+/* figure-two: two diagrams, one short label under each */
+.slide.figure-two h2 {
+  flex: none;
+}
+
+.slide.figure-two figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.slide.figure-two .pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-09);
+  flex: 1;
+  min-height: 0;
+  align-content: center;
+}
+
+.slide.figure-two .pair svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.slide.figure-two figcaption {
+  margin-top: var(--space-04);
+  font-size: var(--text-base);
+  color: var(--fg);
+}
+
+/* table: a clean data table, numbers right aligned */
+.slide.table h2 {
+  margin-bottom: var(--space-08);
+}
+
+.slide table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-md);
+  line-height: 1.3;
+}
+
+.slide caption {
+  padding: 0 0 var(--space-05);
+  font-size: var(--text-sm);
+  text-align: left;
+  color: var(--muted);
+}
+
+.slide th,
+.slide td {
+  padding: var(--space-04) var(--space-05);
+  text-align: left;
+  vertical-align: baseline;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.slide thead th {
+  padding-top: 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.slide tbody tr:last-child th,
+.slide tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.slide .num-cell {
+  text-align: right;
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* code: one block of code or one command */
+.slide.code pre {
+  margin: 0;
+  padding: var(--space-06) var(--space-07);
+  max-height: 480px;
+  overflow: auto;
+  font-size: var(--text-md);
+  line-height: var(--lh-code);
+  color: var(--fg);
+  background: var(--layer-01);
+  border: 0;
+  border-radius: var(--radius);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.slide.code pre code {
+  padding: 0;
+  font-size: inherit;
+}
+
+.slide.code figcaption,
+.slide.code .source {
+  margin-top: var(--space-05);
+  font-size: var(--text-sm);
+  max-width: 80ch;
+}
+
+/* two-col: two blocks of text, one plain heading each */
+.slide.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-07) var(--space-10);
+  align-content: center;
+}
+
+.slide.two-col > h2 {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+.slide.two-col .col > :last-child {
+  margin-bottom: 0;
+}
+
+.slide.two-col .col ul {
+  padding-left: var(--space-06);
+}
+
+.slide.two-col .col li {
+  font-size: var(--text-lg);
+  line-height: var(--lh-list);
+  margin-bottom: var(--space-03);
+  max-width: 34ch;
+}
+
+.slide.two-col .col p {
+  font-size: var(--text-lg);
+  line-height: var(--lh-list);
+  max-width: 34ch;
+}
+
+/* quote: one sentence and who said it */
+.slide.quote blockquote {
+  margin: 0;
+  max-width: 26ch;
+  font-size: var(--text-2xl);
+  line-height: var(--lh-heading);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.slide.quote cite {
+  display: block;
+  margin-top: var(--space-07);
+  font-style: normal;
+  font-size: var(--text-base);
+}
+
+/* big-number: one number and the sentence that says what it means */
+.slide.big-number .value {
+  margin: 0;
+  max-width: 100%;
+  font-size: var(--text-5xl);
+  font-weight: 300;
+  line-height: var(--lh-flat);
+  letter-spacing: var(--tracking-display);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.slide.big-number .caption {
+  margin: var(--space-07) 0 0;
+  max-width: 30ch;
+  font-size: var(--text-xl);
+  line-height: 1.3;
+}
+
+.slide.big-number .source {
+  margin: var(--space-05) 0 0;
+  font-size: var(--text-sm);
+}
+
+/* ------------------------------------------------------------- furniture */
+
+aside.notes {
+  display: none;
+}
+
+.deck-hud {
+  position: absolute;
+  right: var(--space-07);
+  bottom: var(--space-05);
+  z-index: 5;
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------- print */
+
+/* Browsers that do not know length values in @page keep landscape. */
+@page {
+  size: landscape;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    height: auto;
+    overflow: visible;
+    background: var(--bg);
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  main.deck {
+    position: static;
+    top: auto !important;
+    left: auto !important;
+    width: 1280px;
+    height: auto;
+    transform: none !important;
+    overflow: visible;
+  }
+
+  main.deck > .slide,
+  main.deck.is-ready > .slide {
+    position: relative;
+    inset: auto;
+    opacity: 1 !important;
+    visibility: visible !important;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  main.deck > .slide:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .step {
+    opacity: 1 !important;
+  }
+
+  .deck-hud,
+  aside.notes {
+    display: none !important;
+  }
+}
+
+/* Exact 16:9 sheet for one slide per page. */
+@page {
+  size: 1280px 720px;
+  margin: 0;
+}

@@ -1,0 +1,521 @@
+/*
+ * rshow theme "default": results dashboard
+ *
+ * For an experiment explorer a reader works in rather than reads: a filter bar,
+ * a summary of the metric, small multiples and a sortable table of the rows
+ * behind them. Link order: fonts.css, tokens.css, dashboard.css, then mode.js in
+ * <head> and dashboard.js (defer).
+ *
+ * The page is the Carbon system and it follows the modes in tokens.css. It is
+ * wider than a prose page because a table and a row of small multiples need the
+ * room, but the prose inside it still stops at about 62 characters, and the
+ * table, the number columns and the axis labels follow the same rules as a
+ * slide: numbers right aligned in tabular figures, one thin line per row, the
+ * lightest line for a gridline and the strong one for a baseline.
+ *
+ * The charts read their colours from --accent and --chart-1..8 at draw time,
+ * which is why dashboard.js redraws them when the mode changes.
+ *
+ * No eyebrow label, no card grid, no numbered tiles, no shadow, no rounded
+ * corner. A section heading says what the block holds and the type does the
+ * rest.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: var(--color-scheme);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--lh-read);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  padding: 0.1em 0.32em;
+  background: var(--layer-01);
+}
+
+/* ---------------------------------------------------------------- shell ---
+ * 1180px holds three panels of small multiples and the eight column table on
+ * one screen at 1280px wide, and it stays inside a laptop viewport.
+ */
+.dashboard {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-06) var(--space-13);
+}
+
+/* ----------------------------------------------------------------- head --- */
+
+.dash-head {
+  margin: 0 0 var(--space-08);
+}
+
+.dash-head h1 {
+  max-width: 26ch;
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.dash-lede {
+  max-width: 62ch;
+  margin: var(--space-04) 0 0;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.dash-meta {
+  max-width: 62ch;
+  margin: var(--space-05) 0 0;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-meta strong {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* --------------------------------------------------------------- sections -- */
+
+.dash-section {
+  margin: 0 0 var(--space-09);
+}
+
+.dash-section h2 {
+  margin: 0 0 var(--space-05);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.dash-note {
+  margin: var(--space-04) 0 0;
+  max-width: 62ch;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.dash-status {
+  margin: var(--space-04) 0 0;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-status:empty {
+  display: none;
+}
+
+.dash-empty {
+  margin: 0;
+  padding: var(--space-06) 0;
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------- controls --
+ * One field per control, the label above it, the sheet's own type size. An
+ * input is a filled block with a strong underline, so it reads as a control on
+ * either ground without a box that would turn the bar into a row of cards.
+ */
+.dash-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  align-items: end;
+  gap: var(--space-05) var(--space-05);
+  margin: 0 0 var(--space-06);
+}
+
+.dash-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-02);
+  min-width: 0;
+}
+
+.dash-field label {
+  font-size: var(--text-2xs);
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.dash-field select,
+.dash-field input[type="number"] {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-04);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: 1;
+  color: var(--fg);
+  background: var(--layer-01);
+  border: 0;
+  border-bottom: 1px solid var(--border-strong);
+  border-radius: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.dash-field input[type="number"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-field select:focus-visible,
+.dash-field input[type="number"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.dash-select {
+  position: relative;
+  display: block;
+}
+
+.dash-select select {
+  padding-right: var(--space-08);
+}
+
+/* The caret is drawn rather than native, because a native select would bring
+   its own rounded shape into a square system. */
+.dash-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: var(--space-04);
+  margin-top: -2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--muted);
+  pointer-events: none;
+}
+
+.dash-actions {
+  display: flex;
+  align-items: end;
+  gap: var(--space-03);
+}
+
+.dash-btn {
+  min-height: 40px;
+  padding: 0 var(--space-05);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: 1;
+  color: var(--bg);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.dash-btn:hover {
+  color: var(--bg);
+  background: var(--fg);
+  border-color: var(--fg);
+}
+
+.dash-btn:active {
+  color: var(--bg);
+  background: var(--fg);
+  border-color: var(--fg);
+}
+
+.dash-btn--ghost {
+  color: var(--accent);
+  background: transparent;
+  border-color: var(--border-strong);
+}
+
+.dash-btn--ghost:hover,
+.dash-btn--ghost:active {
+  color: var(--fg);
+  background: transparent;
+  border-color: var(--fg);
+}
+
+/* ----------------------------------------------------------------- table ---
+ * The box scrolls, the page does not: a phone gets two scroll axes inside the
+ * frame, and the head stays put while the rows move under it.
+ */
+.dash-box {
+  max-height: 60vh;
+  overflow: auto;
+  border-bottom: 1px solid var(--border-subtle);
+  overscroll-behavior: contain;
+}
+
+.dash-box table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+.dash-box caption {
+  padding: 0 0 var(--space-03);
+  text-align: left;
+  font-size: var(--text-2xs);
+  color: var(--muted);
+}
+
+.dash-box th,
+.dash-box td {
+  padding: var(--space-03) var(--space-05) var(--space-03) 0;
+  text-align: left;
+  vertical-align: baseline;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dash-box th:last-child,
+.dash-box td:last-child {
+  padding-right: 0;
+}
+
+.dash-box thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: var(--space-03);
+  padding-bottom: var(--space-03);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-strong);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dash-box tbody th {
+  font-weight: 400;
+  color: var(--fg);
+}
+
+.dash-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-03);
+  min-height: 28px;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.dash-sort:hover {
+  color: var(--fg);
+}
+
+.dash-sort[data-dir="asc"]::after,
+.dash-sort[data-dir="desc"]::after {
+  content: "";
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+
+.dash-sort[data-dir="asc"]::after {
+  border-bottom: 5px solid var(--accent);
+}
+
+.dash-sort[data-dir="desc"]::after {
+  border-top: 5px solid var(--accent);
+}
+
+.dash-box th[aria-sort] .dash-sort[data-dir] {
+  color: var(--fg);
+}
+
+.dash-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-box tbody tr:last-child th,
+.dash-box tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.dash-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-04);
+  margin: 0 0 var(--space-05);
+}
+
+.dash-toolbar .dash-note {
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- charts ---
+ * Each panel is drawn at the measured width of its box, so the axis labels stay
+ * at their real size instead of scaling with a viewBox.
+ */
+.dash-figure {
+  margin: 0;
+}
+
+.dash-facets svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dash-caption {
+  margin: var(--space-05) 0 0;
+  max-width: 70ch;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- footer --- */
+
+.dash-foot {
+  max-width: 62ch;
+  margin: var(--space-07) 0 0;
+  padding-top: var(--space-05);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--text-2xs);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.dash-foot p {
+  margin: 0 0 var(--space-04);
+}
+
+.dash-foot a {
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------- small screens --- */
+
+@media (max-width: 671px) {
+  .dashboard {
+    padding: var(--space-08) var(--space-05) var(--space-11);
+  }
+
+  .dash-head h1 {
+    font-size: var(--text-xl);
+  }
+
+  .dash-lede {
+    font-size: var(--text-sm);
+  }
+
+  .dash-section h2 {
+    font-size: var(--text-base);
+  }
+
+  .dash-filters {
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  }
+
+  /* A table of eight columns scrolls inside its box rather than crushing; the
+     four-column summary above it fits a phone as it is. */
+  .dash-table--runs {
+    min-width: 640px;
+  }
+
+  .dash-box {
+    max-height: 70vh;
+  }
+
+  .dash-toolbar {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ----------------------------------------------------------------- print ---
+ * Paper keeps the tables whole and drops the controls: a printed sheet is a
+ * record of one view, and the filter bar means nothing without a browser.
+ */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .dashboard {
+    max-width: none;
+    padding: 0;
+  }
+
+  .dash-filters,
+  .dash-toolbar,
+  .rshow-mode-toggle {
+    display: none;
+  }
+
+  .dash-box {
+    max-height: none;
+    overflow: visible;
+    border-bottom: 0;
+  }
+
+  .dash-table--runs {
+    min-width: 0;
+  }
+
+  .dash-box thead th {
+    position: static;
+  }
+
+  .dash-section {
+    break-inside: avoid;
+  }
+}

@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: npm
+    permissions:
+      contents: write # create the GitHub release
+      id-token: write # npm trusted publishing and the provenance attestation
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26'
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - name: Install the workspace from the lockfile
+        run: npm ci
+      - name: The tag matches packages/cli/package.json
+        run: |
+          set -eu
+          version=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/cli/package.json', 'utf8')).version")
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "tag $GITHUB_REF_NAME does not match packages/cli version v$version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_ENV"
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Build the worker bundle, the CLI bundle and the package
+        run: npm run build
+      - name: Release notes from CHANGELOG.md
+        run: |
+          set -eu
+          if [ ! -f CHANGELOG.md ]; then
+            echo "missing CHANGELOG.md"
+            exit 1
+          fi
+          # The section from "## [<version>]" up to the next "## [" heading.
+          awk -v head="## [$version]" '
+            !found { if (index($0, head) == 1) found = 1; next }
+            index($0, "## [") == 1 { exit }
+            { print }
+          ' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          if [ ! -s "$RUNNER_TEMP/notes.md" ]; then
+            echo "CHANGELOG.md has no section for $version"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/notes.md"
+      # No NODE_AUTH_TOKEN: npm trusted publishing must be configured on npmjs.com
+      # for this repository and this workflow file. The OIDC token from
+      # id-token: write is what authenticates the publish and signs the provenance.
+      - name: Publish rshow to npm
+        run: npm publish -w rshow --provenance --access public
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "$RUNNER_TEMP/notes.md"

@@ -1,0 +1,1093 @@
+/*
+ * rshow theme "default": the fluent skin, layer 3.
+ *
+ * A Windows 11 look-alike: the same wf-* kit as wire, drawn the way Microsoft
+ * Fluent draws a desktop app. Segoe UI Variable through the system font stack,
+ * 4px on a control and 8px on a surface, one blue accent, one thin stroke per
+ * edge, elevation by a soft shadow and never by a border and a shadow at once,
+ * and a bottom-edge focus bar under a control instead of a ring around it.
+ *
+ * Nothing here is Microsoft artwork: no logo, no icon set, no Segoe file. The
+ * type is whatever "Segoe UI Variable" resolves to on the reader's machine and
+ * falls back to the system UI font elsewhere, which is what a mockup wants: the
+ * shape of the product, not its licensed assets.
+ *
+ * tokens
+ *
+ *   The kit knobs are the custom.css set, plus the ones this skin needs:
+ *   --mk-surface, --mk-surface-2, --mk-on-accent, --mk-line-strong,
+ *   --mk-accent-soft, --mk-radius-lg, --mk-radius-pill, --mk-ctl-h, --mk-line-h,
+ *   --mk-shadow-2, --mk-shadow-8, --mk-shadow-16, --mk-focus.
+ *   A preset on a screen may overwrite any of them.
+ *
+ *   Under them sit the Fluent design tokens the real components read
+ *   (--colorNeutralBackground1, --colorBrandBackground, --fontSizeBase300 and
+ *   the rest). skins/fluent.js upgrades a wf-button, wf-input, wf-select,
+ *   wf-checkbox, wf-toggle and wf-tabs into the real Fluent UI Web Components,
+ *   and those components paint themselves out of exactly these tokens, so the
+ *   upgraded control and the drawn kit agree on colour, type and stroke.
+ *   The token block is a copy of the Fluent web theme's values; it is data, and
+ *   it is the only reason this file is long.
+ *
+ * skins/fluent.js fetches @fluentui/web-components v3 from jsdelivr at one
+ * pinned version and upgrades those six classes. If the fetch fails the skin
+ * stays CSS only and every control is still drawn here, so the mockup never
+ * depends on the network to be readable.
+ */
+
+/* --------------------------------------------------- the screen, light -- */
+
+[data-skin="fluent"] {
+  /* the ground, a layered panel, and the layer a bar sits on */
+  --mk-bg: #f3f3f3;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #f3f3f3;
+  --mk-chrome-bg-2: #ebebeb;
+  --mk-chrome-line: #d6d6d6;
+  --mk-chrome-fg: #1b1b1b;
+  --mk-surface: #ffffff;
+  --mk-surface-2: #fafafa;
+  --mk-fg: #1b1b1b;
+  --mk-muted: #616161;
+  --mk-line: #e3e3e3;
+  --mk-line-strong: #c7c7c7;
+  --mk-fill: #ededed;
+
+  /* one interactive colour, the same blue the Fluent components use */
+  --mk-accent: #0f6cbd;
+  --mk-accent-hover: #115ea3;
+  --mk-accent-soft: #ebf3fc;
+  --mk-on-accent: #ffffff;
+  --mk-focus: #0f6cbd;
+
+  /* 4px on a control, 8px on a surface, a pill for a filter chip */
+  --mk-radius: 4px;
+  --mk-radius-lg: 8px;
+  --mk-radius-pill: 100px;
+
+  /* Segoe UI Variable first, then the system stack, so a Linux reader or a
+     macOS reader still sees a native window and not a missing font */
+  --mk-font: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI",
+    system-ui, -apple-system, sans-serif;
+  --mk-size: 14px;
+  --mk-line-h: 20px;
+  --mk-ctl-h: 32px;
+  --mk-gap: 12px;
+  --mk-pad: 20px;
+
+  /* elevation: a control has one thin shadow, a flyout has more, a dialog the
+     most. Two levels at once is what makes a drawing look like a web page. */
+  --mk-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.07);
+  --mk-shadow-8: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --mk-shadow-16: 0 4px 16px rgba(0, 0, 0, 0.14);
+  /* fluent light: shape and stroke */
+  --borderRadiusCircular: 10000px;
+  --borderRadiusLarge: 6px;
+  --borderRadiusMedium: 4px;
+  --borderRadiusNone: 0;
+  --borderRadiusSmall: 2px;
+  --strokeWidthThick: 2px;
+  --strokeWidthThicker: 3px;
+  --strokeWidthThin: 1px;
+  /* fluent light: brand */
+  --colorBrandBackground: #0f6cbd;
+  --colorBrandBackground2: #ebf3fc;
+  --colorBrandBackgroundHover: #115ea3;
+  --colorBrandBackgroundPressed: #0c3b5e;
+  --colorBrandForeground1: #0f6cbd;
+  --colorBrandForeground2: #115ea3;
+  --colorBrandStroke2: #b4d6fa;
+  --colorCompoundBrandBackground: #0f6cbd;
+  --colorCompoundBrandBackgroundHover: #115ea3;
+  --colorCompoundBrandBackgroundPressed: #0f548c;
+  --colorCompoundBrandForeground1Hover: #115ea3;
+  --colorCompoundBrandStroke: #0f6cbd;
+  --colorCompoundBrandStrokeHover: #115ea3;
+  --colorCompoundBrandStrokePressed: #0f548c;
+  /* fluent light: neutral surface */
+  --colorNeutralBackground1: #ffffff;
+  --colorNeutralBackground1Hover: #f5f5f5;
+  --colorNeutralBackground1Pressed: #e0e0e0;
+  --colorNeutralBackground3: #f5f5f5;
+  --colorNeutralBackground4: #f0f0f0;
+  --colorNeutralBackground5: #ebebeb;
+  --colorNeutralBackgroundDisabled: #f0f0f0;
+  --colorNeutralBackgroundInverted: #292929;
+  --colorNeutralForeground1: #242424;
+  --colorNeutralForeground1Hover: #242424;
+  --colorNeutralForeground1Pressed: #242424;
+  --colorNeutralForeground1Static: #242424;
+  --colorNeutralForeground2: #424242;
+  --colorNeutralForeground2BrandHover: #0f6cbd;
+  --colorNeutralForeground2BrandPressed: #115ea3;
+  --colorNeutralForeground2Hover: #242424;
+  --colorNeutralForeground2Pressed: #242424;
+  --colorNeutralForeground3: #616161;
+  --colorNeutralForeground3Hover: #424242;
+  --colorNeutralForeground3Pressed: #424242;
+  --colorNeutralForeground4: #707070;
+  --colorNeutralForegroundDisabled: #bdbdbd;
+  --colorNeutralForegroundInverted: #ffffff;
+  --colorNeutralForegroundInvertedHover: #ffffff;
+  --colorNeutralForegroundInvertedPressed: #ffffff;
+  --colorNeutralForegroundOnBrand: #ffffff;
+  --colorNeutralForegroundStaticInverted: #ffffff;
+  --colorNeutralStroke1: #d1d1d1;
+  --colorNeutralStroke1Hover: #c7c7c7;
+  --colorNeutralStroke1Pressed: #b3b3b3;
+  --colorNeutralStroke2: #e0e0e0;
+  --colorNeutralStrokeAccessible: #616161;
+  --colorNeutralStrokeAccessibleHover: #575757;
+  --colorNeutralStrokeAccessiblePressed: #4d4d4d;
+  --colorNeutralStrokeDisabled: #e0e0e0;
+  --colorStrokeFocus1: #ffffff;
+  --colorStrokeFocus2: #000000;
+  --colorSubtleBackground: transparent;
+  --colorSubtleBackgroundHover: #f5f5f5;
+  --colorSubtleBackgroundPressed: #e0e0e0;
+  --colorTransparentBackground: transparent;
+  --colorTransparentBackgroundHover: transparent;
+  --colorTransparentBackgroundPressed: transparent;
+  --colorTransparentStroke: transparent;
+  --colorTransparentStrokeInteractive: transparent;
+  /* fluent light: type */
+  --fontFamilyBase: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  --fontSizeBase100: 10px;
+  --fontSizeBase200: 12px;
+  --fontSizeBase300: 14px;
+  --fontSizeBase400: 16px;
+  --fontSizeBase500: 20px;
+  --fontSizeBase600: 24px;
+  --fontSizeHero1000: 68px;
+  --fontSizeHero700: 28px;
+  --fontSizeHero800: 32px;
+  --fontSizeHero900: 40px;
+  --fontWeightBold: 700;
+  --fontWeightRegular: 400;
+  --fontWeightSemibold: 600;
+  --lineHeightBase100: 14px;
+  --lineHeightBase200: 16px;
+  --lineHeightBase300: 20px;
+  --lineHeightBase400: 22px;
+  --lineHeightBase500: 28px;
+  --lineHeightBase600: 32px;
+  --lineHeightHero1000: 92px;
+  --lineHeightHero700: 36px;
+  --lineHeightHero800: 40px;
+  --lineHeightHero900: 52px;
+  /* fluent light: shadow */
+  --shadow16: 0 0 2px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.14);
+  --shadow2: 0 0 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.14);
+  --shadow4: 0 0 2px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.14);
+  /* fluent light: space and motion */
+  --curveAccelerateMid: cubic-bezier(1,0,1,1);
+  --curveDecelerateMax: cubic-bezier(0.1,0.9,0.2,1);
+  --curveDecelerateMid: cubic-bezier(0,0,0,1);
+  --curveEasyEase: cubic-bezier(0.33,0,0.67,1);
+  --durationFaster: 100ms;
+  --durationNormal: 200ms;
+  --durationSlow: 300ms;
+  --durationUltraFast: 50ms;
+  --spacingHorizontalL: 16px;
+  --spacingHorizontalM: 12px;
+  --spacingHorizontalMNudge: 10px;
+  --spacingHorizontalS: 8px;
+  --spacingHorizontalSNudge: 6px;
+  --spacingHorizontalXS: 4px;
+  --spacingHorizontalXXS: 2px;
+  --spacingVerticalL: 16px;
+  --spacingVerticalM: 12px;
+  --spacingVerticalMNudge: 10px;
+  --spacingVerticalS: 8px;
+  --spacingVerticalSNudge: 6px;
+  --spacingVerticalXS: 4px;
+  --spacingVerticalXXS: 2px;}
+
+/* ---------------------------------------------------- the screen, dark -- */
+
+/* Two blocks carry the dark values on purpose, the same way tokens.css does:
+   one for the system preference, one for a reader who chose dark on a device
+   that prefers light. */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="fluent"] {
+    --mk-bg: #202020;
+
+    /* the window chrome the frame draws, in the same two modes */
+    --mk-chrome-bg: #2b2b2b;
+    --mk-chrome-bg-2: #272727;
+    --mk-chrome-line: #3d3d3d;
+    --mk-chrome-fg: #e0e0e0;
+    --mk-surface: #2b2b2b;
+    --mk-surface-2: #272727;
+    --mk-fg: #ffffff;
+    --mk-muted: #adadad;
+    --mk-line: #3d3d3d;
+    --mk-line-strong: #525252;
+    --mk-fill: #333333;
+    --mk-accent: #479ef5;
+    --mk-accent-hover: #62abf5;
+    --mk-accent-soft: #0a3352;
+    --mk-on-accent: #101010;
+    --mk-focus: #479ef5;
+    --mk-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --mk-shadow-8: 0 2px 8px rgba(0, 0, 0, 0.36);
+    --mk-shadow-16: 0 4px 16px rgba(0, 0, 0, 0.42);
+    /* fluent dark: shape and stroke */
+    --borderRadiusCircular: 10000px;
+    --borderRadiusLarge: 6px;
+    --borderRadiusMedium: 4px;
+    --borderRadiusNone: 0;
+    --borderRadiusSmall: 2px;
+    --strokeWidthThick: 2px;
+    --strokeWidthThicker: 3px;
+    --strokeWidthThin: 1px;
+    /* fluent dark: brand */
+    --colorBrandBackground: #115ea3;
+    --colorBrandBackground2: #082338;
+    --colorBrandBackgroundHover: #0f6cbd;
+    --colorBrandBackgroundPressed: #0c3b5e;
+    --colorBrandForeground1: #479ef5;
+    --colorBrandForeground2: #62abf5;
+    --colorBrandStroke2: #0e4775;
+    --colorCompoundBrandBackground: #479ef5;
+    --colorCompoundBrandBackgroundHover: #62abf5;
+    --colorCompoundBrandBackgroundPressed: #2886de;
+    --colorCompoundBrandForeground1Hover: #62abf5;
+    --colorCompoundBrandStroke: #479ef5;
+    --colorCompoundBrandStrokeHover: #62abf5;
+    --colorCompoundBrandStrokePressed: #2886de;
+    /* fluent dark: neutral surface */
+    --colorNeutralBackground1: #292929;
+    --colorNeutralBackground1Hover: #3d3d3d;
+    --colorNeutralBackground1Pressed: #1f1f1f;
+    --colorNeutralBackground3: #141414;
+    --colorNeutralBackground4: #0a0a0a;
+    --colorNeutralBackground5: #000000;
+    --colorNeutralBackgroundDisabled: #141414;
+    --colorNeutralBackgroundInverted: #ffffff;
+    --colorNeutralForeground1: #ffffff;
+    --colorNeutralForeground1Hover: #ffffff;
+    --colorNeutralForeground1Pressed: #ffffff;
+    --colorNeutralForeground1Static: #242424;
+    --colorNeutralForeground2: #d6d6d6;
+    --colorNeutralForeground2BrandHover: #479ef5;
+    --colorNeutralForeground2BrandPressed: #2886de;
+    --colorNeutralForeground2Hover: #ffffff;
+    --colorNeutralForeground2Pressed: #ffffff;
+    --colorNeutralForeground3: #adadad;
+    --colorNeutralForeground3Hover: #d6d6d6;
+    --colorNeutralForeground3Pressed: #d6d6d6;
+    --colorNeutralForeground4: #999999;
+    --colorNeutralForegroundDisabled: #5c5c5c;
+    --colorNeutralForegroundInverted: #242424;
+    --colorNeutralForegroundInvertedHover: #242424;
+    --colorNeutralForegroundInvertedPressed: #242424;
+    --colorNeutralForegroundOnBrand: #ffffff;
+    --colorNeutralForegroundStaticInverted: #ffffff;
+    --colorNeutralStroke1: #666666;
+    --colorNeutralStroke1Hover: #757575;
+    --colorNeutralStroke1Pressed: #6b6b6b;
+    --colorNeutralStroke2: #525252;
+    --colorNeutralStrokeAccessible: #adadad;
+    --colorNeutralStrokeAccessibleHover: #bdbdbd;
+    --colorNeutralStrokeAccessiblePressed: #b3b3b3;
+    --colorNeutralStrokeDisabled: #424242;
+    --colorStrokeFocus1: #000000;
+    --colorStrokeFocus2: #ffffff;
+    --colorSubtleBackground: transparent;
+    --colorSubtleBackgroundHover: #383838;
+    --colorSubtleBackgroundPressed: #2e2e2e;
+    --colorTransparentBackground: transparent;
+    --colorTransparentBackgroundHover: transparent;
+    --colorTransparentBackgroundPressed: transparent;
+    --colorTransparentStroke: transparent;
+    --colorTransparentStrokeInteractive: transparent;
+    /* fluent dark: type */
+    --fontFamilyBase: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+    --fontSizeBase100: 10px;
+    --fontSizeBase200: 12px;
+    --fontSizeBase300: 14px;
+    --fontSizeBase400: 16px;
+    --fontSizeBase500: 20px;
+    --fontSizeBase600: 24px;
+    --fontSizeHero1000: 68px;
+    --fontSizeHero700: 28px;
+    --fontSizeHero800: 32px;
+    --fontSizeHero900: 40px;
+    --fontWeightBold: 700;
+    --fontWeightRegular: 400;
+    --fontWeightSemibold: 600;
+    --lineHeightBase100: 14px;
+    --lineHeightBase200: 16px;
+    --lineHeightBase300: 20px;
+    --lineHeightBase400: 22px;
+    --lineHeightBase500: 28px;
+    --lineHeightBase600: 32px;
+    --lineHeightHero1000: 92px;
+    --lineHeightHero700: 36px;
+    --lineHeightHero800: 40px;
+    --lineHeightHero900: 52px;
+    /* fluent dark: shadow */
+    --shadow16: 0 0 2px rgba(0,0,0,0.24), 0 8px 16px rgba(0,0,0,0.28);
+    --shadow2: 0 0 2px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.28);
+    --shadow4: 0 0 2px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.28);
+    /* fluent dark: space and motion */
+    --curveAccelerateMid: cubic-bezier(1,0,1,1);
+    --curveDecelerateMax: cubic-bezier(0.1,0.9,0.2,1);
+    --curveDecelerateMid: cubic-bezier(0,0,0,1);
+    --curveEasyEase: cubic-bezier(0.33,0,0.67,1);
+    --durationFaster: 100ms;
+    --durationNormal: 200ms;
+    --durationSlow: 300ms;
+    --durationUltraFast: 50ms;
+    --spacingHorizontalL: 16px;
+    --spacingHorizontalM: 12px;
+    --spacingHorizontalMNudge: 10px;
+    --spacingHorizontalS: 8px;
+    --spacingHorizontalSNudge: 6px;
+    --spacingHorizontalXS: 4px;
+    --spacingHorizontalXXS: 2px;
+    --spacingVerticalL: 16px;
+    --spacingVerticalM: 12px;
+    --spacingVerticalMNudge: 10px;
+    --spacingVerticalS: 8px;
+    --spacingVerticalSNudge: 6px;
+    --spacingVerticalXS: 4px;
+    --spacingVerticalXXS: 2px;  }
+}
+
+:root[data-mode="dark"] [data-skin="fluent"] {
+  --mk-bg: #202020;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #2b2b2b;
+  --mk-chrome-bg-2: #272727;
+  --mk-chrome-line: #3d3d3d;
+  --mk-chrome-fg: #e0e0e0;
+  --mk-surface: #2b2b2b;
+  --mk-surface-2: #272727;
+  --mk-fg: #ffffff;
+  --mk-muted: #adadad;
+  --mk-line: #3d3d3d;
+  --mk-line-strong: #525252;
+  --mk-fill: #333333;
+  --mk-accent: #479ef5;
+  --mk-accent-hover: #62abf5;
+  --mk-accent-soft: #0a3352;
+  --mk-on-accent: #101010;
+  --mk-focus: #479ef5;
+  --mk-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --mk-shadow-8: 0 2px 8px rgba(0, 0, 0, 0.36);
+  --mk-shadow-16: 0 4px 16px rgba(0, 0, 0, 0.42);
+  /* fluent dark: shape and stroke */
+  --borderRadiusCircular: 10000px;
+  --borderRadiusLarge: 6px;
+  --borderRadiusMedium: 4px;
+  --borderRadiusNone: 0;
+  --borderRadiusSmall: 2px;
+  --strokeWidthThick: 2px;
+  --strokeWidthThicker: 3px;
+  --strokeWidthThin: 1px;
+  /* fluent dark: brand */
+  --colorBrandBackground: #115ea3;
+  --colorBrandBackground2: #082338;
+  --colorBrandBackgroundHover: #0f6cbd;
+  --colorBrandBackgroundPressed: #0c3b5e;
+  --colorBrandForeground1: #479ef5;
+  --colorBrandForeground2: #62abf5;
+  --colorBrandStroke2: #0e4775;
+  --colorCompoundBrandBackground: #479ef5;
+  --colorCompoundBrandBackgroundHover: #62abf5;
+  --colorCompoundBrandBackgroundPressed: #2886de;
+  --colorCompoundBrandForeground1Hover: #62abf5;
+  --colorCompoundBrandStroke: #479ef5;
+  --colorCompoundBrandStrokeHover: #62abf5;
+  --colorCompoundBrandStrokePressed: #2886de;
+  /* fluent dark: neutral surface */
+  --colorNeutralBackground1: #292929;
+  --colorNeutralBackground1Hover: #3d3d3d;
+  --colorNeutralBackground1Pressed: #1f1f1f;
+  --colorNeutralBackground3: #141414;
+  --colorNeutralBackground4: #0a0a0a;
+  --colorNeutralBackground5: #000000;
+  --colorNeutralBackgroundDisabled: #141414;
+  --colorNeutralBackgroundInverted: #ffffff;
+  --colorNeutralForeground1: #ffffff;
+  --colorNeutralForeground1Hover: #ffffff;
+  --colorNeutralForeground1Pressed: #ffffff;
+  --colorNeutralForeground1Static: #242424;
+  --colorNeutralForeground2: #d6d6d6;
+  --colorNeutralForeground2BrandHover: #479ef5;
+  --colorNeutralForeground2BrandPressed: #2886de;
+  --colorNeutralForeground2Hover: #ffffff;
+  --colorNeutralForeground2Pressed: #ffffff;
+  --colorNeutralForeground3: #adadad;
+  --colorNeutralForeground3Hover: #d6d6d6;
+  --colorNeutralForeground3Pressed: #d6d6d6;
+  --colorNeutralForeground4: #999999;
+  --colorNeutralForegroundDisabled: #5c5c5c;
+  --colorNeutralForegroundInverted: #242424;
+  --colorNeutralForegroundInvertedHover: #242424;
+  --colorNeutralForegroundInvertedPressed: #242424;
+  --colorNeutralForegroundOnBrand: #ffffff;
+  --colorNeutralForegroundStaticInverted: #ffffff;
+  --colorNeutralStroke1: #666666;
+  --colorNeutralStroke1Hover: #757575;
+  --colorNeutralStroke1Pressed: #6b6b6b;
+  --colorNeutralStroke2: #525252;
+  --colorNeutralStrokeAccessible: #adadad;
+  --colorNeutralStrokeAccessibleHover: #bdbdbd;
+  --colorNeutralStrokeAccessiblePressed: #b3b3b3;
+  --colorNeutralStrokeDisabled: #424242;
+  --colorStrokeFocus1: #000000;
+  --colorStrokeFocus2: #ffffff;
+  --colorSubtleBackground: transparent;
+  --colorSubtleBackgroundHover: #383838;
+  --colorSubtleBackgroundPressed: #2e2e2e;
+  --colorTransparentBackground: transparent;
+  --colorTransparentBackgroundHover: transparent;
+  --colorTransparentBackgroundPressed: transparent;
+  --colorTransparentStroke: transparent;
+  --colorTransparentStrokeInteractive: transparent;
+  /* fluent dark: type */
+  --fontFamilyBase: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  --fontSizeBase100: 10px;
+  --fontSizeBase200: 12px;
+  --fontSizeBase300: 14px;
+  --fontSizeBase400: 16px;
+  --fontSizeBase500: 20px;
+  --fontSizeBase600: 24px;
+  --fontSizeHero1000: 68px;
+  --fontSizeHero700: 28px;
+  --fontSizeHero800: 32px;
+  --fontSizeHero900: 40px;
+  --fontWeightBold: 700;
+  --fontWeightRegular: 400;
+  --fontWeightSemibold: 600;
+  --lineHeightBase100: 14px;
+  --lineHeightBase200: 16px;
+  --lineHeightBase300: 20px;
+  --lineHeightBase400: 22px;
+  --lineHeightBase500: 28px;
+  --lineHeightBase600: 32px;
+  --lineHeightHero1000: 92px;
+  --lineHeightHero700: 36px;
+  --lineHeightHero800: 40px;
+  --lineHeightHero900: 52px;
+  /* fluent dark: shadow */
+  --shadow16: 0 0 2px rgba(0,0,0,0.24), 0 8px 16px rgba(0,0,0,0.28);
+  --shadow2: 0 0 2px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.28);
+  --shadow4: 0 0 2px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.28);
+  /* fluent dark: space and motion */
+  --curveAccelerateMid: cubic-bezier(1,0,1,1);
+  --curveDecelerateMax: cubic-bezier(0.1,0.9,0.2,1);
+  --curveDecelerateMid: cubic-bezier(0,0,0,1);
+  --curveEasyEase: cubic-bezier(0.33,0,0.67,1);
+  --durationFaster: 100ms;
+  --durationNormal: 200ms;
+  --durationSlow: 300ms;
+  --durationUltraFast: 50ms;
+  --spacingHorizontalL: 16px;
+  --spacingHorizontalM: 12px;
+  --spacingHorizontalMNudge: 10px;
+  --spacingHorizontalS: 8px;
+  --spacingHorizontalSNudge: 6px;
+  --spacingHorizontalXS: 4px;
+  --spacingHorizontalXXS: 2px;
+  --spacingVerticalL: 16px;
+  --spacingVerticalM: 12px;
+  --spacingVerticalMNudge: 10px;
+  --spacingVerticalS: 8px;
+  --spacingVerticalSNudge: 6px;
+  --spacingVerticalXS: 4px;
+  --spacingVerticalXXS: 2px;}
+
+/* --------------------------------------------------------------- screen -- */
+
+[data-skin="fluent"] .mk-screen {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="fluent"] .mk-screen {
+    color-scheme: dark;
+  }
+}
+
+:root[data-mode="dark"] [data-skin="fluent"] .mk-screen {
+  color-scheme: dark;
+}
+
+/* A window ground is the layered colour and a panel is the white one, so a
+   screen is one step off white and the content sits on top of it. */
+[data-skin="fluent"] .mk-screen a {
+  color: var(--mk-accent);
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+[data-skin="fluent"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+[data-skin="fluent"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+[data-skin="fluent"] .wf-row.wf-shell {
+  align-items: stretch;
+  gap: 0;
+}
+
+[data-skin="fluent"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+[data-skin="fluent"] .wf-spacer,
+[data-skin="fluent"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+[data-skin="fluent"] .wf-heading {
+  display: block;
+  width: 40%;
+  max-width: 20em;
+  height: 0.85em;
+  background: var(--mk-fg);
+  border-radius: 2px;
+  opacity: 0.9;
+}
+
+[data-skin="fluent"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+  background: none;
+  opacity: 1;
+}
+
+[data-skin="fluent"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * var(--mk-line-h));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--mk-line-strong) 0 7px,
+    transparent 7px var(--mk-line-h)
+  );
+  border-radius: 2px;
+  opacity: 0.75;
+}
+
+[data-skin="fluent"] .wf-text[data-lines="1"] { --mk-lines: 1; }
+[data-skin="fluent"] .wf-text[data-lines="2"] { --mk-lines: 2; }
+[data-skin="fluent"] .wf-text[data-lines="3"] { --mk-lines: 3; }
+[data-skin="fluent"] .wf-text[data-lines="4"] { --mk-lines: 4; }
+[data-skin="fluent"] .wf-text[data-lines="5"] { --mk-lines: 5; }
+[data-skin="fluent"] .wf-text[data-lines="6"] { --mk-lines: 6; }
+[data-skin="fluent"] .wf-text[data-lines="7"] { --mk-lines: 7; }
+[data-skin="fluent"] .wf-text[data-lines="8"] { --mk-lines: 8; }
+
+[data-skin="fluent"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 14px;
+  line-height: var(--mk-line-h);
+  color: var(--mk-muted);
+  background: none;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+[data-skin="fluent"] .wf-box {
+  min-height: 56px;
+  padding: 12px;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+}
+
+/* A selected row in a list: the kit marks it with is-active, and this skin
+   answers with the accent bar Windows 11 draws down the left edge. */
+[data-skin="fluent"] .wf-box.is-active {
+  border-color: var(--mk-accent);
+  box-shadow: inset 3px 0 0 var(--mk-accent);
+}
+
+[data-skin="fluent"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  padding: 16px;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-2);
+}
+
+[data-skin="fluent"] .wf-image {
+  min-height: 120px;
+  background-color: var(--mk-fill);
+  background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="fluent"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  background: var(--mk-accent-soft);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+[data-skin="fluent"] .wf-avatar[data-size="sm"] {
+  width: 24px;
+  height: 24px;
+}
+
+[data-skin="fluent"] .wf-avatar[data-size="lg"] {
+  width: 48px;
+  height: 48px;
+}
+
+[data-skin="fluent"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: 2px;
+}
+
+[data-skin="fluent"] .wf-icon[data-size="lg"] {
+  width: 20px;
+  height: 20px;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+/* A control is one pixel of neutral stroke on a white panel, a 4px corner and
+   a shadow light enough to read as a lift and not as a drop shadow. A keyboard
+   focus is a 2px bar under the control, which is what Fluent draws. */
+
+[data-skin="fluent"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 96px;
+  height: var(--mk-ctl-h);
+  padding: 0 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mk-fg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+  box-shadow: var(--mk-shadow-2);
+}
+
+[data-skin="fluent"] .wf-button.primary {
+  color: var(--mk-on-accent);
+  background: var(--mk-accent);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+[data-skin="fluent"] .wf-button.ghost {
+  color: var(--mk-fg);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+[data-skin="fluent"] .wf-button[disabled] {
+  color: var(--mk-muted);
+  background: var(--mk-fill);
+  border-color: transparent;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+[data-skin="fluent"] .wf-button:focus-visible,
+[data-skin="fluent"] .wf-button[data-focus] {
+  outline: 2px solid var(--mk-focus);
+  outline-offset: 1px;
+}
+
+[data-skin="fluent"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 10px;
+  font-size: 14px;
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="fluent"] .wf-input[data-label]::before,
+[data-skin="fluent"] .wf-select[data-label]::before,
+[data-skin="fluent"] .wf-label {
+  position: absolute;
+  top: -7px;
+  left: 8px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+}
+
+[data-skin="fluent"] .wf-input[data-label]::before,
+[data-skin="fluent"] .wf-select[data-label]::before {
+  content: attr(data-label);
+}
+
+[data-skin="fluent"] .wf-input:focus-within {
+  box-shadow: inset 0 -1px 0 0 var(--mk-accent);
+}
+
+/* An empty field still says what it is: the drawing's placeholder is read out
+   of the attribute, so a search box in a title bar is not a blank rectangle. */
+[data-skin="fluent"] .wf-input[data-placeholder]:empty::after {
+  content: attr(data-placeholder);
+  color: var(--mk-muted);
+}
+
+[data-skin="fluent"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 30px 0 10px;
+  font-size: 14px;
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="fluent"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  width: 0;
+  height: 0;
+  margin-top: -1px;
+  border-top: 4px solid var(--mk-muted);
+  border-right: 3.5px solid transparent;
+  border-left: 3.5px solid transparent;
+}
+
+[data-skin="fluent"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: 3px;
+}
+
+[data-skin="fluent"] .wf-checkbox[data-checked="true"] {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="fluent"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--mk-on-accent);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+[data-skin="fluent"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 20px;
+  background: transparent;
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="fluent"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--mk-muted);
+  border-radius: 50%;
+}
+
+[data-skin="fluent"] .wf-toggle.on {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="fluent"] .wf-toggle.on::after {
+  left: 23px;
+  background: var(--mk-on-accent);
+}
+
+[data-skin="fluent"] .wf-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="fluent"] .wf-tabs > * {
+  padding: 0 12px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--mk-muted);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+[data-skin="fluent"] .wf-tabs > .is-active,
+[data-skin="fluent"] .wf-tabs > [aria-selected="true"] {
+  font-weight: 600;
+  color: var(--mk-fg);
+  border-bottom-color: var(--mk-accent);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+[data-skin="fluent"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  background: var(--mk-surface-2);
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="fluent"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+  width: 232px;
+  padding: 8px;
+  background: var(--mk-surface-2);
+  border-right: 1px solid var(--mk-line);
+}
+
+[data-skin="fluent"] .wf-sidebar > .wf-row {
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 8px;
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="fluent"] .wf-sidebar > .wf-row.is-active,
+[data-skin="fluent"] .wf-sidebar > .is-active {
+  background: var(--mk-fill);
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+[data-skin="fluent"] .wf-table {
+  --mk-rows: 4;
+  --mk-cols: 3;
+  height: calc(var(--mk-rows) * 34px);
+  background-color: var(--mk-surface);
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 33px,
+      var(--mk-line) 33px 34px
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(100% / var(--mk-cols) - 1px),
+      var(--mk-line) calc(100% / var(--mk-cols) - 1px) calc(100% / var(--mk-cols))
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="fluent"] .wf-table[data-rows="1"] { --mk-rows: 1; }
+[data-skin="fluent"] .wf-table[data-rows="2"] { --mk-rows: 2; }
+[data-skin="fluent"] .wf-table[data-rows="3"] { --mk-rows: 3; }
+[data-skin="fluent"] .wf-table[data-rows="4"] { --mk-rows: 4; }
+[data-skin="fluent"] .wf-table[data-rows="5"] { --mk-rows: 5; }
+[data-skin="fluent"] .wf-table[data-rows="6"] { --mk-rows: 6; }
+[data-skin="fluent"] .wf-table[data-rows="8"] { --mk-rows: 8; }
+[data-skin="fluent"] .wf-table[data-rows="10"] { --mk-rows: 10; }
+[data-skin="fluent"] .wf-table[data-cols="1"] { --mk-cols: 1; }
+[data-skin="fluent"] .wf-table[data-cols="2"] { --mk-cols: 2; }
+[data-skin="fluent"] .wf-table[data-cols="3"] { --mk-cols: 3; }
+[data-skin="fluent"] .wf-table[data-cols="4"] { --mk-cols: 4; }
+[data-skin="fluent"] .wf-table[data-cols="5"] { --mk-cols: 5; }
+[data-skin="fluent"] .wf-table[data-cols="6"] { --mk-cols: 6; }
+
+[data-skin="fluent"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 160px;
+  padding: 0 0 0 1px;
+  border-bottom: 1px solid var(--mk-line);
+  border-left: 1px solid var(--mk-line);
+}
+
+[data-skin="fluent"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 4px;
+  background: var(--mk-fill);
+  border-radius: 3px 3px 0 0;
+}
+
+[data-skin="fluent"] .wf-chart > .is-accent {
+  background: var(--mk-accent);
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+[data-skin="fluent"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+[data-skin="fluent"] .wf-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(480px, 84%);
+  max-height: 84%;
+  padding: 24px;
+  overflow: auto;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-16);
+  transform: translate(-50%, -50%);
+}
+
+[data-skin="fluent"] .wf-toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 84%;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-8);
+  transform: translateX(-50%);
+}
+
+/* ------------------------------------------- the real Fluent components -- */
+
+/* skins/fluent.js replaces a wf-button, wf-input, wf-select, wf-checkbox,
+   wf-toggle and wf-tabs with the Fluent element of the same job. Those paint
+   themselves from the tokens above; what is left is to hold them in the place
+   the drawing expects, and to keep the kit's own selectors off them. */
+
+[data-skin="fluent"] .mk-screen fluent-button,
+[data-skin="fluent"] .mk-screen fluent-anchor-button {
+  font-size: 14px;
+}
+
+/* The wrapper skins/fluent.js builds around an upgraded input: the field holds
+   the kit's label in the notch and the component fills the rest. */
+[data-skin="fluent"] .wf-field {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+[data-skin="fluent"] .wf-field > .wf-label {
+  /* the label sits in the notch and has to stay above the component's own
+     background, so it takes a stacking position of its own */
+  z-index: 2;
+  color: var(--mk-muted);
+}
+
+[data-skin="fluent"] .mk-screen fluent-text-input {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* A standalone dropdown takes its stroke from a variable the field normally
+   sets, so a dropdown outside a field gets it from the skin instead. */
+[data-skin="fluent"] .mk-screen fluent-dropdown {
+  --control-border-color: var(--colorNeutralStrokeAccessible, var(--mk-line-strong));
+  min-height: var(--mk-ctl-h);
+  min-width: 160px;
+}
+
+[data-skin="fluent"] .mk-screen fluent-tablist {
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="fluent"] .mk-screen fluent-checkbox,
+[data-skin="fluent"] .mk-screen fluent-switch {
+  flex: 0 0 auto;
+}

@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Mockup: one desktop app in four windows</title>
+<!--
+  One desktop app, drawn four times: a window on macOS, on Windows, on Linux,
+  and a frameless window that paints its own title bar. The fifth screen is the
+  same product as a bare surface, the way a GPU drawn toolkit such as egui
+  paints it, with the compact dark preset switched on.
+
+  The point of the file is that the app is the same in every frame: the content
+  does not change when the chrome does. A mockup follows the platform the app
+  ships on, not rshow and not a convention borrowed from a browser.
+
+  Theme links. A published mockup points at the theme artifact with
+  root-relative URLs, one per file, all at the same pinned version:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/mockup.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/skins/wire.css" id="mk-skin" data-mk-skin>
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/mockup.js"></script>
+    <script defer src="/_themes/<name>@<n>/skins/sketch.js"></script>
+
+  "Ledger" and its notes are placeholders: this is a layout, not a product.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../mockup.css">
+<link rel="stylesheet" href="../skins/wire.css" id="mk-skin" data-mk-skin>
+<script src="../mode.js"></script>
+<script defer src="../mockup.js"></script>
+<script defer src="../skins/sketch.js"></script>
+</head>
+<body>
+
+<main class="mockup" data-name="Ledger" data-skin="wire">
+
+  <!-- ================================================================ macOS -->
+  <section class="artboard" id="window-mac" data-frame="desktop" data-os="mac"
+           data-title="macOS window" data-window-title="Ledger" data-flush
+           data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-row" style="height:48px;padding:0 16px;gap:12px;border-bottom:1px solid var(--mk-line)">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-label="Find" style="width:240px">Search notes</span>
+        <span class="wf-icon"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:60%"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Weekly plan</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Archive</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+        <div class="wf-col" style="width:300px;padding:12px;gap:10px;border-right:1px solid var(--mk-line)">
+          <span class="wf-text" data-lines="1" style="width:80px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+        </div>
+        <div class="wf-col wf-grow" style="padding:24px;gap:14px">
+          <span class="wf-heading">Weekly plan</span>
+          <div class="wf-row" style="gap:8px;font-size:12px;color:var(--mk-muted)">
+            <span>Edited two days ago</span>
+            <span>/</span>
+            <span>Inbox</span>
+          </div>
+          <span class="wf-text" data-lines="4"></span>
+          <span class="wf-box" style="height:96px"></span>
+          <span class="wf-text" data-lines="3"></span>
+          <span class="wf-text" data-lines="6"></span>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:120px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Preview</span>
+            <span class="wf-button primary">Save</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="The app does not change between the four frames. Only the chrome does, so draw the chrome the platform draws."
+          style="top:62px;left:1216px"></span>
+  </section>
+
+  <!-- ============================================================== Windows -->
+  <section class="artboard" id="window-windows" data-frame="desktop" data-os="windows"
+           data-title="Windows window" data-window-title="Ledger - weekly plan" data-flush
+           data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-row" style="height:48px;padding:0 16px;gap:12px;border-bottom:1px solid var(--mk-line)">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-label="Find" style="width:240px">Search notes</span>
+        <span class="wf-icon"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:60%"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Weekly plan</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Archive</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+        <div class="wf-col" style="width:300px;padding:12px;gap:10px;border-right:1px solid var(--mk-line)">
+          <span class="wf-text" data-lines="1" style="width:80px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+        </div>
+        <div class="wf-col wf-grow" style="padding:24px;gap:14px">
+          <span class="wf-heading">Weekly plan</span>
+          <div class="wf-row" style="gap:8px;font-size:12px;color:var(--mk-muted)">
+            <span>Edited two days ago</span>
+            <span>/</span>
+            <span>Inbox</span>
+          </div>
+          <span class="wf-text" data-lines="4"></span>
+          <span class="wf-box" style="height:96px"></span>
+          <span class="wf-text" data-lines="3"></span>
+          <span class="wf-text" data-lines="6"></span>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:120px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Preview</span>
+            <span class="wf-button primary">Save</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="Windows writes the title on the left and the three controls on the right. Do not centre either of them."
+          style="top:48px;left:1216px"></span>
+  </section>
+
+  <!-- ================================================================ Linux -->
+  <section class="artboard" id="window-linux" data-frame="desktop" data-os="linux"
+           data-title="Linux window" data-window-title="Ledger" data-flush
+           data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-row" style="height:48px;padding:0 16px;gap:12px;border-bottom:1px solid var(--mk-line)">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-label="Find" style="width:240px">Search notes</span>
+        <span class="wf-icon"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:60%"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Weekly plan</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Archive</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+        <div class="wf-col" style="width:300px;padding:12px;gap:10px;border-right:1px solid var(--mk-line)">
+          <span class="wf-text" data-lines="1" style="width:80px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+          <span class="wf-box" style="min-height:64px"></span>
+        </div>
+        <div class="wf-col wf-grow" style="padding:24px;gap:14px">
+          <span class="wf-heading">Weekly plan</span>
+          <div class="wf-row" style="gap:8px;font-size:12px;color:var(--mk-muted)">
+            <span>Edited two days ago</span>
+            <span>/</span>
+            <span>Inbox</span>
+          </div>
+          <span class="wf-text" data-lines="4"></span>
+          <span class="wf-box" style="height:96px"></span>
+          <span class="wf-text" data-lines="3"></span>
+          <span class="wf-text" data-lines="6"></span>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:120px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Preview</span>
+            <span class="wf-button primary">Save</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ a window with no chrome -->
+  <section class="artboard" id="window-custom" data-frame="custom" data-controls data-drag="40"
+           data-title="Frameless window" data-flush
+           data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="drag-region wf-row" style="height:40px;padding:0 16px;gap:12px;border-bottom:1px solid var(--mk-line)">
+        <span class="wf-icon"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+      </div>
+      <div class="wf-row" style="height:48px;padding:0 16px;gap:12px;border-bottom:1px solid var(--mk-line)">
+        <span class="wf-icon"></span>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-label="Find" style="width:240px">Search notes</span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:60%"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Weekly plan</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Archive</span></div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:24px;gap:14px">
+          <span class="wf-heading">Weekly plan</span>
+          <span class="wf-text" data-lines="4"></span>
+          <span class="wf-box" style="height:96px"></span>
+          <span class="wf-text" data-lines="3"></span>
+          <span class="wf-text" data-lines="6"></span>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-spacer"></span>
+            <span class="wf-button primary">Save</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="A frameless window draws its own bar, so the drag region is part of the design. Mark it, and mark where the system puts its controls."
+          style="top:8px;left:800px"></span>
+  </section>
+
+  <!-- ============================================ the same tool, bare, dark -->
+  <section class="artboard preset-compact-dark" id="tool-bare" data-frame="bare"
+           data-title="Compact dark tool, bare frame" data-flush
+           data-w="1024" data-h="640">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-row" style="height:26px;padding:0 8px;gap:12px;border-bottom:1px solid var(--mk-line);font-size:11px">
+        <span>File</span>
+        <span>Edit</span>
+        <span>View</span>
+        <span class="wf-spacer"></span>
+        <span>beam 0.4</span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar" style="width:180px;gap:2px">
+          <span class="wf-text" data-lines="1" style="width:70%"></span>
+          <span>Scene</span>
+          <span>Camera</span>
+          <span>Lighting</span>
+          <span>Materials</span>
+          <span class="wf-spacer"></span>
+          <span>Console</span>
+        </div>
+        <div class="wf-col" style="width:240px;padding:8px;gap:6px;border-right:1px solid var(--mk-line)">
+          <span class="wf-text" data-lines="1" style="width:60px"></span>
+          <span class="wf-select">Cube</span>
+          <span class="wf-select">Mesh 03</span>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Cast shadows</span>
+          </div>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-toggle on"></span>
+            <span>Visible</span>
+          </div>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-input" data-label="X">0.00</span>
+            <span class="wf-input" data-label="Y">1.42</span>
+            <span class="wf-input" data-label="Z">0.00</span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-button">Reset</span>
+            <span class="wf-button primary">Apply</span>
+          </div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:8px;gap:6px">
+          <span class="wf-image" style="height:100%"></span>
+        </div>
+        <div class="wf-col" style="width:220px;padding:8px;gap:6px;border-left:1px solid var(--mk-line)">
+          <span>Inspector</span>
+          <span class="wf-table" data-rows="4" data-cols="2"></span>
+          <span class="wf-text" data-lines="4"></span>
+          <span class="wf-spacer"></span>
+          <span class="wf-box" style="min-height:0;padding:2px 8px;align-self:flex-start">Saved</span>
+        </div>
+      </div>
+      <div class="wf-row" style="height:22px;padding:0 8px;gap:12px;border-top:1px solid var(--mk-line);font-size:11px">
+        <span>4 objects selected</span>
+        <span class="wf-spacer"></span>
+        <span>60 fps</span>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="A bare frame has no chrome at all: this is what a GPU drawn toolkit looks like, and the tool must not add a window around it."
+          style="top:8px;left:300px"></span>
+    <span class="note-pin" data-note="The compact dark preset is one block of tokens in skins/custom.css, not a second skin."
+          style="top:300px;left:170px"></span>
+  </section>
+
+</main>
+
+</body>
+</html>

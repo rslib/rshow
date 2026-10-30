@@ -1,0 +1,647 @@
+/*
+ * rshow theme "default": the mac skin, layer 3.
+ *
+ * A macOS look-alike drawn from the platform's public design principles: the
+ * system font stack, a 6px corner on a control and a 10px corner on a surface,
+ * one blue accent, a hairline separator instead of a border, a translucent
+ * sidebar, and a segmented control wherever the drawing wants tabs.
+ *
+ * It is a drawing of a Mac app, not a copy of one: no Apple artwork, no SF file
+ * and no icon set. -apple-system resolves to the system face on a Mac and falls
+ * through to system-ui everywhere else, so the shape survives a reader on Linux.
+ *
+ * Knobs: the custom.css set plus --mk-surface, --mk-surface-2, --mk-sidebar,
+ * --mk-on-accent, --mk-accent-soft, --mk-radius-lg, --mk-radius-pill,
+ * --mk-ctl-h, --mk-line-h, --mk-shadow-1, --mk-shadow-4, --mk-shadow-12.
+ */
+
+/* --------------------------------------------------- the screen, light -- */
+
+[data-skin="mac"] {
+  --mk-bg: #ffffff;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #efeff1;
+  --mk-chrome-bg-2: #e3e3e6;
+  --mk-chrome-line: #d8d8dc;
+  --mk-chrome-fg: #1d1d1f;
+  --mk-surface: #f5f5f7;
+  --mk-surface-2: #ececf0;
+  --mk-fg: #1d1d1f;
+  --mk-muted: #6e6e73;
+  --mk-line: #d8d8dc;
+  --mk-line-strong: #c2c2c7;
+  --mk-fill: #eeeef1;
+
+  /* the one accent. A single token, so a mockup of a product with its own
+     accent is one line, not a new skin. */
+  --mk-accent: #0a84ff;
+  --mk-accent-hover: #0071e3;
+  --mk-accent-soft: #e6f2ff;
+  --mk-on-accent: #ffffff;
+  --mk-focus: #0a84ff;
+
+  /* a sidebar in macOS is translucent, and the translucency is a token so a
+     dark mode and a light mode each pick their own value */
+  --mk-sidebar: rgba(246, 246, 248, 0.82);
+
+  --mk-radius: 6px;
+  --mk-radius-lg: 10px;
+  --mk-radius-pill: 100px;
+
+  --mk-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    system-ui, sans-serif;
+  --mk-size: 13px;
+  --mk-line-h: 18px;
+  --mk-ctl-h: 28px;
+  --mk-gap: 12px;
+  --mk-pad: 20px;
+
+  --mk-shadow-1: 0 1px 1px rgba(0, 0, 0, 0.06);
+  --mk-shadow-4: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --mk-shadow-12: 0 8px 12px rgba(0, 0, 0, 0.16);
+}
+
+/* ---------------------------------------------------- the screen, dark -- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="mac"] {
+    --mk-bg: #1e1e1e;
+
+    /* the window chrome the frame draws, in the same two modes */
+    --mk-chrome-bg: #2c2c2e;
+    --mk-chrome-bg-2: #242426;
+    --mk-chrome-line: #3a3a3c;
+    --mk-chrome-fg: #f0f0f2;
+    --mk-surface: #2c2c2e;
+    --mk-surface-2: #242426;
+    --mk-fg: #f5f5f7;
+    --mk-muted: #a1a1a6;
+    --mk-line: #3a3a3c;
+    --mk-line-strong: #48484a;
+    --mk-fill: #3a3a3c;
+    --mk-accent: #0a84ff;
+    --mk-accent-hover: #409cff;
+    --mk-accent-soft: #0b2a47;
+    --mk-on-accent: #ffffff;
+    --mk-focus: #409cff;
+    --mk-sidebar: rgba(38, 38, 41, 0.82);
+    --mk-shadow-1: 0 1px 1px rgba(0, 0, 0, 0.4);
+    --mk-shadow-4: 0 2px 4px rgba(0, 0, 0, 0.45);
+    --mk-shadow-12: 0 8px 12px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-mode="dark"] [data-skin="mac"] {
+  --mk-bg: #1e1e1e;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #2c2c2e;
+  --mk-chrome-bg-2: #242426;
+  --mk-chrome-line: #3a3a3c;
+  --mk-chrome-fg: #f0f0f2;
+  --mk-surface: #2c2c2e;
+  --mk-surface-2: #242426;
+  --mk-fg: #f5f5f7;
+  --mk-muted: #a1a1a6;
+  --mk-line: #3a3a3c;
+  --mk-line-strong: #48484a;
+  --mk-fill: #3a3a3c;
+  --mk-accent: #0a84ff;
+  --mk-accent-hover: #409cff;
+  --mk-accent-soft: #0b2a47;
+  --mk-on-accent: #ffffff;
+  --mk-focus: #409cff;
+  --mk-sidebar: rgba(38, 38, 41, 0.82);
+  --mk-shadow-1: 0 1px 1px rgba(0, 0, 0, 0.4);
+  --mk-shadow-4: 0 2px 4px rgba(0, 0, 0, 0.45);
+  --mk-shadow-12: 0 8px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* --------------------------------------------------------------- screen -- */
+
+[data-skin="mac"] .mk-screen {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="mac"] .mk-screen {
+    color-scheme: dark;
+  }
+}
+
+:root[data-mode="dark"] [data-skin="mac"] .mk-screen {
+  color-scheme: dark;
+}
+
+[data-skin="mac"] .mk-screen a {
+  color: var(--mk-accent);
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+[data-skin="mac"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+[data-skin="mac"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+[data-skin="mac"] .wf-row.wf-shell {
+  align-items: stretch;
+  gap: 0;
+}
+
+[data-skin="mac"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+[data-skin="mac"] .wf-spacer,
+[data-skin="mac"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+[data-skin="mac"] .wf-heading {
+  display: block;
+  width: 38%;
+  max-width: 18em;
+  height: 0.8em;
+  background: var(--mk-fg);
+  border-radius: 3px;
+  opacity: 0.85;
+}
+
+[data-skin="mac"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  background: none;
+  opacity: 1;
+}
+
+[data-skin="mac"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * var(--mk-line-h));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--mk-line-strong) 0 6px,
+    transparent 6px var(--mk-line-h)
+  );
+  border-radius: 3px;
+  opacity: 0.7;
+}
+
+[data-skin="mac"] .wf-text[data-lines="1"] { --mk-lines: 1; }
+[data-skin="mac"] .wf-text[data-lines="2"] { --mk-lines: 2; }
+[data-skin="mac"] .wf-text[data-lines="3"] { --mk-lines: 3; }
+[data-skin="mac"] .wf-text[data-lines="4"] { --mk-lines: 4; }
+[data-skin="mac"] .wf-text[data-lines="5"] { --mk-lines: 5; }
+[data-skin="mac"] .wf-text[data-lines="6"] { --mk-lines: 6; }
+[data-skin="mac"] .wf-text[data-lines="7"] { --mk-lines: 7; }
+[data-skin="mac"] .wf-text[data-lines="8"] { --mk-lines: 8; }
+
+[data-skin="mac"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 13px;
+  line-height: var(--mk-line-h);
+  color: var(--mk-muted);
+  background: none;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+/* macOS groups rows inside a rounded panel with a hairline between them and no
+   border around them, so a card is a surface and a box is a row group. */
+[data-skin="mac"] .wf-box {
+  min-height: 44px;
+  padding: 10px 12px;
+  background: var(--mk-surface);
+  border-radius: var(--mk-radius-lg);
+}
+
+/* A selected row: macOS fills the row with the accent at low weight and keeps
+   the text colour, so a list reads as a list and not as a button. */
+[data-skin="mac"] .wf-box.is-active {
+  background: var(--mk-accent-soft);
+  box-shadow: inset 3px 0 0 var(--mk-accent);
+}
+
+[data-skin="mac"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  padding: 14px;
+  background: var(--mk-surface);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-1);
+}
+
+[data-skin="mac"] .wf-image {
+  min-height: 120px;
+  background-color: var(--mk-fill);
+  background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="mac"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  background: var(--mk-accent-soft);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+[data-skin="mac"] .wf-avatar[data-size="sm"] {
+  width: 22px;
+  height: 22px;
+}
+
+[data-skin="mac"] .wf-avatar[data-size="lg"] {
+  width: 44px;
+  height: 44px;
+}
+
+[data-skin="mac"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  background: var(--mk-fill);
+  border-radius: 3px;
+}
+
+[data-skin="mac"] .wf-icon[data-size="lg"] {
+  width: 20px;
+  height: 20px;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+[data-skin="mac"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: var(--mk-ctl-h);
+  padding: 0 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mk-fg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+  box-shadow: var(--mk-shadow-1);
+}
+
+[data-skin="mac"] .wf-button.primary {
+  color: var(--mk-on-accent);
+  background: var(--mk-accent);
+  border-color: transparent;
+}
+
+[data-skin="mac"] .wf-button.ghost {
+  color: var(--mk-accent);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+[data-skin="mac"] .wf-button[disabled] {
+  color: var(--mk-muted);
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+/* macOS draws focus as a soft ring outside a control, not a hard outline. */
+[data-skin="mac"] .wf-button:focus-visible,
+[data-skin="mac"] .wf-button[data-focus] {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--mk-accent-soft), 0 0 0 4px var(--mk-focus);
+}
+
+[data-skin="mac"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 8px;
+  font-size: 13px;
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="mac"] .wf-input[data-label]::before,
+[data-skin="mac"] .wf-select[data-label]::before,
+[data-skin="mac"] .wf-label {
+  position: absolute;
+  top: -16px;
+  left: 1px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--mk-muted);
+  background: none;
+}
+
+[data-skin="mac"] .wf-input[data-label]::before,
+[data-skin="mac"] .wf-select[data-label]::before {
+  content: attr(data-label);
+}
+
+[data-skin="mac"] .wf-input:focus-within {
+  box-shadow: 0 0 0 3px var(--mk-accent-soft);
+  border-color: var(--mk-accent);
+}
+
+/* An empty field still says what it is: the drawing's placeholder is read out
+   of the attribute, so a search box in a title bar is not a blank rectangle. */
+[data-skin="mac"] .wf-input[data-placeholder]:empty::after {
+  content: attr(data-placeholder);
+  color: var(--mk-muted);
+}
+
+[data-skin="mac"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 26px 0 8px;
+  font-size: 13px;
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="mac"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-top: 4px solid var(--mk-muted);
+  border-right: 3px solid transparent;
+  border-left: 3px solid transparent;
+}
+
+[data-skin="mac"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: 3px;
+}
+
+[data-skin="mac"] .wf-checkbox[data-checked="true"] {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="mac"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 3.5px;
+  width: 3.5px;
+  height: 7px;
+  border: solid var(--mk-on-accent);
+  border-width: 0 1.6px 1.6px 0;
+  transform: rotate(45deg);
+}
+
+[data-skin="mac"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 20px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="mac"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 16px;
+  height: 16px;
+  background: var(--mk-bg);
+  border-radius: 50%;
+  box-shadow: var(--mk-shadow-1);
+}
+
+[data-skin="mac"] .wf-toggle.on {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="mac"] .wf-toggle.on::after {
+  left: 15px;
+}
+
+/* A segmented control is what macOS uses where a web app would put tabs, and
+   it is one box with a raised pill inside it. */
+[data-skin="mac"] .wf-tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0;
+  padding: 2px;
+  background: var(--mk-fill);
+  border-radius: 8px;
+}
+
+[data-skin="mac"] .wf-tabs > * {
+  padding: 3px 12px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--mk-fg);
+  white-space: nowrap;
+  border-radius: 6px;
+}
+
+[data-skin="mac"] .wf-tabs > .is-active,
+[data-skin="mac"] .wf-tabs > [aria-selected="true"] {
+  font-weight: 500;
+  background: var(--mk-bg);
+  box-shadow: var(--mk-shadow-1);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+/* The title bar of a macOS window is translucent and it is one band with the
+   toolbar, so a nav is a bar over the sidebar's colour and not over white. */
+[data-skin="mac"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  background: var(--mk-sidebar);
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="mac"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 1px;
+  width: 208px;
+  padding: 10px 8px;
+  background: var(--mk-sidebar);
+  border-right: 1px solid var(--mk-line);
+}
+
+[data-skin="mac"] .wf-sidebar > .wf-row {
+  gap: 8px;
+  min-height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+}
+
+[data-skin="mac"] .wf-sidebar > .wf-row.is-active,
+[data-skin="mac"] .wf-sidebar > .is-active {
+  background: var(--mk-fill);
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+[data-skin="mac"] .wf-table {
+  --mk-rows: 4;
+  --mk-cols: 3;
+  height: calc(var(--mk-rows) * 30px);
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 29px,
+      var(--mk-line) 29px 30px
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(100% / var(--mk-cols) - 1px),
+      var(--mk-line) calc(100% / var(--mk-cols) - 1px) calc(100% / var(--mk-cols))
+    );
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="mac"] .wf-table[data-rows="1"] { --mk-rows: 1; }
+[data-skin="mac"] .wf-table[data-rows="2"] { --mk-rows: 2; }
+[data-skin="mac"] .wf-table[data-rows="3"] { --mk-rows: 3; }
+[data-skin="mac"] .wf-table[data-rows="4"] { --mk-rows: 4; }
+[data-skin="mac"] .wf-table[data-rows="5"] { --mk-rows: 5; }
+[data-skin="mac"] .wf-table[data-rows="6"] { --mk-rows: 6; }
+[data-skin="mac"] .wf-table[data-rows="8"] { --mk-rows: 8; }
+[data-skin="mac"] .wf-table[data-rows="10"] { --mk-rows: 10; }
+[data-skin="mac"] .wf-table[data-cols="1"] { --mk-cols: 1; }
+[data-skin="mac"] .wf-table[data-cols="2"] { --mk-cols: 2; }
+[data-skin="mac"] .wf-table[data-cols="3"] { --mk-cols: 3; }
+[data-skin="mac"] .wf-table[data-cols="4"] { --mk-cols: 4; }
+[data-skin="mac"] .wf-table[data-cols="5"] { --mk-cols: 5; }
+[data-skin="mac"] .wf-table[data-cols="6"] { --mk-cols: 6; }
+
+[data-skin="mac"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 150px;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+[data-skin="mac"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 4px;
+  background: var(--mk-fill);
+  border-radius: 3px 3px 0 0;
+}
+
+[data-skin="mac"] .wf-chart > .is-accent {
+  background: var(--mk-accent);
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+[data-skin="mac"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+[data-skin="mac"] .wf-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(420px, 82%);
+  max-height: 84%;
+  padding: 20px;
+  overflow: auto;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: 12px;
+  box-shadow: var(--mk-shadow-12);
+  transform: translate(-50%, -50%);
+}
+
+[data-skin="mac"] .wf-toast {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 82%;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-4);
+  transform: translateX(-50%);
+}

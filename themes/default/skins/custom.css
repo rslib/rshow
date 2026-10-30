@@ -1,0 +1,596 @@
+/*
+ * rshow theme "default": the custom skin, layer 3.
+ *
+ * The wire skin draws a structure and the sketch skin draws it by hand; this
+ * skin is the one that carries a product. It is the same wf-* kit, and every
+ * rule reads a token instead of a literal, so a mockup of an application looks
+ * like that application: Electron, Tauri, an egui tool, a desktop client of
+ * somebody's own design.
+ *
+ * The knobs, all set on the mockup or on any element inside it, because custom
+ * properties inherit:
+ *
+ *   --mk-bg         the ground of a window
+ *   --mk-surface    a raised panel or a bar, one step off the ground
+ *   --mk-fg         text and icons
+ *   --mk-muted      a secondary line, a label, a placeholder
+ *   --mk-line       a border, a rule
+ *   --mk-fill       an inert block: a bar, a swatch, a chart column
+ *   --mk-accent     the one interactive colour
+ *   --mk-on-accent  the text that sits on --mk-accent
+ *   --mk-radius     the corner of every widget
+ *   --mk-font       the product's type
+ *   --mk-size       the body size, and the unit every widget scales from
+ *   --mk-gap        the space between blocks
+ *   --mk-pad        the inset of the screen itself
+ *
+ * Two presets ship as classes, so an example can show one product twice:
+ *
+ *   .preset-compact-dark   a dense tool: dark gray, 12px text, square widgets
+ *   .preset-soft-light     a consumer app: light, rounded, airy
+ *
+ * A different product is a different five line block, not a new skin. That is
+ * the whole point of this file.
+ */
+
+.mockup[data-skin="custom"] {
+  --mk-bg: #ffffff;
+  --mk-surface: #f4f5f7;
+  --mk-fg: #16181d;
+  --mk-muted: #6b7280;
+  --mk-line: #d8dbe0;
+  --mk-fill: #eef0f3;
+  --mk-accent: #2f6fdd;
+  --mk-on-accent: #ffffff;
+  --mk-radius: 8px;
+  --mk-font: var(--font-sans, system-ui, sans-serif);
+  --mk-size: 15px;
+  --mk-gap: 14px;
+  --mk-pad: 24px;
+}
+
+.preset-compact-dark {
+  --mk-bg: #1b1b1b;
+  --mk-surface: #262626;
+  --mk-fg: #d6d6d6;
+  --mk-muted: #8d8d8d;
+  --mk-line: #3a3a3a;
+  --mk-fill: #2c2c2c;
+  --mk-accent: #4f9cf0;
+  --mk-on-accent: #101010;
+  --mk-radius: 3px;
+  --mk-size: 12px;
+  --mk-gap: 6px;
+  --mk-pad: 12px;
+}
+
+.preset-soft-light {
+  --mk-bg: #fbfbfd;
+  --mk-surface: #ffffff;
+  --mk-fg: #20222a;
+  --mk-muted: #6c7280;
+  --mk-line: #e3e5ea;
+  --mk-fill: #f1f3f7;
+  --mk-accent: #3a63f0;
+  --mk-on-accent: #ffffff;
+  --mk-radius: 14px;
+  --mk-size: 15px;
+  --mk-gap: 18px;
+  --mk-pad: 28px;
+}
+
+.mockup[data-skin="custom"] .mk-screen {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+.mockup[data-skin="custom"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+.mockup[data-skin="custom"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+.mockup[data-skin="custom"] .wf-row.wf-shell {
+  align-items: stretch;
+}
+
+.mockup[data-skin="custom"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+.mockup[data-skin="custom"] .wf-spacer,
+.mockup[data-skin="custom"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+.mockup[data-skin="custom"] .wf-heading {
+  display: block;
+  width: 40%;
+  max-width: 22em;
+  height: 0.9em;
+  background: var(--mk-fg);
+  border-radius: var(--mk-radius);
+  opacity: 0.85;
+}
+
+.mockup[data-skin="custom"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 1.5em;
+  font-weight: 600;
+  line-height: 1.3;
+  background: none;
+  opacity: 1;
+}
+
+.mockup[data-skin="custom"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * 1.4em);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--mk-line) 0 0.55em,
+    transparent 0.55em 1.4em
+  );
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="1"] {
+  --mk-lines: 1;
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="2"] {
+  --mk-lines: 2;
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="3"] {
+  --mk-lines: 3;
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="4"] {
+  --mk-lines: 4;
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="5"] {
+  --mk-lines: 5;
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="6"] {
+  --mk-lines: 6;
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="7"] {
+  --mk-lines: 7;
+}
+
+.mockup[data-skin="custom"] .wf-text[data-lines="8"] {
+  --mk-lines: 8;
+}
+
+.mockup[data-skin="custom"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 0.95em;
+  line-height: 1.5;
+  color: var(--mk-muted);
+  background: none;
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+.mockup[data-skin="custom"] .wf-box {
+  min-height: 2.6em;
+  padding: 0.85em;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  padding: 1em;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-image {
+  min-height: 8em;
+  background-color: var(--mk-fill);
+  background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line) calc(50% - 0.5px),
+      var(--mk-line) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line) calc(50% - 0.5px),
+      var(--mk-line) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 2.4em;
+  height: 2.4em;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+.mockup[data-skin="custom"] .wf-avatar[data-size="sm"] {
+  width: 1.7em;
+  height: 1.7em;
+}
+
+.mockup[data-skin="custom"] .wf-avatar[data-size="lg"] {
+  width: 3.4em;
+  height: 3.4em;
+}
+
+.mockup[data-skin="custom"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: calc(var(--mk-radius) / 2);
+}
+
+.mockup[data-skin="custom"] .wf-icon[data-size="lg"] {
+  width: 1.6em;
+  height: 1.6em;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+.mockup[data-skin="custom"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  height: 2.4em;
+  padding: 0 0.9em;
+  font: inherit;
+  font-size: 0.95em;
+  color: var(--mk-fg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-button.primary {
+  color: var(--mk-on-accent);
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="custom"] .wf-button.ghost {
+  color: var(--mk-muted);
+  background: transparent;
+}
+
+.mockup[data-skin="custom"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.5em;
+  padding: 0 0.75em;
+  font-size: 0.95em;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-input[data-label]::before {
+  content: attr(data-label);
+}
+
+.mockup[data-skin="custom"] .wf-input[data-label]::before,
+.mockup[data-skin="custom"] .wf-label {
+  position: absolute;
+  top: -0.7em;
+  left: 0.6em;
+  padding: 0 0.3em;
+  font-size: 0.7em;
+  line-height: 1.4;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+}
+
+.mockup[data-skin="custom"] .wf-input:focus-within {
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="custom"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.5em;
+  padding: 0 2.2em 0 0.75em;
+  font-size: 0.95em;
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0.8em;
+  width: 0;
+  height: 0;
+  margin-top: -0.1em;
+  border-top: 0.32em solid var(--mk-muted);
+  border-right: 0.28em solid transparent;
+  border-left: 0.28em solid transparent;
+}
+
+.mockup[data-skin="custom"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 1.15em;
+  height: 1.15em;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: calc(var(--mk-radius) / 2);
+}
+
+.mockup[data-skin="custom"] .wf-checkbox[data-checked="true"] {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="custom"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0.12em;
+  left: 0.32em;
+  width: 0.3em;
+  height: 0.58em;
+  border: solid var(--mk-on-accent);
+  border-width: 0 0.14em 0.14em 0;
+  transform: rotate(45deg);
+}
+
+.mockup[data-skin="custom"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 2.4em;
+  height: 1.35em;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: 0.7em;
+}
+
+.mockup[data-skin="custom"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 0.13em;
+  left: 0.13em;
+  width: 0.9em;
+  height: 0.9em;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+.mockup[data-skin="custom"] .wf-toggle.on {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="custom"] .wf-toggle.on::after {
+  left: 1.15em;
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="custom"] .wf-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1.2em;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.mockup[data-skin="custom"] .wf-tabs > * {
+  padding: 0.65em 0;
+  font-size: 0.95em;
+  color: var(--mk-muted);
+  white-space: nowrap;
+}
+
+.mockup[data-skin="custom"] .wf-tabs > .is-active,
+.mockup[data-skin="custom"] .wf-tabs > [aria-selected="true"] {
+  color: var(--mk-fg);
+  border-bottom: 2px solid var(--mk-accent);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+.mockup[data-skin="custom"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  min-height: 3.2em;
+  padding: 0 1em;
+  background: var(--mk-surface);
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.mockup[data-skin="custom"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 0.4em;
+  width: 13em;
+  padding: 0.8em;
+  background: var(--mk-surface);
+  border-right: 1px solid var(--mk-line);
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+.mockup[data-skin="custom"] .wf-table {
+  --mk-rows: 4;
+  --mk-cols: 3;
+  height: calc(var(--mk-rows) * 2.4em);
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(2.4em - 1px),
+      var(--mk-line) calc(2.4em - 1px) 2.4em
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(100% / var(--mk-cols) - 1px),
+      var(--mk-line) calc(100% / var(--mk-cols) - 1px) calc(100% / var(--mk-cols))
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="1"] {
+  --mk-rows: 1;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="2"] {
+  --mk-rows: 2;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="3"] {
+  --mk-rows: 3;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="4"] {
+  --mk-rows: 4;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="5"] {
+  --mk-rows: 5;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="6"] {
+  --mk-rows: 6;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="8"] {
+  --mk-rows: 8;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-rows="10"] {
+  --mk-rows: 10;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-cols="1"] {
+  --mk-cols: 1;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-cols="2"] {
+  --mk-cols: 2;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-cols="3"] {
+  --mk-cols: 3;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-cols="4"] {
+  --mk-cols: 4;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-cols="5"] {
+  --mk-cols: 5;
+}
+
+.mockup[data-skin="custom"] .wf-table[data-cols="6"] {
+  --mk-cols: 6;
+}
+
+.mockup[data-skin="custom"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4em;
+  height: 9em;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.mockup[data-skin="custom"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 0.4em;
+  background: var(--mk-fill);
+  border-radius: calc(var(--mk-radius) / 2) calc(var(--mk-radius) / 2) 0 0;
+}
+
+.mockup[data-skin="custom"] .wf-chart > .is-accent {
+  background: var(--mk-accent);
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+.mockup[data-skin="custom"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(16, 18, 22, 0.42);
+}
+
+.mockup[data-skin="custom"] .wf-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  width: min(30em, 84%);
+  max-height: 84%;
+  padding: 1.3em;
+  overflow: auto;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+  transform: translate(-50%, -50%);
+}
+
+.mockup[data-skin="custom"] .wf-toast {
+  position: absolute;
+  bottom: 1.5em;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  max-width: 82%;
+  padding: 0.7em 1em;
+  font-size: 0.95em;
+  color: var(--mk-bg);
+  background: var(--mk-fg);
+  border-radius: var(--mk-radius);
+  transform: translateX(-50%);
+}

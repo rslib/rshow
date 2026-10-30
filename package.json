@@ -1,0 +1,18 @@
+{
+  "name": "rshow-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "rshow: publish static artifacts to rshow",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces --if-present && node packages/cli/scripts/assemble.mjs",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

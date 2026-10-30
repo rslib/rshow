@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>rshow: publishing a folder as an immutable artifact</title>
+<!--
+  A project page: the landing page of a paper. Theme links, one per file, all
+  at the same pinned version:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/project.css">
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/project.js"></script>
+
+  This copy links the theme folder itself, so it previews from a local checkout
+  and makes no remote request. mode.js runs in the head, before the body paints.
+  project.js is deferred and does one thing: the copy button on the BibTeX
+  entry, with the clipboard API and a fallback that selects the text.
+
+  Read <div class="project"> as one column. The children are the title block,
+  the teaser, <main> and the footer; the teaser carries class="wide" and takes
+  the wider measure. The teaser is an <img>, so teaser.svg carries its own light
+  and dark values.
+
+  Every person, affiliation, venue, address and number here is a placeholder.
+  The two exhibits under "Key results" are example data and say so.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../project.css">
+<script src="../mode.js"></script>
+<script defer src="../project.js"></script>
+</head>
+<body>
+
+<div class="project">
+
+  <header class="project-head">
+    <h1>rshow: publishing a folder as an immutable artifact</h1>
+    <p class="authors">[Author One]<sup>1,*</sup>, [Author Two]<sup>1,*</sup>,
+      [Author Three]<sup>2</sup>, [Author Four]<sup>2</sup></p>
+    <p class="affiliations"><sup>1</sup> [Affiliation One],
+      <sup>2</sup> [Affiliation Two]</p>
+    <p class="marks"><sup>*</sup> Equal contribution.</p>
+    <p class="venue">[Example venue], 2025</p>
+
+    <nav class="links" aria-label="Paper resources">
+      <a class="btn btn--tertiary" href="https://example.org/rshow-paper.pdf">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+          <path d="M3.5 1.5h6l3 3v10h-9z"></path>
+          <path d="M9.5 1.5v3.5h3.5"></path>
+        </svg>
+        <span class="btn-label">Paper PDF</span>
+      </a>
+      <a class="btn" href="https://example.org/rshow-code">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+          <path d="M5.5 5 2.5 8l3 3"></path>
+          <path d="M10.5 5l3 3-3 3"></path>
+        </svg>
+        <span class="btn-label">Code</span>
+      </a>
+      <a class="btn" href="https://example.org/rshow-artifact">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+          <path d="M2.5 5.5 8 2.5l5.5 3v5L8 13.5l-5.5-3z"></path>
+          <path d="M2.5 5.5 8 8.5l5.5-3"></path>
+          <path d="M8 8.5v5"></path>
+        </svg>
+        <span class="btn-label">Artifact</span>
+      </a>
+      <a class="btn" href="https://example.org/rshow-video">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+          <rect x="1.5" y="2.5" width="13" height="11"></rect>
+          <path d="M6.5 5.5l4 2.5-4 2.5z"></path>
+        </svg>
+        <span class="btn-label">Video</span>
+      </a>
+      <a class="btn" href="https://example.org/rshow-slides">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+          <rect x="1.5" y="2.5" width="13" height="9"></rect>
+          <path d="M8 11.5v2.5"></path>
+          <path d="M5.5 14h5"></path>
+        </svg>
+        <span class="btn-label">Slides</span>
+      </a>
+    </nav>
+  </header>
+
+  <figure class="teaser wide">
+    <img src="teaser.svg" width="800" height="210" alt="A folder of files is published into a version, and the version is served through two links: a newest link that follows each publish and a pinned link that holds one version.">
+    <figcaption>One folder, one numbered version and two kinds of address.
+    The version never changes after it is written, so the newest link is the
+    only address that moves.</figcaption>
+  </figure>
+
+  <main>
+
+    <p class="tldr"><strong>TL;DR.</strong> rshow publishes a talk as a numbered
+    version whose bytes never change, so a link sent before a talk still opens
+    the same deck a year later, and a republish sends only what the edit
+    touched.</p>
+
+    <section class="abstract" aria-labelledby="abstract-title">
+      <h2 id="abstract-title">Abstract</h2>
+      <p>A link sent in a calendar invite outlives the slide it points at. Most
+      publishing tools answer this by keeping one mutable page behind a stable
+      address, so an edit made tonight silently rewrites what a reader opens
+      next week. rshow takes the other side. A publish writes a numbered version
+      of the folder, a version never changes once it is written, and the address
+      that follows the newest version is a separate promise from the address
+      that holds one version in place. This paper describes the design we ship,
+      the record an artifact carries, the caching rules that follow from
+      immutability, the share model that decides who may read a link, and the
+      experiment we would run to test the claim that a republish sends only what
+      changed.</p>
+    </section>
+
+    <section aria-labelledby="results-title">
+      <h2 id="results-title">Key results</h2>
+      <p>We have not run a controlled study, so the two exhibits below are
+      example data. They show the shape of the claim rather than a measurement
+      of any host: after the first publish, the bytes a republish sends track
+      what the edit touched, not the size of the folder.</p>
+
+      <figure>
+        <svg viewBox="0 0 600 240" role="img" aria-label="Example data: megabytes uploaded on a republish of one folder. The first publish sends 120 megabytes, a new section 46, a new figure 13 and a typo fix 4.">
+          <g style="fill: var(--accent)">
+            <rect x="30" y="50" width="70" height="120"></rect>
+            <rect x="175" y="124" width="70" height="46"></rect>
+            <rect x="320" y="157" width="70" height="13"></rect>
+            <rect x="465" y="166" width="70" height="4"></rect>
+          </g>
+          <g style="font-family: var(--font-sans); font-size: 16px; fill: var(--fg); font-variant-numeric: tabular-nums; text-anchor: middle">
+            <text x="65" y="40">120</text>
+            <text x="210" y="114">46</text>
+            <text x="355" y="147">13</text>
+            <text x="500" y="156">4</text>
+          </g>
+          <line x1="20" y1="170" x2="580" y2="170" style="stroke: var(--border-strong); stroke-width: 1"></line>
+          <g style="font-family: var(--font-sans); font-size: 13px; fill: var(--muted); text-anchor: middle">
+            <text x="65" y="192">first publish</text>
+            <text x="210" y="192">new section</text>
+            <text x="355" y="192">new figure</text>
+            <text x="500" y="192">typo fix</text>
+          </g>
+          <text x="20" y="224" style="font-family: var(--font-sans); font-size: 13px; fill: var(--muted)">Example data, not a measurement.</text>
+        </svg>
+        <figcaption>Megabytes uploaded per publish, by the kind of edit that
+        preceded it. One series, so it takes the interactive blue and every
+        value is labelled where it is read.</figcaption>
+      </figure>
+
+      <div class="table">
+        <table>
+          <caption>Example data: one publish of the folder in the figure
+          above, timed with the host's store empty and then holding the
+          bytes.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Step</th>
+              <th scope="col" class="num-cell">Cold store</th>
+              <th scope="col" class="num-cell">Warm store</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Hash the folder</th>
+              <td class="num-cell">310 ms</td>
+              <td class="num-cell">310 ms</td>
+            </tr>
+            <tr>
+              <th scope="row">Upload the missing files</th>
+              <td class="num-cell">4.2 s</td>
+              <td class="num-cell">41 ms</td>
+            </tr>
+            <tr>
+              <th scope="row">Write the version record</th>
+              <td class="num-cell">12 ms</td>
+              <td class="num-cell">12 ms</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The hash and the record cost the same either way, because they are
+      reads and one small write. The upload is the whole difference, and it is
+      also the reason a republish of a folder left alone sends nothing.</p>
+    </section>
+
+    <section aria-labelledby="cite-title">
+      <h2 id="cite-title">BibTeX</h2>
+      <div class="bibtex-block">
+        <pre id="bibtex-entry"><code>@inproceedings{rshow2025,
+  title = {rshow: publishing a folder as an immutable artifact},
+  author = {[Author One] and [Author Two] and others},
+  booktitle = {[Example venue]},
+  year = {2025},
+  note = {Example entry: authors, venue and address are placeholders.}
+}</code></pre>
+        <div class="copy-row">
+          <button class="btn" type="button" data-rshow-copy="bibtex-entry">
+            <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+              <rect x="5.5" y="5.5" width="8" height="9"></rect>
+              <path d="M10.5 3.5v-1h-8v9h1"></path>
+            </svg>
+            <span class="btn-label">Copy</span>
+          </button>
+          <p class="copy-status" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="project-foot">
+    <p class="ack">Acknowledgements. We thank [Name One] and [Name Two] for
+    reading drafts of this paper, and [Example funding body] for support under
+    grant [number].</p>
+    <p>Example page for the rshow theme <strong>default</strong>. The authors,
+    the affiliations, the venue, the addresses and every number on this page are
+    placeholders, and the two exhibits under Key results are example data.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

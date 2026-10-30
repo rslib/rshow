@@ -1,0 +1,8 @@
+---
+type: regex
+weight: 2
+arm: both
+pattern: '<script[^>]+src="https?://(?![^"]*@[0-9])(?![^"]*[0-9]+\.[0-9])'
+match: not_contains
+target: {source: file, path: reports/q3/index.html}
+---

@@ -1,0 +1,703 @@
+/*
+ * rshow theme "default": the tui kit, layer 4.
+ *
+ * A terminal user interface drawn as cells, for the mockups that are a tool
+ * rather than a window: a git client, a log tail, a deploy console. It is not a
+ * screenshot of a terminal and it is not a web page in a mono font: the drawing
+ * is a grid of character cells, every block is a whole number of cells wide and
+ * a whole number of lines tall, and the frame around a pane is drawn with the
+ * same box-drawing characters a real TUI would print.
+ *
+ *     <div class="tui" data-cols="100" data-rows="27" data-palette="default"
+ *          data-depth="256">
+ *       <div class="tui-screen"> ... panes, status bar, key hints ... </div>
+ *     </div>
+ *
+ * tui.js turns data-cols, data-rows, data-lines and data-title into the custom
+ * properties and the frames below, draws the gauges and sparklines, gates a
+ * terminal that is too small, and warns in the console when a pane does not fit
+ * its grid. Without tui.js the kit still renders: the properties have fallbacks,
+ * panes fall back to a 1px border, and no block is hidden.
+ *
+ * The rules this kit is drawn by, all of them enforced or checked by tui.js:
+ *
+ *   1. Cells, not pixels. Type is one size, the line height is fixed, and a
+ *      block is sized with --tui-cols and --tui-lines. A half cell is a bug.
+ *   2. A terminal that is smaller than 80x24 is not a small terminal, it is a
+ *      terminal asking to be resized: the grid is replaced by that message.
+ *   3. Exactly one pane has focus. Focus is a double frame and a bold title, so
+ *      it survives a palette with one colour and a reader who cannot see colour.
+ *   4. Ctrl+C, Ctrl+Z and Ctrl+\ are the terminal's keys. A mockup that binds
+ *      them teaches a reader something the app cannot keep.
+ *   5. Palettes degrade. Every palette is legible at data-depth="16", because a
+ *      drawing that only works in true colour is a drawing that will be shown
+ *      to someone with a 16 colour terminal, or a printer.
+ */
+
+/* --------------------------------------------------------------- palette -- */
+
+/* The default is a dark terminal with the six colours a TUI actually uses: a
+   dim grey for chrome, one accent, and green, red and yellow for state. */
+.tui {
+  --tui-cols: 80;
+  --tui-rows: 24;
+  --tui-size: 13px;
+  --tui-line: 1.4;
+  --tui-cell-h: calc(var(--tui-line) * 1em);
+
+  --tui-bg: #121314;
+  --tui-fg: #d6d6d6;
+  --tui-dim: #7d848c;
+  --tui-line-color: #3a3f45;
+  --tui-fill: #1d2024;
+  --tui-accent: #6cb6ff;
+  --tui-add: #7ee787;
+  --tui-del: #ff8080;
+  --tui-warn: #e3b341;
+  --tui-sel-bg: #d6d6d6;
+  --tui-sel-fg: #121314;
+  --tui-status-bg: #21262b;
+  --tui-status-fg: #c9d1d9;
+  --tui-toast-bg: #21262b;
+  --tui-cursor: #d6d6d6;
+
+  box-sizing: border-box;
+  display: inline-block;
+  overflow: hidden;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--tui-size);
+  font-variant-ligatures: none;
+  line-height: var(--tui-line);
+  color: var(--tui-fg);
+  background: var(--tui-bg);
+  border-radius: 2px;
+  tab-size: 4;
+}
+
+.tui *,
+.tui *::before,
+.tui *::after {
+  box-sizing: border-box;
+}
+
+.tui[data-palette="dark"] {
+  --tui-bg: #1b1b1b;
+  --tui-fg: #d6d6d6;
+  --tui-dim: #8b8b8b;
+  --tui-line-color: #454545;
+  --tui-fill: #262626;
+  --tui-accent: #8ec07c;
+  --tui-add: #b8bb26;
+  --tui-del: #fb4934;
+  --tui-warn: #fabd2f;
+  --tui-sel-bg: #d6d6d6;
+  --tui-sel-fg: #1b1b1b;
+  --tui-status-bg: #262626;
+  --tui-status-fg: #d6d6d6;
+  --tui-toast-bg: #262626;
+  --tui-cursor: #d6d6d6;
+}
+
+.tui[data-palette="light"] {
+  --tui-bg: #fbfbfa;
+  --tui-fg: #232629;
+  --tui-dim: #6b7280;
+  --tui-line-color: #c9ccd1;
+  --tui-fill: #eceef1;
+  --tui-accent: #0b62a4;
+  --tui-add: #0f7b34;
+  --tui-del: #b3261e;
+  --tui-warn: #8a5a00;
+  --tui-sel-bg: #232629;
+  --tui-sel-fg: #fbfbfa;
+  --tui-status-bg: #eceef1;
+  --tui-status-fg: #232629;
+  --tui-toast-bg: #eceef1;
+  --tui-cursor: #232629;
+}
+
+/* A high contrast terminal is black on black and white on white: the frame is
+   white, the dim text is still readable, and the three states are the three
+   primaries. It is the palette to test a drawing in. */
+.tui[data-palette="high-contrast"] {
+  --tui-bg: #000000;
+  --tui-fg: #ffffff;
+  --tui-dim: #c3c3c3;
+  --tui-line-color: #ffffff;
+  --tui-fill: #141414;
+  --tui-accent: #00ffff;
+  --tui-add: #00ff00;
+  --tui-del: #ff5555;
+  --tui-warn: #ffff00;
+  --tui-sel-bg: #ffffff;
+  --tui-sel-fg: #000000;
+  --tui-status-bg: #ffffff;
+  --tui-status-fg: #000000;
+  --tui-toast-bg: #000000;
+  --tui-cursor: #ffffff;
+}
+
+/* Mono is one colour and no colour at all: state is carried by a symbol, by
+   reverse video and by weight, which is what a reader with a monochrome
+   terminal, a printer or a colour deficiency sees. */
+.tui[data-palette="mono"] {
+  --tui-bg: #0b0b0b;
+  --tui-fg: #e6e6e6;
+  --tui-dim: #949494;
+  --tui-line-color: #b4b4b4;
+  --tui-fill: #1c1c1c;
+  --tui-accent: #ffffff;
+  --tui-add: #e6e6e6;
+  --tui-del: #e6e6e6;
+  --tui-warn: #c9c9c9;
+  --tui-sel-bg: #e6e6e6;
+  --tui-sel-fg: #0b0b0b;
+  --tui-status-bg: #e6e6e6;
+  --tui-status-fg: #0b0b0b;
+  --tui-toast-bg: #1c1c1c;
+  --tui-cursor: #e6e6e6;
+}
+
+/* --------------------------------------------------------------- depth -- */
+
+/* Sixteen colours is the floor: no true colour, no 256 colour cube, and nothing
+   subtle. The accent, the three states and the dim text are replaced with the
+   sixteen colour names so the same drawing is read the same way there. */
+.tui[data-depth="16"] {
+  --tui-dim: #7f7f7f;
+  --tui-accent: #00cdcd;
+  --tui-add: #00cd00;
+  --tui-del: #cd0000;
+  --tui-warn: #cdcd00;
+  --tui-sel-bg: #e5e5e5;
+  --tui-sel-fg: #000000;
+}
+
+.tui[data-palette="light"][data-depth="16"] {
+  --tui-dim: #767676;
+  --tui-accent: #0000ee;
+  --tui-add: #007700;
+  --tui-del: #cd0000;
+  --tui-warn: #8a6d00;
+  --tui-sel-bg: #000000;
+  --tui-sel-fg: #ffffff;
+}
+
+.tui[data-palette="high-contrast"][data-depth="16"],
+.tui[data-palette="mono"][data-depth="16"] {
+  --tui-accent: #ffffff;
+  --tui-add: #ffffff;
+  --tui-del: #ffffff;
+  --tui-warn: #d7d7d7;
+}
+
+/* --------------------------------------------------------------- screen -- */
+
+.tui-screen {
+  position: relative;
+  width: calc(var(--tui-cols) * 1ch);
+  height: calc(var(--tui-rows) * var(--tui-cell-h));
+  overflow: hidden;
+}
+
+/* The minimum size gate. A terminal smaller than 80x24 is not a small terminal:
+   it is one that wants to be resized, and it says so instead of hiding the fact
+   that the drawing no longer fits. */
+.tui-toosmall {
+  display: none;
+  width: calc(var(--tui-cols) * 1ch);
+  height: calc(var(--tui-rows) * var(--tui-cell-h));
+  padding: 1ch;
+  color: var(--tui-warn);
+  white-space: pre;
+}
+
+.tui[data-toosmall="true"] .tui-screen {
+  display: none;
+}
+
+.tui[data-toosmall="true"] .tui-toosmall {
+  display: block;
+}
+
+/* Layout helpers. A screen is a column of rows; a main region is a row of
+   panes. Both are sized in cells by their own --tui-cols and --tui-lines. */
+.tui-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tui-main {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0;
+  min-height: 0;
+}
+
+.tui-gap {
+  flex: 0 0 1ch;
+}
+
+.tui-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------- panes -- */
+
+/* The frame itself is glyphs, drawn by tui.js into .tui-frame-* layers, because
+   a pane's title lives inside its top border and a border that is a line cannot
+   hold a title. Without tui.js the pane keeps a 1px border, which is the same
+   frame at the resolution of a browser instead of the resolution of a cell. */
+.tui-pane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: calc(var(--tui-cols, 40) * 1ch);
+  height: calc(var(--tui-lines, 10) * var(--tui-cell-h));
+  min-height: 0;
+  padding: var(--tui-cell-h) 1ch;
+  overflow: hidden;
+  border: 1px solid var(--tui-line-color);
+}
+
+/* Once tui.js has drawn the glyph frame, the 1px border has done its job and
+   goes away, so the box is exactly the cells it says it is and not two pixels
+   more. Without tui.js the border stays and the pane still reads as a box. */
+.tui-pane.tui-framed,
+.tui-dialog.tui-framed {
+  border-width: 0;
+}
+
+/* Focus is a double frame, a bold title and nothing that depends on colour: a
+   reader with one colour still sees which pane has the keyboard. */
+/* Without the drawn frame the fallback marks focus with a 2px inner ring and a
+   bold title: still two signals, still not colour alone. */
+.tui-pane[data-focus]:not(.tui-framed),
+.tui-dialog[data-focus]:not(.tui-framed) {
+  border-color: var(--tui-fg);
+  box-shadow: inset 0 0 0 2px var(--tui-fg);
+  font-weight: 700;
+}
+
+.tui-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--tui-line-color);
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tui-frame-top,
+.tui-frame-bottom {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--tui-cell-h);
+  line-height: var(--tui-cell-h);
+  white-space: pre;
+}
+
+.tui-frame-top {
+  top: 0;
+}
+
+.tui-frame-bottom {
+  bottom: 0;
+}
+
+.tui-frame-left,
+.tui-frame-right {
+  position: absolute;
+  top: var(--tui-cell-h);
+  overflow: hidden;
+  line-height: var(--tui-cell-h);
+  white-space: pre;
+}
+
+.tui-frame-left {
+  left: 0;
+}
+
+.tui-frame-right {
+  right: 0;
+}
+
+/* The frame's own focus mark, set by tui.js when it draws a double frame, so a
+   pane demoted by a dialog loses the weight as well as the second line. */
+.tui-pane.tui-frame-focus > .tui-frame,
+.tui-dialog.tui-frame-focus > .tui-frame {
+  color: var(--tui-fg);
+}
+
+.tui-frame-focus .tui-frame-title {
+  font-weight: 700;
+}
+
+/* A pane's scroll body: every line is one cell tall, and overflow is a bug that
+   tui.js marks rather than a scrollbar a terminal would not draw. */
+.tui-body-lines {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- lists -- */
+
+.tui-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tui-list-item {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+/* The classic selected row: reverse video, not a colour, not a bar. */
+.tui-list-item[data-selected] {
+  color: var(--tui-sel-fg);
+  background: var(--tui-sel-bg);
+}
+
+.tui-list-item[data-selected] .tui-dim,
+.tui-list-item[data-selected] .tui-accent {
+  color: inherit;
+}
+
+.tui-list-item[data-marker]::before {
+  content: attr(data-marker);
+}
+
+/* --------------------------------------------------------------- tables -- */
+
+/* One cell of gutter on the right: a proportional column can land on a half
+   cell, and a glyph clipped by half a cell is the one thing a cell grid must not
+   do. */
+.tui-table {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 1ch);
+  --tui-table-cols: 12ch 1fr 8ch;
+}
+
+.tui-table-row {
+  display: grid;
+  grid-template-columns: var(--tui-table-cols);
+  gap: 1ch;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.tui-table-row > * {
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.tui-table-row[data-head] {
+  color: var(--tui-dim);
+  border-bottom: 1px solid var(--tui-line-color);
+}
+
+.tui-table-row[data-align="right"] > * {
+  text-align: right;
+}
+
+.tui-table-cell[data-align="right"],
+.tui-table-row > [data-align="right"] {
+  text-align: right;
+}
+
+/* ----------------------------------------------------- gauges and plots -- */
+
+/* A gauge is block characters, so it is a whole number of cells wide and it
+   reads in a 16 colour terminal and on a printer. */
+.tui-gauge {
+  white-space: pre;
+  letter-spacing: 0;
+  color: var(--tui-accent);
+}
+
+.tui-gauge[data-tone="warn"] {
+  color: var(--tui-warn);
+}
+
+.tui-gauge[data-tone="del"] {
+  color: var(--tui-del);
+}
+
+.tui-gauge .tui-gauge-empty {
+  color: var(--tui-dim);
+}
+
+.tui-sparkline {
+  white-space: pre;
+  letter-spacing: 0;
+  color: var(--tui-accent);
+}
+
+/* ------------------------------------------------------------------ tabs -- */
+
+.tui-tabs {
+  display: flex;
+  gap: 1ch;
+  white-space: nowrap;
+}
+
+.tui-tab {
+  padding: 0 1ch;
+  color: var(--tui-dim);
+}
+
+.tui-tab[data-active],
+.tui-tab.is-active {
+  color: var(--tui-sel-fg);
+  background: var(--tui-sel-bg);
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------------- input -- */
+
+.tui-input {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tui-cell-h);
+  max-width: 100%;
+  padding: 0;
+  overflow: hidden;
+  white-space: pre;
+  color: var(--tui-fg);
+  background: var(--tui-fill);
+}
+
+.tui-input[data-label]::before {
+  content: attr(data-label) " ";
+  color: var(--tui-dim);
+}
+
+.tui-cursor {
+  display: inline-block;
+  width: 1ch;
+  height: 1em;
+  background: var(--tui-cursor);
+  vertical-align: text-bottom;
+  animation: tui-blink 1.1s steps(1, end) infinite;
+}
+
+@keyframes tui-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  50.01%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tui-cursor {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------ status bar -- */
+
+.tui-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  min-height: var(--tui-cell-h);
+  padding: 0 1ch;
+  color: var(--tui-status-fg);
+  background: var(--tui-status-bg);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tui-statusbar .tui-dim {
+  color: inherit;
+  opacity: 0.75;
+}
+
+/* ------------------------------------------------------------- key hints -- */
+
+.tui-keys {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  min-height: var(--tui-cell-h);
+  padding: 0 1ch;
+  color: var(--tui-dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tui-keys kbd {
+  font: inherit;
+  color: var(--tui-fg);
+  background: var(--tui-fill);
+  border: 0;
+}
+
+.tui-keys kbd::before {
+  content: "[";
+  color: var(--tui-dim);
+}
+
+.tui-keys kbd::after {
+  content: "]";
+  color: var(--tui-dim);
+}
+
+.tui-keys .tui-gap {
+  flex: 0 0 2ch;
+}
+
+/* -------------------------------------------------------------- dialogs -- */
+
+/* A dialog is a pane that sits over the grid: same frame, double frame, and the
+   columns behind it stay visible so a reader sees what the dialog is about. */
+.tui-dialog {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: calc(var(--tui-cols, 46) * 1ch);
+  height: calc(var(--tui-lines, 8) * var(--tui-cell-h));
+  padding: var(--tui-cell-h) 1ch;
+  overflow: hidden;
+  color: var(--tui-fg);
+  background: var(--tui-bg);
+  border: 1px solid var(--tui-fg);
+  transform: translate(-50%, -50%);
+}
+
+.tui-dialog > .tui-frame {
+  color: var(--tui-fg);
+}
+
+.tui-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tui-dialog-actions {
+  display: flex;
+  gap: 2ch;
+  white-space: nowrap;
+}
+
+/* A button in a terminal is a word in reverse video, and the default one is
+   marked with a symbol as well, so the drawing survives mono. */
+.tui-button {
+  padding: 0 1ch;
+  color: var(--tui-sel-fg);
+  background: var(--tui-sel-bg);
+}
+
+.tui-button[data-variant="quiet"] {
+  color: var(--tui-fg);
+  background: transparent;
+  padding: 0;
+}
+
+/* --------------------------------------------------------------- toasts -- */
+
+.tui-toast {
+  position: absolute;
+  bottom: calc(2 * var(--tui-cell-h));
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding: 0 1ch;
+  color: var(--tui-toast-fg, var(--tui-fg));
+  background: var(--tui-toast-bg);
+  border: 1px solid var(--tui-line-color);
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.tui-toast[data-tone="ok"] {
+  border-color: var(--tui-add);
+}
+
+.tui-toast[data-tone="warn"] {
+  border-color: var(--tui-warn);
+}
+
+.tui-toast[data-tone="error"] {
+  border-color: var(--tui-del);
+}
+
+/* -------------------------------------------------------------- semantic -- */
+
+.tui-dim {
+  color: var(--tui-dim);
+}
+
+.tui-accent {
+  color: var(--tui-accent);
+}
+
+.tui-add {
+  color: var(--tui-add);
+}
+
+.tui-del {
+  color: var(--tui-del);
+}
+
+.tui-warn {
+  color: var(--tui-warn);
+}
+
+.tui-bold {
+  font-weight: 700;
+}
+
+.tui-reverse {
+  color: var(--tui-sel-fg);
+  background: var(--tui-sel-bg);
+}
+
+.tui-rule {
+  height: var(--tui-cell-h);
+  overflow: hidden;
+  color: var(--tui-line-color);
+  white-space: pre;
+}
+
+.tui-line {
+  height: var(--tui-cell-h);
+  overflow: hidden;
+  white-space: pre;
+}
+
+/* ------------------------------------------------------------ the check -- */
+
+/* tui.js adds this to an element whose content no longer fits its cells. It is
+   loud on purpose: a mockup that silently clips a line teaches the reader the
+   wrong thing about the screen. */
+.tui-overflow {
+  outline: 2px dashed var(--tui-del);
+  outline-offset: -2px;
+}
+
+/* Inside a mockup the terminal is the screen: no page margin, no page font. */
+.mk-screen .tui {
+  margin: 0;
+}

@@ -1,0 +1,292 @@
+/*
+ * rshow theme "default": terminal viewer
+ *
+ * A capture of a terminal, in a plain window frame. Two sources, one shape:
+ *
+ *   <figure class="terminal" data-mode="ansi" data-src="capture.ans"
+ *           data-cols="100" data-rows="30" data-title="procview"></figure>
+ *   <figure class="terminal" data-mode="cast" data-src="demo.cast"
+ *           data-title="rshow publish ./deck"></figure>
+ *
+ * Link order: fonts.css, tokens.css, terminal.css, then terminal.js deferred.
+ * terminal.js draws the frame and fills the body, with xterm.js for an ANSI
+ * capture and asciinema-player for a recording, both pinned and loaded from
+ * jsDelivr only when a figure of that kind exists. Without either library the
+ * capture still reads: the escapes are stripped and the text is set in a <pre>.
+ *
+ * The frame is a terminal window and nothing else: a title bar with the title,
+ * a body with padding, IBM Plex Mono throughout. No traffic light dots, no
+ * vendor logo, no drama.
+ *
+ * The palette is a set of custom properties on the figure, which is how both
+ * libraries are told what to draw: asciinema-player reads --term-color-* from
+ * its element by name, and terminal.js hands the same values to xterm. Four
+ * palettes:
+ *
+ *   default        the page ground, light or dark, with a neutral sixteen that
+ *                  holds on either ground (every colour is mid tone: at least
+ *                  3:1 on white and on #161616), so a capture reads the same in
+ *                  both modes and nothing has to be recorded twice
+ *   dark           a fixed dark ground, for a capture that is about being dark
+ *   light          a fixed light ground
+ *   high-contrast  black on white in a light page, white on black in a dark one
+ *
+ * The ANSI extremes (slot 0 and slot 7/15) follow whichever ground they sit on:
+ * a terminal's "black" is dim, and "white" is the brightest ink the ground can
+ * carry.
+ */
+
+.terminal {
+  /* The ground and the ink: the page's own in the default palette. */
+  --term-color-background: var(--bg);
+  --term-color-foreground: var(--fg);
+  --term-color-selection: rgba(15, 98, 254, 0.18);
+  --term-font-size: 13px;
+
+  /* Neutral sixteen, mid tone on purpose. */
+  --term-color-0: #5c6670;
+  --term-color-1: #b8312f;
+  --term-color-2: #2b7a3d;
+  --term-color-3: #8a6d1f;
+  --term-color-4: #2f6bd8;
+  --term-color-5: #8b4bc4;
+  --term-color-6: #1a7b8c;
+  --term-color-7: #8d8d8d;
+  --term-color-8: #757d85;
+  --term-color-9: #c94a44;
+  --term-color-10: #3a8f4d;
+  --term-color-11: #9c7f26;
+  --term-color-12: #4a82e0;
+  --term-color-13: #a158d8;
+  --term-color-14: #2b8e9e;
+  --term-color-15: #929292;
+
+  margin: var(--space-07) 0;
+  font-family: var(--font-mono);
+}
+
+.terminal[data-palette="dark"] {
+  --term-color-background: #161616;
+  --term-color-foreground: #f4f4f4;
+  --term-color-selection: rgba(120, 169, 255, 0.24);
+  --term-color-0: #525252;
+  --term-color-1: #fa4d56;
+  --term-color-2: #42be65;
+  --term-color-3: #f1c21b;
+  --term-color-4: #78a9ff;
+  --term-color-5: #be95ff;
+  --term-color-6: #33b1ff;
+  --term-color-7: #e0e0e0;
+  --term-color-8: #6f6f6f;
+  --term-color-9: #ff8389;
+  --term-color-10: #6fdc8c;
+  --term-color-11: #fddc69;
+  --term-color-12: #a6c8ff;
+  --term-color-13: #d4bbff;
+  --term-color-14: #5cdbd3;
+  --term-color-15: #ffffff;
+}
+
+.terminal[data-palette="light"] {
+  --term-color-background: #ffffff;
+  --term-color-foreground: #161616;
+  --term-color-selection: rgba(15, 98, 254, 0.14);
+  --term-color-0: #161616;
+  --term-color-1: #da1e28;
+  --term-color-2: #198038;
+  --term-color-3: #8a6d1f;
+  --term-color-4: #0f62fe;
+  --term-color-5: #8a3ffc;
+  --term-color-6: #0072a3;
+  --term-color-7: #424242;
+  --term-color-8: #525252;
+  --term-color-9: #a2191f;
+  --term-color-10: #0e6027;
+  --term-color-11: #684e00;
+  --term-color-12: #0043ce;
+  --term-color-13: #6929c4;
+  --term-color-14: #00539a;
+  --term-color-15: #161616;
+}
+
+.terminal[data-palette="high-contrast"] {
+  --term-color-background: #ffffff;
+  --term-color-foreground: #000000;
+  --term-color-selection: rgba(0, 38, 201, 0.2);
+  --term-color-0: #000000;
+  --term-color-1: #b8000f;
+  --term-color-2: #005c14;
+  --term-color-3: #5c4400;
+  --term-color-4: #0026c9;
+  --term-color-5: #6a00c9;
+  --term-color-6: #005454;
+  --term-color-7: #000000;
+  --term-color-8: #3d3d3d;
+  --term-color-9: #d1000f;
+  --term-color-10: #007a1a;
+  --term-color-11: #6b5200;
+  --term-color-12: #0033ff;
+  --term-color-13: #7d00e6;
+  --term-color-14: #006b6b;
+  --term-color-15: #000000;
+}
+
+:root[data-mode="dark"] .terminal[data-palette="high-contrast"] {
+  --term-color-background: #000000;
+  --term-color-foreground: #ffffff;
+  --term-color-selection: rgba(122, 167, 255, 0.3);
+  --term-color-0: #7a7a7a;
+  --term-color-1: #ff6b6b;
+  --term-color-2: #4fd97a;
+  --term-color-3: #ffd24a;
+  --term-color-4: #7aa7ff;
+  --term-color-5: #d6a6ff;
+  --term-color-6: #4fe0e0;
+  --term-color-7: #ffffff;
+  --term-color-8: #a0a0a0;
+  --term-color-9: #ff8f8f;
+  --term-color-10: #7ff0a2;
+  --term-color-11: #ffe27a;
+  --term-color-12: #a6c4ff;
+  --term-color-13: #e6c8ff;
+  --term-color-14: #8df0f0;
+  --term-color-15: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) .terminal[data-palette="high-contrast"] {
+    --term-color-background: #000000;
+    --term-color-foreground: #ffffff;
+    --term-color-selection: rgba(122, 167, 255, 0.3);
+    --term-color-0: #7a7a7a;
+    --term-color-1: #ff6b6b;
+    --term-color-2: #4fd97a;
+    --term-color-3: #ffd24a;
+    --term-color-4: #7aa7ff;
+    --term-color-5: #d6a6ff;
+    --term-color-6: #4fe0e0;
+    --term-color-7: #ffffff;
+    --term-color-8: #a0a0a0;
+    --term-color-9: #ff8f8f;
+    --term-color-10: #7ff0a2;
+    --term-color-11: #ffe27a;
+    --term-color-12: #a6c4ff;
+    --term-color-13: #e6c8ff;
+    --term-color-14: #8df0f0;
+    --term-color-15: #ffffff;
+  }
+}
+
+/* --------------------------------------------------------------- frame --- */
+
+.terminal-window {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  border: 1px solid var(--border-subtle);
+  background: var(--term-color-background);
+  color: var(--term-color-foreground);
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--space-05);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg);
+}
+
+.terminal-title {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.terminal-body {
+  padding: var(--space-05);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--term-font-size);
+  line-height: 1.4;
+}
+
+/* A capture is a fixed grid: no wrapping, no selection jitter, no cursor.
+   xterm.css paints the ground black and the text white of its own accord, so
+   the palette is repeated here for the two elements that carry it. The sixteen
+   colours themselves still come from the terminal's own theme. */
+.terminal .terminal-body .xterm {
+  color: var(--term-color-foreground);
+  background-color: var(--term-color-background);
+  font-family: var(--font-mono);
+}
+
+/* Three classes deep on purpose: xterm.css arrives after this file, and one
+   class more than it uses is what it takes to keep the theme's ground. */
+.terminal .terminal-body .xterm-viewport {
+  overflow: hidden;
+  background-color: var(--term-color-background);
+}
+
+.terminal-pre {
+  margin: 0;
+  color: var(--term-color-foreground);
+  font-family: var(--font-mono);
+  font-size: var(--term-font-size);
+  line-height: 1.4;
+  white-space: pre;
+  tab-size: 8;
+}
+
+/* asciinema-player declares a dark palette of its own on .ap-player, which
+   would win over anything inherited from the figure. Hand it the figure's
+   palette instead, so a recording and a capture of the same program agree. */
+.terminal .ap-player,
+.terminal .asciinema-player {
+  --term-color-background: inherit;
+  --term-color-foreground: inherit;
+  --term-color-0: inherit;
+  --term-color-1: inherit;
+  --term-color-2: inherit;
+  --term-color-3: inherit;
+  --term-color-4: inherit;
+  --term-color-5: inherit;
+  --term-color-6: inherit;
+  --term-color-7: inherit;
+  --term-color-8: inherit;
+  --term-color-9: inherit;
+  --term-color-10: inherit;
+  --term-color-11: inherit;
+  --term-color-12: inherit;
+  --term-color-13: inherit;
+  --term-color-14: inherit;
+  --term-color-15: inherit;
+  --term-font-family: var(--font-mono);
+  width: 100%;
+}
+
+.terminal-fallback {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+}
+
+.terminal-fallback a {
+  color: var(--accent);
+}
+
+@media print {
+  .terminal-window {
+    border-color: var(--border-strong);
+    break-inside: avoid;
+  }
+
+  .terminal-body {
+    overflow: visible;
+  }
+}

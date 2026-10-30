@@ -1,0 +1,49 @@
+{
+  "name": "rshow",
+  "version": "0.1.0",
+  "description": "Publish static artifacts to rshow",
+  "license": "MIT",
+  "homepage": "https://rslib.github.io/rshow",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rslib/rshow.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/rslib/rshow/issues"
+  },
+  "keywords": [
+    "rshow",
+    "cli",
+    "publish",
+    "static",
+    "artifacts"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
+  "bin": {
+    "rshow": "./dist/main.js"
+  },
+  "files": [
+    "dist",
+    "worker",
+    "skills",
+    "themes",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "prepack": "node scripts/assemble.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "esbuild": "0.28.2",
+    "rshow-shared": "*",
+    "typescript": "^5.9.3"
+  }
+}

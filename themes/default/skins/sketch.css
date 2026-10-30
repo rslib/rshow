@@ -1,0 +1,436 @@
+/*
+ * rshow theme "default": the sketch skin, layer 3.
+ *
+ * The same kit as the wire skin, drawn by hand. sketches.js loads rough.js at
+ * one pinned version and draws a rough outline behind every wf-* element, so a
+ * box looks like a box somebody sketched rather than a box a browser drew.
+ *
+ * This file holds the geometry and the type; the pencil is in sketch.js. The
+ * hand is a system stack, so nothing new is fetched for the type: Comic Sans
+ * MS on Windows and on macOS with Office, Chalkboard on macOS, Segoe Print on
+ * Windows, and a cursive fallback. It is set as --mk-hand and read as --mk-font
+ * for the same reason every other screen colour is a token: a skin should be
+ * one block of values.
+ *
+ * If rough.js does not load, sketch.js swaps the skin back to wire, so a reader
+ * never gets a half drawn screen.
+ */
+
+.mockup[data-skin="sketch"] {
+  --mk-hand: "Comic Sans MS", "Chalkboard", "Segoe Print", cursive;
+  --mk-bg: #ffffff;
+  --mk-fg: #2b2b2b;
+  --mk-muted: #6b6b6b;
+  --mk-line: #3a3a3a;
+  --mk-fill: transparent;
+  --mk-accent: #1f4fd8;
+  --mk-radius: 0;
+  --mk-font: var(--mk-hand);
+  --mk-size: 15px;
+  --mk-gap: 12px;
+  --mk-pad: 20px;
+  --mk-line-h: 20px;
+}
+
+.mockup[data-skin="sketch"] .mk-screen {
+  /* The pencil sits under the content, so the screen is its own stacking
+     context and the rough layer can take z-index -1. */
+  isolation: isolate;
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+}
+
+.mockup[data-skin="sketch"] .mk-rough {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+.mockup[data-skin="sketch"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+.mockup[data-skin="sketch"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+.mockup[data-skin="sketch"] .wf-row.wf-shell {
+  align-items: stretch;
+}
+
+.mockup[data-skin="sketch"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+.mockup[data-skin="sketch"] .wf-spacer,
+.mockup[data-skin="sketch"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+.mockup[data-skin="sketch"] .wf-heading {
+  display: block;
+  width: 44%;
+  max-width: 320px;
+  height: 18px;
+}
+
+.mockup[data-skin="sketch"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.mockup[data-skin="sketch"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * var(--mk-line-h));
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="1"] {
+  --mk-lines: 1;
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="2"] {
+  --mk-lines: 2;
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="3"] {
+  --mk-lines: 3;
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="4"] {
+  --mk-lines: 4;
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="5"] {
+  --mk-lines: 5;
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="6"] {
+  --mk-lines: 6;
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="7"] {
+  --mk-lines: 7;
+}
+
+.mockup[data-skin="sketch"] .wf-text[data-lines="8"] {
+  --mk-lines: 8;
+}
+
+.mockup[data-skin="sketch"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--mk-muted);
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+.mockup[data-skin="sketch"] .wf-box {
+  min-height: 48px;
+  padding: 12px;
+}
+
+.mockup[data-skin="sketch"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  padding: 16px;
+}
+
+.mockup[data-skin="sketch"] .wf-image {
+  min-height: 120px;
+}
+
+.mockup[data-skin="sketch"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.mockup[data-skin="sketch"] .wf-avatar[data-size="sm"] {
+  width: 28px;
+  height: 28px;
+}
+
+.mockup[data-skin="sketch"] .wf-avatar[data-size="lg"] {
+  width: 56px;
+  height: 56px;
+}
+
+.mockup[data-skin="sketch"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.mockup[data-skin="sketch"] .wf-icon[data-size="lg"] {
+  width: 24px;
+  height: 24px;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+.mockup[data-skin="sketch"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--mk-fg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mockup[data-skin="sketch"] .wf-button.primary {
+  color: var(--mk-accent);
+}
+
+.mockup[data-skin="sketch"] .wf-button.ghost {
+  color: var(--mk-muted);
+}
+
+.mockup[data-skin="sketch"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--mk-muted);
+}
+
+.mockup[data-skin="sketch"] .wf-input[data-label]::before {
+  content: attr(data-label);
+}
+
+.mockup[data-skin="sketch"] .wf-input[data-label]::before,
+.mockup[data-skin="sketch"] .wf-label {
+  position: absolute;
+  top: -9px;
+  left: 10px;
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+}
+
+.mockup[data-skin="sketch"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 32px 0 12px;
+  font-size: 14px;
+  color: var(--mk-fg);
+}
+
+.mockup[data-skin="sketch"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-top: 5px solid var(--mk-fg);
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.mockup[data-skin="sketch"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+}
+
+.mockup[data-skin="sketch"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 5px;
+  width: 6px;
+  height: 10px;
+  border: solid var(--mk-accent);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.mockup[data-skin="sketch"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 22px;
+}
+
+.mockup[data-skin="sketch"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 14px;
+  height: 14px;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+.mockup[data-skin="sketch"] .wf-toggle.on::after {
+  left: 20px;
+}
+
+.mockup[data-skin="sketch"] .wf-tabs {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.mockup[data-skin="sketch"] .wf-tabs > * {
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--mk-muted);
+  white-space: nowrap;
+}
+
+.mockup[data-skin="sketch"] .wf-tabs > .is-active,
+.mockup[data-skin="sketch"] .wf-tabs > [aria-selected="true"] {
+  color: var(--mk-fg);
+  border-bottom: 2px solid var(--mk-accent);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+.mockup[data-skin="sketch"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 58px;
+  padding: 0 20px;
+}
+
+.mockup[data-skin="sketch"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 8px;
+  width: 220px;
+  padding: 16px;
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+.mockup[data-skin="sketch"] .wf-table {
+  height: calc(var(--mk-rows, 4) * 36px);
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="1"] {
+  --mk-rows: 1;
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="2"] {
+  --mk-rows: 2;
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="3"] {
+  --mk-rows: 3;
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="4"] {
+  --mk-rows: 4;
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="5"] {
+  --mk-rows: 5;
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="6"] {
+  --mk-rows: 6;
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="8"] {
+  --mk-rows: 8;
+}
+
+.mockup[data-skin="sketch"] .wf-table[data-rows="10"] {
+  --mk-rows: 10;
+}
+
+.mockup[data-skin="sketch"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 160px;
+}
+
+.mockup[data-skin="sketch"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 8px;
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+.mockup[data-skin="sketch"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(43, 43, 43, 0.3);
+}
+
+.mockup[data-skin="sketch"] .wf-modal {
+  position: absolute;
+  isolation: isolate;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(460px, 82%);
+  max-height: 84%;
+  padding: 20px;
+  background: var(--mk-bg);
+  transform: translate(-50%, -50%);
+}
+
+.mockup[data-skin="sketch"] .wf-toast {
+  position: absolute;
+  isolation: isolate;
+  bottom: 24px;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 82%;
+  padding: 10px 14px;
+  font-size: 14px;
+  background: var(--mk-bg);
+  transform: translateX(-50%);
+}

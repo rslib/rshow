@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Mockup: rshow admin, gallery to share dialog</title>
+<!--
+  A mockup of rshow's own admin: the gallery, one artifact, the share dialog in
+  three states, and the same flow on a phone. Wire skin by default, so a reader
+  argues about the layout and not about the colour.
+
+  Theme links. A published mockup points at the theme artifact with
+  root-relative URLs, one per file, all at the same pinned version:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/mockup.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/skins/wire.css" id="mk-skin" data-mk-skin>
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/mockup.js"></script>
+    <script defer src="/_themes/<name>@<n>/skins/sketch.js"></script>
+
+  This copy links the theme folder itself, so it previews from a local checkout
+  and makes no remote request until somebody picks the sketch skin. The skin
+  link carries id="mk-skin" so the toolbar can swap it.
+
+  Every artifact name, address and version number below is placeholder data.
+  The layout and the flow are the design; the words are stand-ins.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../mockup.css">
+<link rel="stylesheet" href="../skins/wire.css" id="mk-skin" data-mk-skin>
+<script src="../mode.js"></script>
+<script defer src="../mockup.js"></script>
+<script defer src="../skins/sketch.js"></script>
+</head>
+<body>
+
+<main class="mockup" data-name="rshow admin" data-skin="wire">
+
+  <!-- ============================================== the gallery, signed in -->
+  <section class="artboard" id="gallery" data-frame="browser" data-title="Gallery"
+           data-url="art.example.com/admin" data-flush
+           data-states="empty,loading,error" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>rshow</strong>
+        <span class="wf-input" data-label="Search" style="width:280px">All artifacts</span>
+        <span class="wf-spacer"></span>
+        <span class="wf-icon"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+
+      <div class="wf-row wf-shell wf-grow">
+
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:70%"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>All</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Owned</span></div>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Shared</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row" style="gap:8px"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+
+        <div class="wf-col wf-grow" style="padding:24px;gap:16px">
+
+          <div class="wf-row">
+            <span class="wf-heading">Artifacts</span>
+            <span class="wf-spacer"></span>
+            <span class="wf-input" data-label="Filter" style="width:200px">Public</span>
+            <span class="wf-button primary">New artifact</span>
+          </div>
+
+          <div class="wf-tabs">
+            <span aria-selected="true">All</span>
+            <span>Mine</span>
+            <span>Shared</span>
+            <span>Archived</span>
+          </div>
+
+          <div class="wf-col wf-state" data-state="default,loading,error" style="gap:8px">
+            <a class="wf-row wf-box" href="#artifact">
+              <span class="wf-icon" data-size="lg"></span>
+              <span class="wf-col" style="gap:6px">
+                <strong>q3-review</strong>
+                <span class="wf-text" data-lines="1" style="width:220px"></span>
+              </span>
+              <span class="wf-spacer"></span>
+              <span class="wf-text" data-lines="1" style="width:64px"></span>
+              <span class="wf-text" data-lines="1" style="width:120px"></span>
+            </a>
+            <a class="wf-row wf-box" href="#artifact">
+              <span class="wf-icon" data-size="lg"></span>
+              <span class="wf-col" style="gap:6px">
+                <strong>api-notes</strong>
+                <span class="wf-text" data-lines="1" style="width:260px"></span>
+              </span>
+              <span class="wf-spacer"></span>
+              <span class="wf-text" data-lines="1" style="width:64px"></span>
+              <span class="wf-text" data-lines="1" style="width:120px"></span>
+            </a>
+            <a class="wf-row wf-box" href="#artifact">
+              <span class="wf-icon" data-size="lg"></span>
+              <span class="wf-col" style="gap:6px">
+                <strong>onboarding</strong>
+                <span class="wf-text" data-lines="1" style="width:180px"></span>
+              </span>
+              <span class="wf-spacer"></span>
+              <span class="wf-text" data-lines="1" style="width:64px"></span>
+              <span class="wf-text" data-lines="1" style="width:120px"></span>
+            </a>
+            <a class="wf-row wf-box" href="#artifact">
+              <span class="wf-icon" data-size="lg"></span>
+              <span class="wf-col" style="gap:6px">
+                <strong>hiring-brief</strong>
+                <span class="wf-text" data-lines="1" style="width:240px"></span>
+              </span>
+              <span class="wf-spacer"></span>
+              <span class="wf-text" data-lines="1" style="width:64px"></span>
+              <span class="wf-text" data-lines="1" style="width:120px"></span>
+            </a>
+          </div>
+
+          <div class="wf-col" data-state="empty" style="gap:12px;align-items:flex-start">
+            <span class="wf-image" style="width:100%;min-height:220px"></span>
+            <span class="wf-heading">Nothing here yet</span>
+            <span class="wf-text" data-lines="2" style="width:420px"></span>
+            <span class="wf-button primary">Publish a folder</span>
+          </div>
+
+          <div class="wf-col" data-state="loading" style="gap:8px">
+            <span class="wf-box" style="height:76px"></span>
+            <span class="wf-box" style="height:76px"></span>
+            <span class="wf-box" style="height:76px"></span>
+            <span class="wf-text" data-lines="1" style="width:160px"></span>
+          </div>
+
+          <div class="wf-col" data-state="error" style="gap:12px;align-items:flex-start">
+            <span class="wf-heading">The gallery did not load</span>
+            <span class="wf-text" data-lines="2" style="width:460px"></span>
+            <span class="wf-button">Try again</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="Filters are a guess. Confirm which ones the gallery needs before anybody builds them."
+          style="top:98px;left:150px"></span>
+    <span class="note-pin" data-note="Artifact names and version numbers here are placeholders."
+          style="top:262px;left:1128px"></span>
+  </section>
+
+  <!-- ================================================== one artifact, v12 -->
+  <section class="artboard" id="artifact" data-frame="browser" data-title="Artifact"
+           data-url="art.example.com/admin/artifacts/q3-review" data-flush
+           data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>rshow</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+
+      <div class="wf-col wf-grow" style="padding:24px;gap:16px">
+
+        <div class="wf-row" style="gap:8px;font-size:12px;color:var(--mk-muted)">
+          <a href="#gallery">Artifacts</a>
+          <span>/</span>
+          <span>q3-review</span>
+        </div>
+
+        <div class="wf-row">
+          <span class="wf-heading">q3-review</span>
+          <span class="wf-spacer"></span>
+          <a class="wf-button" href="#share">Share</a>
+          <span class="wf-button primary">Publish</span>
+        </div>
+
+        <div class="wf-tabs">
+          <span aria-selected="true">Versions</span>
+          <span>Files</span>
+          <span>Access</span>
+        </div>
+
+        <div class="wf-row wf-top" style="gap:24px">
+
+          <div class="wf-col wf-grow" style="gap:12px">
+            <div class="wf-table" data-rows="8" data-cols="4"></div>
+            <div class="wf-row">
+              <span class="wf-text" data-lines="1" style="width:180px"></span>
+              <span class="wf-spacer"></span>
+              <span class="wf-button ghost">Older versions</span>
+            </div>
+          </div>
+
+          <div class="wf-col" style="width:300px;gap:12px">
+            <div class="wf-card">
+              <span class="wf-heading">Served version</span>
+              <span class="wf-text" data-lines="2"></span>
+              <div class="wf-row">
+                <span class="wf-toggle on"></span>
+                <span>Pin v12</span>
+              </div>
+            </div>
+            <div class="wf-card">
+              <span class="wf-heading">Who can open it</span>
+              <div class="wf-row">
+                <span class="wf-avatar" data-size="sm"></span>
+                <span class="wf-text" data-lines="1" style="width:140px"></span>
+                <span class="wf-spacer"></span>
+                <span class="wf-text" data-lines="1" style="width:50px"></span>
+              </div>
+              <div class="wf-row">
+                <span class="wf-avatar" data-size="sm"></span>
+                <span class="wf-text" data-lines="1" style="width:110px"></span>
+                <span class="wf-spacer"></span>
+                <span class="wf-text" data-lines="1" style="width:50px"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="Versions are the object people come for, so the table is the page and everything else is a side column."
+          style="top:352px;left:748px"></span>
+  </section>
+
+  <!-- ==================================== the share dialog, three states -->
+  <section class="artboard" id="share" data-frame="browser" data-title="Share dialog"
+           data-url="art.example.com/admin/artifacts/q3-review" data-flush
+           data-states="loading,error" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>rshow</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-col wf-grow" style="padding:24px;gap:16px">
+        <div class="wf-row">
+          <span class="wf-heading">q3-review</span>
+          <span class="wf-spacer"></span>
+          <span class="wf-button">Share</span>
+          <span class="wf-button primary">Publish</span>
+        </div>
+        <div class="wf-table" data-rows="5" data-cols="4"></div>
+      </div>
+    </div>
+
+    <div class="wf-scrim"></div>
+
+    <div class="wf-modal">
+      <div class="wf-row">
+        <span class="wf-heading">Share q3-review</span>
+        <span class="wf-spacer"></span>
+        <span class="wf-icon"></span>
+      </div>
+
+      <div class="wf-row">
+        <span class="wf-input wf-grow" data-label="Email">name@example.com</span>
+        <span class="wf-select" style="width:140px">Can view</span>
+        <span class="wf-button">Invite</span>
+      </div>
+
+      <div class="wf-col" style="gap:10px">
+        <div class="wf-row">
+          <span class="wf-avatar" data-size="sm"></span>
+          <span class="wf-text" data-lines="1" style="width:150px"></span>
+          <span class="wf-spacer"></span>
+          <span class="wf-select" style="width:120px">Owner</span>
+        </div>
+        <div class="wf-row">
+          <span class="wf-avatar" data-size="sm"></span>
+          <span class="wf-text" data-lines="1" style="width:120px"></span>
+          <span class="wf-spacer"></span>
+          <span class="wf-select" style="width:120px">Can edit</span>
+        </div>
+      </div>
+
+      <div class="wf-row" style="gap:10px">
+        <span class="wf-toggle on"></span>
+        <span>Anyone with the link can read the pinned version</span>
+      </div>
+
+      <div class="wf-row" data-state="default,error">
+        <span class="wf-input wf-grow" style="font-family:var(--font-mono);font-size:12px">art.example.com/q3-review/v12</span>
+        <span class="wf-button primary">Copy link</span>
+      </div>
+
+      <div class="wf-row" data-state="loading">
+        <span class="wf-text" data-lines="1" style="width:100%"></span>
+      </div>
+
+      <div class="wf-row">
+        <span class="wf-spacer"></span>
+        <span class="wf-button" data-goto="artifact">Done</span>
+      </div>
+    </div>
+
+    <div data-state="error">
+      <div class="wf-toast">The clipboard is blocked here. Select the link and copy it.</div>
+    </div>
+
+    <span class="note-pin" data-note="Copy link is the one action. Invite, roles and the public toggle are support for it, not peers of it."
+          style="top:246px;left:900px"></span>
+  </section>
+
+  <!-- ================================================ the same list, phone -->
+  <section class="artboard" id="phone-gallery" data-frame="phone" data-title="Gallery on a phone"
+           data-status="9:41" data-flush data-w="390" data-h="844">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav" style="min-height:52px;gap:10px">
+        <strong>Artifacts</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-icon"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-col wf-grow" style="padding:16px;gap:10px">
+        <span class="wf-input" data-label="Search">All artifacts</span>
+        <div class="wf-tabs" style="gap:14px">
+          <span aria-selected="true">All</span>
+          <span>Mine</span>
+          <span>Shared</span>
+        </div>
+        <a class="wf-row wf-box" href="#phone-share">
+          <span class="wf-icon" data-size="lg"></span>
+          <span class="wf-col" style="gap:6px">
+            <strong>q3-review</strong>
+            <span class="wf-text" data-lines="1" style="width:140px"></span>
+          </span>
+          <span class="wf-spacer"></span>
+          <span class="wf-icon"></span>
+        </a>
+        <a class="wf-row wf-box" href="#phone-share">
+          <span class="wf-icon" data-size="lg"></span>
+          <span class="wf-col" style="gap:6px">
+            <strong>api-notes</strong>
+            <span class="wf-text" data-lines="1" style="width:170px"></span>
+          </span>
+          <span class="wf-spacer"></span>
+          <span class="wf-icon"></span>
+        </a>
+        <a class="wf-row wf-box" href="#phone-share">
+          <span class="wf-icon" data-size="lg"></span>
+          <span class="wf-col" style="gap:6px">
+            <strong>onboarding</strong>
+            <span class="wf-text" data-lines="1" style="width:120px"></span>
+          </span>
+          <span class="wf-spacer"></span>
+          <span class="wf-icon"></span>
+        </a>
+        <span class="wf-spacer"></span>
+        <span class="wf-button primary">New artifact</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== the share sheet, phone -->
+  <section class="artboard" id="phone-share" data-frame="phone" data-title="Share on a phone"
+           data-status="9:41" data-flush data-w="390" data-h="844">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav" style="min-height:52px;gap:10px">
+        <span class="wf-icon" data-goto="phone-gallery"></span>
+        <strong>Share</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-icon" data-goto="phone-gallery"></span>
+      </div>
+      <div class="wf-col wf-grow" style="padding:16px;gap:14px">
+        <span class="wf-input" data-label="Email">name@example.com</span>
+        <span class="wf-select">Can view</span>
+        <div class="wf-col" style="gap:10px">
+          <div class="wf-row">
+            <span class="wf-avatar" data-size="sm"></span>
+            <span class="wf-text" data-lines="1" style="width:120px"></span>
+            <span class="wf-spacer"></span>
+            <span>Owner</span>
+          </div>
+          <div class="wf-row">
+            <span class="wf-avatar" data-size="sm"></span>
+            <span class="wf-text" data-lines="1" style="width:100px"></span>
+            <span class="wf-spacer"></span>
+            <span>Editor</span>
+          </div>
+        </div>
+        <div class="wf-row" style="gap:10px">
+          <span class="wf-toggle on"></span>
+          <span>Public link</span>
+        </div>
+        <span class="wf-input" style="font-family:var(--font-mono);font-size:12px">art.example.com/q3-review/v12</span>
+        <span class="wf-button primary">Copy link</span>
+        <span class="wf-spacer"></span>
+        <span class="wf-button" data-goto="phone-gallery">Done</span>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="On a phone the dialog is a whole screen, so nothing sits under it and the back arrow is the only exit."
+          style="top:64px;left:348px"></span>
+  </section>
+
+</main>
+
+</body>
+</html>

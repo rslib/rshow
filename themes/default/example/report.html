@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>rshow: publishing a folder as an immutable artifact</title>
+<!--
+  Theme links. A published report points at the theme artifact with
+  root-relative URLs, one per file, all at the same pinned version:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/report.css">
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/report.js"></script>
+
+  This copy links the theme folder itself, so it previews from a local checkout
+  and makes no remote request. mode.js runs in the head, before the body paints,
+  so a reader who chose dark never sees a white flash. report.js is deferred: it
+  numbers the sections, figures and tables, resolves the cross-references,
+  builds the contents and moves the notes into the margin. With JavaScript off
+  the document is still a readable paper, it just loses the generated labels.
+
+  Six sections, two figures, one table, three notes, six references. The
+  authors, the affiliations, the date and the version line are placeholders:
+  fill them in when the report is real. Every number in figure 2 and in the
+  prose around it is example data and says so.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../report.css">
+<script src="../mode.js"></script>
+<script defer src="../report.js"></script>
+</head>
+<body>
+
+<div class="report">
+
+  <nav class="toc" aria-label="Contents"></nav>
+
+  <main>
+
+    <header class="report-head">
+      <h1>rshow: publishing a folder as an immutable artifact</h1>
+      <p class="subtitle">Design, versioning, caching and access control for a link that keeps working.</p>
+      <p class="authors">[Author One]<sup>1</sup>, [Author Two]<sup>2</sup></p>
+      <p class="affiliations"><sup>1</sup> [Affiliation]<br>
+        <sup>2</sup> [Affiliation]</p>
+      <p class="date">[Date]</p>
+      <p class="version">Preprint, version [n]</p>
+    </header>
+
+    <section class="abstract" id="abstract">
+      <h2 data-nonum data-notoc>Abstract</h2>
+      <p>A link sent in a calendar invite outlives the slide it points at. Most
+      publishing tools answer this by keeping a mutable page behind a stable
+      address, so every edit silently rewrites what a reader will see next week.
+      rshow takes the other side: a publish writes a numbered version, a version
+      never changes, and the address that follows the newest version is a
+      separate promise from the address that holds one. This paper describes the
+      design we ship, the record an artifact carries, the caching rules that
+      follow from immutability, the share model that decides who may read a
+      link, and the experiment we would run to test the claim that a republish
+      sends only what changed.</p>
+    </section>
+
+    <section id="sec-design">
+      <h2>Design</h2>
+      <p>rshow publishes a folder. The command reads the folder, runs the
+      optional build command if <code>rshow.json</code> names one, hashes every
+      file, writes a manifest, uploads what the host does not already hold and
+      records a version. There is no application server holding the bytes, and
+      no state on the reader's side beyond an ordinary HTTP cache. A published artifact is static files plus a
+      record, which means the reader's browser does the same work it does for any
+      other page, and the host does the work an edge runtime does well.<a class="cite" href="#ref-workers"></a> The reading side stays stateless in
+      the sense Fielding argues for, so a version can be served by any node that
+      holds the bytes.<a class="cite" href="#ref-fielding"></a></p>
+      <p>Three addresses come out of one publish: a versioned path that holds the
+      bytes of that publish, a slug path that follows the newest version, and an
+      optional pin that holds a chosen version in place. The three are different
+      promises and the page states which one it is showing.</p>
+
+      <h3>The artifact record</h3>
+      <p>The record is small and it is the only mutable object in the system:
+      one row per slug, holding the title, the owner, the mode, the newest
+      version number and the pin if there is one. A version is a row of its own
+      under the slug, with its label, its file count and byte count; a manifest
+      is a list of path to hash, size and content type, kept beside the version
+      and enough to rebuild the artifact on another host. A publish inserts the
+      version row only while the newest number is still the one it read, so two
+      writers cannot take the same number: the loser is answered with a conflict
+      and publishes again.</p>
+      <p>Content addressing does the rest. A file is stored under the hash of its
+      bytes, so the same picture in two decks is stored once, and a republish of
+      an unchanged file is a lookup that finds the hash already present.<span class="fn">A hash is the SHA-256 of the file bytes, written in hex. The store keys a file by that value, so identical bytes are stored once whatever their name.</span></p>
+
+      <h3>The publish pipeline</h3>
+      <p>The pipeline has five steps and each one can fail without changing what
+      a reader sees, because the record is written last. The order in the figure
+      below is the whole concurrency story of a publish.</p>
+
+      <figure id="fig-pipeline">
+        <svg viewBox="0 0 600 186" role="img" aria-label="Publish pipeline: the folder is hashed, a manifest is written, only files whose hash the host lacks are uploaded, and the version is recorded. The record is written last, so a failed publish leaves the previous version in place.">
+          <g style="font-family: var(--font-sans)">
+            <g style="fill: var(--layer-01)">
+              <rect x="0" y="0" width="104" height="96"></rect>
+              <rect x="124" y="0" width="104" height="96"></rect>
+              <rect x="248" y="0" width="104" height="96"></rect>
+              <rect x="372" y="0" width="104" height="96"></rect>
+              <rect x="496" y="0" width="104" height="96"></rect>
+            </g>
+            <g style="font-size: 16px; font-weight: 600; fill: var(--fg)">
+              <text x="12" y="36">Folder</text>
+              <text x="136" y="36">Hash</text>
+              <text x="260" y="36">Manifest</text>
+              <text x="384" y="36">Upload</text>
+              <text x="508" y="36">Record</text>
+            </g>
+            <g style="font-size: 13px; fill: var(--muted)">
+              <text x="12" y="60">the files</text>
+              <text x="12" y="78">as written</text>
+              <text x="136" y="60">one hash</text>
+              <text x="136" y="78">per file</text>
+              <text x="260" y="60">hash, path,</text>
+              <text x="260" y="78">content type</text>
+              <text x="384" y="60">only what</text>
+              <text x="384" y="78">is new</text>
+              <text x="508" y="60">a numbered</text>
+              <text x="508" y="78">version</text>
+            </g>
+            <g style="stroke: var(--accent); stroke-width: 2">
+              <line x1="104" y1="46" x2="118" y2="46" marker-end="url(#arrow)"></line>
+              <line x1="228" y1="46" x2="242" y2="46" marker-end="url(#arrow)"></line>
+              <line x1="352" y1="46" x2="366" y2="46" marker-end="url(#arrow)"></line>
+              <line x1="476" y1="46" x2="490" y2="46" marker-end="url(#arrow)"></line>
+            </g>
+            <line x1="0" y1="124" x2="600" y2="124" style="stroke: var(--border-subtle); stroke-width: 1"></line>
+            <g style="font-size: 13px; fill: var(--muted)">
+              <text x="0" y="148">The record is written last, so a failed publish leaves the previous version in place.</text>
+            </g>
+            <g style="font-size: 13px; fill: var(--fg)">
+              <text x="600" y="172" text-anchor="end">art.example.com/my-talk/</text>
+            </g>
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"></path>
+              </marker>
+            </defs>
+          </g>
+        </svg>
+        <figcaption>The publish pipeline. Hashing and comparing are reads, the
+        upload is idempotent, and the version is recorded only after every file
+        the manifest names is present.</figcaption>
+      </figure>
+    </section>
+
+    <section id="sec-versioning">
+      <h2>Versioning</h2>
+      <p>A version is a promise that the bytes behind its path will not change.
+      rshow keeps that promise by never writing to a versioned path twice: a
+      publish allocates the next number and writes its files there. Publishing
+      the same content again does raise the number, but it sends no new bytes,
+      because every hash in the manifest is already in the store. Versions are
+      therefore dense, ordered and comparable, and a reader who cites one can be
+      sure the artifact is the artifact. That is the
+      old advice about persistent identifiers taken literally.<a class="cite" href="#ref-cooluris"></a></p>
+
+      <h3>Slugs and versions</h3>
+      <p>A slug is the human name of the artifact and a version is a number
+      under it. The slug path is the one that moves, and it is the only address
+      that needs any coordination. A version path is a pure function of the
+      slug and the number, so it can be computed, cached and shared without
+      asking the host anything.</p>
+
+      <h3>Pins</h3>
+      <p id="sec-pins">A pin holds one version at the slug path while later
+      publishes go on behind it. It is one line in the record and it can be
+      moved or removed in a single write, which matters during the last hour
+      before a talk, when the link in the room must not change but the folder
+      still does. Without a pin the slug path follows the newest version and a
+      reader sees the next publish with no warning.</p>
+    </section>
+
+    <section id="sec-caching">
+      <h2>Caching</h2>
+      <p>Immutability is what makes a long cache lifetime safe. The bytes at a
+      versioned path never change, so a browser may keep them for a year and an
+      edge may keep its own copy for five minutes. The live path is the
+      opposite: it is the one address that must be rechecked, so its own
+      lifetime is zero and an edge may answer from a copy for no longer than
+      fifteen seconds.</p>
+      <p>The cost of a publish follows the same rule. Let the files of a version
+      be <code>files(n)</code> and let the host's store be the set of hashes it
+      already holds. The bytes a publish must send are the size of every file
+      whose hash is missing from the store.</p>
+
+      <div class="equation" id="eq-bytes">
+        <span>bytes(n) = sum of |f| for f whose hash is new</span>
+      </div>
+
+      <p>The equation is the whole reason a republish of a mostly unchanged deck
+      is cheap, and it is also why the first publish is expensive: on the first
+      publish the store is empty, so every file is new. A cache may keep a
+      versioned response for a year and must recheck the live link on every use;
+      an answer to a signed-in reader is never stored by anyone.<a class="cite" href="#ref-rfc7234"></a><span class="fn">Revalidation is a conditional request: the browser sends the entity tag it holds and the host answers 304 Not Modified while the bytes still match.</span></p>
+      <p>The headers below are the ones the host sends, not a measurement. Each
+      row is one kind of response rshow can produce and the rule that fixes its
+      cache lifetime.</p>
+
+      <figure class="table" id="tab-headers">
+        <table>
+          <caption>Cache rules by response kind.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Response</th>
+              <th scope="col">Cache-Control</th>
+              <th scope="col">Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A versioned path, <code>/my-talk/v3/</code></td>
+              <td><code>public, max-age=31536000, immutable, s-maxage=300</code></td>
+              <td>The bytes at that path never change, so a browser keeps them for a year and an edge for five minutes.</td>
+            </tr>
+            <tr>
+              <td>The live link, <code>/my-talk/</code></td>
+              <td><code>public, max-age=0, s-maxage=15, must-revalidate</code></td>
+              <td>It has to be rechecked to follow the next publish; an edge may reuse it for fifteen seconds.</td>
+            </tr>
+            <tr>
+              <td>Any response for a private or a people artifact</td>
+              <td><code>private, no-store</code></td>
+              <td>The answer depends on who is asking, so no cache may hold it.</td>
+            </tr>
+            <tr>
+              <td>A theme file, <code>/_themes/default@3/report.css</code></td>
+              <td><code>public, max-age=31536000, immutable</code></td>
+              <td>The path names the theme and its version, and neither ever changes.</td>
+            </tr>
+          </tbody>
+        </table>
+        <figcaption>Header choices for the four kinds of response. The rule
+        follows from the path and the mode of the artifact, not from the
+        file.</figcaption>
+      </figure>
+    </section>
+
+    <section id="sec-access">
+      <h2>Access control</h2>
+      <p>Reading is decided by two things: who is asking and the mode of the
+      artifact. Every reader signs in through Cloudflare Access, so the host is
+      handed a verified email address before it looks at the artifact. The mode
+      and the share list live in the record, so changing either is one write and
+      never a re-publish.</p>
+      <p>There are three modes. Private is the default and answers to the owner
+      and to the addresses named with the editor role. People answers to every
+      address named on the artifact, viewer or editor. Public answers to anyone
+      with the link and asks for no sign-in at all.</p>
+
+      <h3>Shares</h3>
+      <p>A share is one row: an address and a role. An editor may publish a new
+      version and move the pin; a viewer may only read. Only the owner shares,
+      renames or deletes. An address that is not on that list has no way in,
+      whatever it is signed in as.</p>
+      <p>The check happens in the Worker, before a byte of the artifact is read,
+      which keeps it off the storage path. The request carries the Access
+      session cookie, the Worker verifies it and reads the email claim, and the
+      mode and the shares decide whether the request continues. A signed-in
+      reader who may not read gets a page that names their address, and a reader
+      with no session is sent to the sign-in page and back to the path they
+      asked for.</p>
+
+      <h3>What there is not</h3>
+      <p>There is no per-link grant and no expiring share URL. The only way to
+      read a non-public artifact is to be a signed-in address the record names,
+      so a closed artifact is closed by the identity provider and the share
+      list, not by a token in the URL. Bearer tokens do exist, but only for the
+      admin API on the other hostname: they publish and manage, and they never
+      open a viewer page.</p>
+    </section>
+
+    <section id="sec-evaluation">
+      <h2>Evaluation</h2>
+      <p>We have not run a controlled study of rshow, so this section describes
+      the experiment we would run and shows the shape of its result with example
+      data. The claim under test is narrow: after the first publish, the bytes a
+      republish sends track the bytes that changed, and not the size of the
+      folder. A reader should treat every number below as illustrative.</p>
+
+      <h3>What we would measure</h3>
+      <p>Take one folder of a fixed size, edit it as a person edits a talk,
+      publish after every edit and record the bytes the upload sent, the time to
+      first byte at the slug path, and the size of the record. Repeat with the
+      cache cold and warm, because the two answer different questions: a cold
+      cache measures the host, a warm one measures the reader. The result is one
+      series, drawn in one colour, with each value labelled where it is
+      read.<a class="cite" href="#ref-tufte"></a></p>
+
+      <figure id="fig-upload">
+        <svg viewBox="0 0 600 270" role="img" aria-label="Example data: megabytes uploaded per publish over six publishes of one folder, 120, 40, 18, 9, 6 and 6 megabytes, so a republish sends a fraction of the first publish.">
+          <g style="font-family: var(--font-sans)">
+            <!-- One series, so it takes the interactive blue and not --chart-1. -->
+            <g style="fill: var(--accent)">
+              <rect x="60" y="60" width="48" height="150"></rect>
+              <rect x="152" y="160" width="48" height="50"></rect>
+              <rect x="244" y="187" width="48" height="23"></rect>
+              <rect x="336" y="199" width="48" height="11"></rect>
+              <rect x="428" y="202" width="48" height="8"></rect>
+              <rect x="520" y="202" width="48" height="8"></rect>
+            </g>
+            <g style="font-size: 16px; fill: var(--fg); font-variant-numeric: tabular-nums; text-anchor: middle">
+              <text x="84" y="50">120</text>
+              <text x="176" y="150">40</text>
+              <text x="268" y="177">18</text>
+              <text x="360" y="189">9</text>
+              <text x="452" y="192">6</text>
+              <text x="544" y="192">6</text>
+            </g>
+            <line x1="20" y1="210" x2="580" y2="210" style="stroke: var(--border-strong); stroke-width: 1"></line>
+            <g style="font-size: 13px; fill: var(--muted); text-anchor: middle">
+              <text x="84" y="232">publish 1</text>
+              <text x="176" y="232">publish 2</text>
+              <text x="268" y="232">publish 3</text>
+              <text x="360" y="232">publish 4</text>
+              <text x="452" y="232">publish 5</text>
+              <text x="544" y="232">publish 6</text>
+            </g>
+            <text x="20" y="258" style="font-size: 13px; fill: var(--muted)">Megabytes uploaded per publish. Example data, not a measurement.</text>
+          </g>
+        </svg>
+        <figcaption>Example data, not a measurement: megabytes uploaded per
+        publish for six publishes of one folder. The first publish sends the
+        whole folder and every later one sends the files that changed, which is
+        <a class="ref" href="#eq-bytes">the formula above</a> drawn
+        out.</figcaption>
+      </figure>
+
+      <h3>What the numbers are not</h3>
+      <p>The chart in <a class="ref" href="#fig-upload"></a> is round on
+      purpose. It shows the shape we expect, a first publish that carries the
+      folder and later publishes that carry a change, and it says nothing about
+      the size of a real deck or the speed of a real host. A result we would
+      publish is the same chart with the folder, the host and the date named
+      beside
+      it.<span class="fn">The six values in the chart are example data, chosen to make the shape of the argument visible. They were not produced by a measurement of rshow.</span></p>
+    </section>
+
+    <section id="sec-discussion">
+      <h2>Discussion</h2>
+      <p>Immutability buys a link a reader can cite and costs the writer the
+      habit of the newest link. The pin exists because the two are both wanted
+      on the same day: the room reads a fixed version while the folder moves
+      behind it. The trade we have not solved is deletion. A version that never
+      changes is also a version that is hard to withdraw, and a link that has
+      reached one reader can be deleted from the host but not from the copy that
+      reader kept.</p>
+      <p>The design leans on the fact that static bytes are the cheapest thing a
+      network can serve. That is the same bet the Carbon design system makes
+      about interfaces: one system, few moving parts, and the plainest possible
+      answer to a question a reader asks.<a class="cite" href="#ref-carbon"></a>
+      The theme in this repository is that bet applied to a page, and its two
+      modes are one system read under two grounds.</p>
+      <p>Two limits are worth naming. The first is the record: one row per slug
+      is easy to read, and the version insert assumes one writer at a time. Two
+      people publishing the same slug in the same second will resolve to one of
+      the two versions, and the loser is told to publish again. We take that
+      over a lock, because the case is rare and the recovery is cheap.</p>
+      <p>The second is trust. A version is immutable because the host says so,
+      and nothing in the link proves it. A reader who needs more than the host's
+      word can hash the files they received and compare the result with a
+      manifest they were given, and rshow keeps a manifest for every version;
+      what it does not do is print those hashes on the page, because that costs a
+      reader attention and answers a question most readers do not ask.</p>
+    </section>
+
+    <section id="sec-references">
+      <h2 data-nonum data-break>References</h2>
+      <ol class="refs">
+        <li id="ref-rfc7234">Fielding, R., Nottingham, M. and Reschke, J. (eds).
+        <em>HTTP/1.1 Caching</em>. RFC 7234, IETF, June 2014.
+        <a href="https://www.rfc-editor.org/rfc/rfc7234">https://www.rfc-editor.org/rfc/rfc7234</a></li>
+        <li id="ref-workers">Cloudflare. <em>Workers documentation</em>. Cloudflare,
+        Inc., 2025. <a href="https://developers.cloudflare.com/workers/">https://developers.cloudflare.com/workers</a></li>
+        <li id="ref-carbon">IBM. <em>Carbon Design System</em>. IBM Corporation,
+        2025. <a href="https://carbondesignsystem.com/">https://carbondesignsystem.com</a></li>
+        <li id="ref-tufte">Tufte, E. R. <em>The Visual Display of Quantitative
+        Information</em>. Graphics Press, Cheshire, Connecticut, 1983.</li>
+        <li id="ref-cooluris">Berners-Lee, T. <em>Cool URIs don't change</em>.
+        W3C, 1998. <a href="https://www.w3.org/Provider/Style/URI">https://www.w3.org/Provider/Style/URI</a></li>
+        <li id="ref-fielding">Fielding, R. T. <em>Architectural Styles and the
+        Design of Network-based Software Architectures</em>. Doctoral
+        dissertation, University of California, Irvine, 2000.
+        <a href="https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm</a></li>
+      </ol>
+    </section>
+
+  </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+/*
+ * rshow theme "default": fonts
+ *
+ * Self hosted IBM Plex, Latin 1 subset, woff2, no remote request. The files
+ * live in fonts/ next to this stylesheet and the URLs are relative, so the
+ * theme works from /_themes/<name>@<n>/ on the host and from a local folder.
+ *
+ * Weights: IBM Plex Sans 300, 400, 600 and IBM Plex Mono 400. That is the whole
+ * set the system uses: 300 for a display line above 54px, 400 for body and for
+ * a slide title, 600 for a small heading and for emphasis, and 400 mono for
+ * code and data.
+ *
+ * Licence: SIL Open Font License 1.1, see fonts/OFL.txt.
+ * Source: https://github.com/IBM/plex (packages @ibm/plex-sans, @ibm/plex-mono).
+ *
+ * font-display: swap keeps text readable while the file loads; the token
+ * stacks in tokens.css end in system fonts, so a missing file degrades to a
+ * local face instead of invisible text.
+ */
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("fonts/IBMPlexSans-Light-Latin1.woff2") format("woff2");
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153,
+    U+02C6, U+02DA, U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022,
+    U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/IBMPlexSans-Regular-Latin1.woff2") format("woff2");
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153,
+    U+02C6, U+02DA, U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022,
+    U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/IBMPlexSans-SemiBold-Latin1.woff2") format("woff2");
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153,
+    U+02C6, U+02DA, U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022,
+    U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/IBMPlexMono-Regular-Latin1.woff2") format("woff2");
+  unicode-range: U+0000, U+000D, U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153,
+    U+02C6, U+02DA, U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2020-2022,
+    U+2026, U+2030, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FB01-FB02;
+}

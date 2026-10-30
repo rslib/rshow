@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Mockup: one product on four platforms</title>
+<!--
+  One product, two screens, five skins, each in the frame the platform draws:
+
+    fluent    Windows 11     a desktop window
+    mac       macOS          a desktop window
+    adwaita   GNOME          a desktop window
+    egui      a GPU toolkit  a bare frame, no chrome at all
+    material  Material 3     a phone
+
+  The point of the file is the same as the point of mockup-desktop.html, one
+  step further: the content does not change when the chrome does, and it does
+  not change when the skin does either. A settings screen is the settings screen
+  on all five, and what a reader should notice is which one the product would
+  ship on, not which one looks prettiest.
+
+  The phone is the one exception, and it is a real design decision rather than a
+  layout trick: 390px cannot hold a sidebar, so the Material screens are the
+  same two screens in one column. Everything else is the same markup five times.
+
+  Pinning. A mockup has one skin at a time and the toolbar swaps it. This page
+  shows five at once, so each artboard pins its own with data-skin and the page
+  itself carries data-skin="pin", which no skin matches. The skin link that the
+  toolbar rewrites is marked media="not all" for the same reason: switching the
+  page's skin here would fight the pinned screens. Pick a skin on any other
+  mockup, or open one of these screens in focus view.
+
+  Every name, address and number below is a placeholder for a drawing.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../mockup.css">
+<link rel="stylesheet" href="../skins/wire.css" id="mk-skin" data-mk-skin media="not all">
+<link rel="stylesheet" href="../skins/fluent.css">
+<link rel="stylesheet" href="../skins/mac.css">
+<link rel="stylesheet" href="../skins/adwaita.css">
+<link rel="stylesheet" href="../skins/egui.css">
+<link rel="stylesheet" href="../skins/material.css">
+<script src="../mode.js"></script>
+<script defer src="../mockup.js"></script>
+<script defer src="../skins/fluent.js"></script>
+</head>
+<body>
+
+<main class="mockup" data-name="Ledger" data-skin="pin">
+
+  <!-- ======================================================== fluent · settings -->
+  <section class="artboard" id="fluent-settings" data-skin="fluent"
+           data-frame="desktop" data-os="windows" data-flush
+           data-title="Settings · fluent, Windows 11 frame"
+           data-window-title="Ledger - Settings" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-placeholder="Search" aria-label="Search" style="width:220px"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:64%"></span>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Account</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Appearance</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Notifications</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Privacy</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Advanced</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Sign out</span></div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:28px 32px;gap:18px">
+          <span class="wf-heading">Settings</span>
+          <div class="wf-tabs">
+            <span class="is-active">General</span>
+            <span>Appearance</span>
+            <span>Privacy</span>
+          </div>
+          <div class="wf-row" style="gap:14px">
+            <span class="wf-input" data-label="Display name" style="flex:1 1 0">Rae Haldane</span>
+            <span class="wf-input" data-label="Email" style="flex:1 1 0">rae@example.invalid</span>
+          </div>
+          <span class="wf-select" data-label="Workspace" data-options="Design|Engineering|Support"
+                data-value="Design" style="width:280px">Design</span>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Remember this device</span>
+          </div>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-toggle on"></span>
+            <span>Sync drafts while offline</span>
+          </div>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-toggle"></span>
+            <span>Send a weekly digest</span>
+          </div>
+          <div class="wf-card">
+            <div class="wf-row" style="gap:10px">
+              <strong>Active sessions</strong>
+              <span class="wf-spacer"></span>
+              <span class="wf-button ghost">Sign out everywhere</span>
+            </div>
+            <span class="wf-table" data-rows="3"></span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:180px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Cancel</span>
+            <span class="wf-button primary">Save changes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="Fluent puts a 2px accent bar under the selected tab and a 4px corner on every control; the window is one flat ground with white panels on it, not a card per row."
+          style="top:70px;left:1196px"></span>
+  </section>
+
+  <!-- =========================================================== fluent · list -->
+  <section class="artboard" id="fluent-list" data-skin="fluent"
+           data-frame="desktop" data-os="windows" data-flush
+           data-title="Invoices · fluent, Windows 11 frame"
+           data-window-title="Ledger - Invoices" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-placeholder="Search" aria-label="Search" style="width:220px"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <div class="wf-row"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Invoices</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Reports</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+        <div class="wf-col" style="width:300px;padding:12px;gap:8px;border-right:1px solid var(--mk-line)">
+          <div class="wf-row" style="gap:8px">
+            <strong style="font-size:14px">Invoices</strong>
+            <span class="wf-spacer"></span>
+            <span class="wf-button ghost">New</span>
+          </div>
+          <div class="wf-box is-active" style="min-height:56px;padding:10px">
+            <strong>Ledger 4021</strong><br><span class="wf-text" data-lines="1" style="width:70%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4020</strong><br><span class="wf-text" data-lines="1" style="width:60%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4019</strong><br><span class="wf-text" data-lines="1" style="width:80%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4018</strong><br><span class="wf-text" data-lines="1" style="width:50%"></span>
+          </div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:28px 32px;gap:16px">
+          <div class="wf-row">
+            <span class="wf-heading">Ledger 4021</span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Duplicate</span>
+            <span class="wf-button primary">Send</span>
+          </div>
+          <span class="wf-text" data-lines="2"></span>
+          <span class="wf-table" data-rows="4" data-cols="3"></span>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Notify the client when it is paid</span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:240px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Print</span>
+            <span class="wf-button primary">Mark as paid</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="The list column keeps a white row on the window ground and marks the open invoice with the accent, because Windows 11 has no filled selected row in a list."
+          style="top:70px;left:1196px"></span>
+  </section>
+
+  <!-- =========================================================== mac · settings -->
+  <section class="artboard" id="mac-settings" data-skin="mac"
+           data-frame="desktop" data-os="mac" data-flush
+           data-title="Settings · mac, macOS frame"
+           data-window-title="Ledger" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-placeholder="Search" aria-label="Search" style="width:220px"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:64%"></span>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Account</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Appearance</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Notifications</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Privacy</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Advanced</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Sign out</span></div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:28px 32px;gap:18px">
+          <span class="wf-heading">Settings</span>
+          <div class="wf-tabs">
+            <span class="is-active">General</span>
+            <span>Appearance</span>
+            <span>Privacy</span>
+          </div>
+          <div class="wf-row" style="gap:14px">
+            <span class="wf-input" data-label="Display name" style="flex:1 1 0">Rae Haldane</span>
+            <span class="wf-input" data-label="Email" style="flex:1 1 0">rae@example.invalid</span>
+          </div>
+          <span class="wf-select" data-label="Workspace" data-options="Design|Engineering|Support"
+                data-value="Design" style="width:280px">Design</span>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Remember this device</span>
+          </div>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-toggle on"></span>
+            <span>Sync drafts while offline</span>
+          </div>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-toggle"></span>
+            <span>Send a weekly digest</span>
+          </div>
+          <div class="wf-card">
+            <div class="wf-row" style="gap:10px">
+              <strong>Active sessions</strong>
+              <span class="wf-spacer"></span>
+              <span class="wf-button ghost">Sign out everywhere</span>
+            </div>
+            <span class="wf-table" data-rows="3"></span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:180px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Cancel</span>
+            <span class="wf-button primary">Save changes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="The tabs are a segmented control, not a tab bar: macOS has no underline indicator and a Mac user reads a row of underlined words as a web page."
+          style="top:64px;left:1196px"></span>
+  </section>
+
+  <!-- ============================================================== mac · list -->
+  <section class="artboard" id="mac-list" data-skin="mac"
+           data-frame="desktop" data-os="mac" data-flush
+           data-title="Invoices · mac, macOS frame"
+           data-window-title="Ledger" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-placeholder="Search" aria-label="Search" style="width:220px"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <div class="wf-row"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Invoices</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Reports</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+        <div class="wf-col" style="width:300px;padding:12px;gap:8px;border-right:1px solid var(--mk-line)">
+          <div class="wf-row" style="gap:8px">
+            <strong style="font-size:13px">Invoices</strong>
+            <span class="wf-spacer"></span>
+            <span class="wf-button ghost">New</span>
+          </div>
+          <div class="wf-box is-active" style="min-height:56px;padding:10px">
+            <strong>Ledger 4021</strong><br><span class="wf-text" data-lines="1" style="width:70%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4020</strong><br><span class="wf-text" data-lines="1" style="width:60%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4019</strong><br><span class="wf-text" data-lines="1" style="width:80%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4018</strong><br><span class="wf-text" data-lines="1" style="width:50%"></span>
+          </div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:28px 32px;gap:16px">
+          <div class="wf-row">
+            <span class="wf-heading">Ledger 4021</span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Duplicate</span>
+            <span class="wf-button primary">Send</span>
+          </div>
+          <span class="wf-text" data-lines="2"></span>
+          <span class="wf-table" data-rows="4" data-cols="3"></span>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Notify the client when it is paid</span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:240px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Print</span>
+            <span class="wf-button primary">Mark as paid</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="A macOS table has no border around it: the invoice lines are rows with a hairline, and the columns appear only because this drawing asks for them."
+          style="top:64px;left:1196px"></span>
+  </section>
+
+  <!-- ======================================================= adwaita · settings -->
+  <section class="artboard" id="adwaita-settings" data-skin="adwaita"
+           data-frame="desktop" data-os="linux" data-flush
+           data-title="Settings · adwaita, GNOME frame"
+           data-window-title="Ledger" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-placeholder="Search" aria-label="Search" style="width:220px"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:64%"></span>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Account</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Appearance</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Notifications</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Privacy</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Advanced</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Sign out</span></div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:28px 32px;gap:18px">
+          <span class="wf-heading">Settings</span>
+          <div class="wf-tabs">
+            <span class="is-active">General</span>
+            <span>Appearance</span>
+            <span>Privacy</span>
+          </div>
+          <div class="wf-row" style="gap:14px">
+            <span class="wf-input" data-label="Display name" style="flex:1 1 0">Rae Haldane</span>
+            <span class="wf-input" data-label="Email" style="flex:1 1 0">rae@example.invalid</span>
+          </div>
+          <span class="wf-select" data-label="Workspace" data-options="Design|Engineering|Support"
+                data-value="Design" style="width:280px">Design</span>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Remember this device</span>
+          </div>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-toggle on"></span>
+            <span>Sync drafts while offline</span>
+          </div>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-toggle"></span>
+            <span>Send a weekly digest</span>
+          </div>
+          <div class="wf-card">
+            <div class="wf-row" style="gap:10px">
+              <strong>Active sessions</strong>
+              <span class="wf-spacer"></span>
+              <span class="wf-button ghost">Sign out everywhere</span>
+            </div>
+            <span class="wf-table" data-rows="3"></span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:180px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Cancel</span>
+            <span class="wf-button primary">Save changes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="The suggested action is the one pill in the window and the view switcher is a pill around the tabs: libadwaita draws one shape per level, never a radius per element."
+          style="top:64px;left:1196px"></span>
+  </section>
+
+  <!-- ========================================================== adwaita · list -->
+  <section class="artboard" id="adwaita-list" data-skin="adwaita"
+           data-frame="desktop" data-os="linux" data-flush
+           data-title="Invoices · adwaita, GNOME frame"
+           data-window-title="Ledger" data-w="1280" data-h="800">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span class="wf-icon" data-size="lg"></span>
+        <strong>Ledger</strong>
+        <span class="wf-spacer"></span>
+        <span class="wf-input" data-placeholder="Search" aria-label="Search" style="width:220px"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <div class="wf-row"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Invoices</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Reports</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+        <div class="wf-col" style="width:300px;padding:12px;gap:8px;border-right:1px solid var(--mk-line)">
+          <div class="wf-row" style="gap:8px">
+            <strong style="font-size:14px">Invoices</strong>
+            <span class="wf-spacer"></span>
+            <span class="wf-button ghost">New</span>
+          </div>
+          <div class="wf-box is-active" style="min-height:56px;padding:10px">
+            <strong>Ledger 4021</strong><br><span class="wf-text" data-lines="1" style="width:70%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4020</strong><br><span class="wf-text" data-lines="1" style="width:60%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4019</strong><br><span class="wf-text" data-lines="1" style="width:80%"></span>
+          </div>
+          <div class="wf-box" style="min-height:56px;padding:10px">
+            <strong>Ledger 4018</strong><br><span class="wf-text" data-lines="1" style="width:50%"></span>
+          </div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:28px 32px;gap:16px">
+          <div class="wf-row">
+            <span class="wf-heading">Ledger 4021</span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Duplicate</span>
+            <span class="wf-button primary">Send</span>
+          </div>
+          <span class="wf-text" data-lines="2"></span>
+          <span class="wf-table" data-rows="4"></span>
+          <div class="wf-row" style="gap:10px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Notify the client when it is paid</span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row">
+            <span class="wf-text" data-lines="1" style="width:240px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Print</span>
+            <span class="wf-button primary">Mark as paid</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="The session list is a boxed list: rows and a hairline, no outer border. The invoice table keeps its columns because a grid of cells is what that drawing needs."
+          style="top:64px;left:1196px"></span>
+  </section>
+
+  <!-- ========================================================== egui · settings -->
+  <section class="artboard" id="egui-settings" data-skin="egui"
+           data-frame="bare" data-flush
+           data-title="Settings · egui, bare frame"
+           data-w="1200" data-h="750">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span>File</span><span>Edit</span><span>View</span>
+        <span class="wf-spacer"></span>
+        <span>ledger 0.4</span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <span class="wf-text" data-lines="1" style="width:64%"></span>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Account</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Appearance</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Notifications</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Privacy</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Advanced</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Sign out</span></div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:10px 14px;gap:16px">
+          <span class="wf-heading">Settings</span>
+          <div class="wf-tabs">
+            <span class="is-active">General</span>
+            <span>Appearance</span>
+            <span>Privacy</span>
+          </div>
+          <div class="wf-row" style="gap:8px">
+            <span class="wf-input" data-label="Display name" style="flex:1 1 0">Rae Haldane</span>
+            <span class="wf-input" data-label="Email" style="flex:1 1 0">rae@example.invalid</span>
+          </div>
+          <span class="wf-select" data-label="Workspace" data-options="Design|Engineering|Support"
+                data-value="Design" style="width:200px">Design</span>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Remember this device</span>
+          </div>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-toggle on"></span>
+            <span>Sync drafts while offline</span>
+          </div>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-toggle"></span>
+            <span>Send a weekly digest</span>
+          </div>
+          <div class="wf-card">
+            <div class="wf-row" style="gap:10px">
+              <strong>Active sessions</strong>
+              <span class="wf-spacer"></span>
+              <span class="wf-button ghost">Sign out everywhere</span>
+            </div>
+            <span class="wf-table" data-rows="3"></span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-text" data-lines="1" style="width:140px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Cancel</span>
+            <span class="wf-button primary">Save changes</span>
+          </div>
+        </div>
+      </div>
+      <div class="wf-row" style="min-height:18px;padding:0 6px;gap:10px;font-size:10px;color:var(--mk-muted);border-top:1px solid var(--mk-line)">
+        <span>Ready</span>
+        <span class="wf-spacer"></span>
+        <span>60 fps</span>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="A bare frame has no chrome at all, so the menu bar is drawn by the app: it is one row of words with no fill and no border, which is all egui would paint."
+          style="top:44px;left:1110px"></span>
+  </section>
+
+  <!-- ============================================================== egui · list -->
+  <section class="artboard" id="egui-list" data-skin="egui"
+           data-frame="bare" data-flush
+           data-title="Invoices · egui, bare frame"
+           data-w="1200" data-h="750">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav">
+        <span>File</span><span>Edit</span><span>View</span>
+        <span class="wf-spacer"></span>
+        <span>ledger 0.4</span>
+      </div>
+      <div class="wf-row wf-shell wf-grow">
+        <div class="wf-sidebar">
+          <div class="wf-row"><span class="wf-icon"></span><span>Inbox</span></div>
+          <div class="wf-row is-active"><span class="wf-icon"></span><span>Invoices</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Clients</span></div>
+          <div class="wf-row"><span class="wf-icon"></span><span>Reports</span></div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row"><span class="wf-icon"></span><span>Settings</span></div>
+        </div>
+        <div class="wf-col" style="width:240px;padding:6px;gap:4px;border-right:1px solid var(--mk-line)">
+          <div class="wf-row" style="gap:6px">
+            <strong style="font-size:12px">Invoices</strong>
+            <span class="wf-spacer"></span>
+            <span class="wf-button ghost">New</span>
+          </div>
+          <div class="wf-box is-active" style="min-height:40px;padding:6px">
+            <strong>Ledger 4021</strong><br><span class="wf-text" data-lines="1" style="width:70%"></span>
+          </div>
+          <div class="wf-box" style="min-height:40px;padding:6px">
+            <strong>Ledger 4020</strong><br><span class="wf-text" data-lines="1" style="width:60%"></span>
+          </div>
+          <div class="wf-box" style="min-height:40px;padding:6px">
+            <strong>Ledger 4019</strong><br><span class="wf-text" data-lines="1" style="width:80%"></span>
+          </div>
+          <div class="wf-box" style="min-height:40px;padding:6px">
+            <strong>Ledger 4018</strong><br><span class="wf-text" data-lines="1" style="width:50%"></span>
+          </div>
+        </div>
+        <div class="wf-col wf-grow" style="padding:10px 14px;gap:16px">
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-heading">Ledger 4021</span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Duplicate</span>
+            <span class="wf-button primary">Send</span>
+          </div>
+          <span class="wf-text" data-lines="2"></span>
+          <span class="wf-table" data-rows="4" data-cols="3"></span>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-checkbox" data-checked="true"></span>
+            <span>Notify the client when it is paid</span>
+          </div>
+          <span class="wf-spacer"></span>
+          <div class="wf-row" style="gap:6px">
+            <span class="wf-text" data-lines="1" style="width:160px"></span>
+            <span class="wf-spacer"></span>
+            <span class="wf-button">Print</span>
+            <span class="wf-button primary">Mark as paid</span>
+          </div>
+        </div>
+      </div>
+      <div class="wf-row" style="min-height:18px;padding:0 6px;gap:10px;font-size:10px;color:var(--mk-muted);border-top:1px solid var(--mk-line)">
+        <span>12 invoices</span>
+        <span class="wf-spacer"></span>
+        <span>selected 1</span>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="egui has no shadow and no second surface: the list column is separated by a 1px line and the open invoice is marked with the selection blue, which is the toolkit's only accent."
+          style="top:44px;left:1110px"></span>
+  </section>
+
+  <!-- ==================================================== material · settings -->
+  <section class="artboard" id="material-settings" data-skin="material"
+           data-frame="phone" data-flush data-status="9:41"
+           data-title="Settings · material, phone frame"
+           data-w="390" data-h="844">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav" style="min-height:56px;font-size:16px;border-radius:0">
+        <span class="wf-icon"></span>
+        <span style="font-size:22px">Settings</span>
+        <span class="wf-spacer"></span>
+        <span class="wf-avatar" data-size="sm"></span>
+      </div>
+      <div class="wf-col wf-grow" style="padding:12px 16px;gap:16px">
+        <div class="wf-tabs" style="border-radius:12px">
+          <span class="is-active">General</span>
+          <span>Look</span>
+          <span>Privacy</span>
+        </div>
+        <span class="wf-input" data-label="Display name">Rae Haldane</span>
+        <span class="wf-input" data-label="Email" data-variant="filled">rae@example.invalid</span>
+        <span class="wf-select" data-label="Workspace" data-options="Design|Engineering|Support"
+              data-value="Design">Design</span>
+        <div class="wf-row" style="gap:12px">
+          <span class="wf-checkbox" data-checked="true"></span>
+          <span>Remember this device</span>
+        </div>
+        <div class="wf-row" style="gap:12px">
+          <span class="wf-toggle on"></span>
+          <span>Sync drafts while offline</span>
+        </div>
+        <div class="wf-row" style="gap:12px">
+          <span class="wf-toggle"></span>
+          <span>Send a weekly digest</span>
+        </div>
+        <div class="wf-box" style="padding:14px">
+          <div class="wf-row" style="gap:10px">
+            <strong style="font-size:14px">Storage</strong>
+            <span class="wf-spacer"></span>
+            <span style="font-size:12px;color:var(--mk-muted)">4.2 of 15 GB</span>
+          </div>
+          <span class="wf-text" data-lines="1" style="width:100%;margin-top:8px"></span>
+        </div>
+        <div class="wf-box" style="padding:14px">
+          <div class="wf-row" style="gap:10px">
+            <strong style="font-size:14px">Active sessions</strong>
+            <span class="wf-spacer"></span>
+            <span class="wf-button ghost">Sign out</span>
+          </div>
+          <span class="wf-text" data-lines="1" style="width:70%;margin-top:8px"></span>
+        </div>
+        <span class="wf-spacer"></span>
+        <div class="wf-row" style="justify-content:flex-end;gap:8px">
+          <span class="wf-button ghost">Cancel</span>
+          <span class="wf-button primary">Save</span>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="390px is one column: the sidebar becomes the tabs, and the outlined field becomes a filled field where the label would collide with the row above."
+          style="top:120px;left:340px"></span>
+  </section>
+
+  <!-- ======================================================== material · list -->
+  <section class="artboard" id="material-list" data-skin="material"
+           data-frame="phone" data-flush data-status="9:41"
+           data-title="Invoices · material, phone frame"
+           data-w="390" data-h="844">
+
+    <div class="wf-col" style="height:100%;gap:0">
+      <div class="wf-nav" style="min-height:56px;font-size:16px;border-radius:0">
+        <span class="wf-icon"></span>
+        <span style="font-size:22px">Invoices</span>
+        <span class="wf-spacer"></span>
+        <span class="wf-button ghost">New</span>
+      </div>
+      <div class="wf-col wf-grow" style="padding:8px 16px;gap:8px">
+        <div class="wf-box is-active" style="min-height:72px;padding:14px">
+          <strong>Ledger 4021</strong><br>
+          <span class="wf-text" data-lines="1" style="width:70%"></span>
+        </div>
+        <div class="wf-box" style="min-height:72px;padding:14px">
+          <strong>Ledger 4020</strong><br>
+          <span class="wf-text" data-lines="1" style="width:60%"></span>
+        </div>
+        <div class="wf-box" style="min-height:72px;padding:14px">
+          <strong>Ledger 4019</strong><br>
+          <span class="wf-text" data-lines="1" style="width:80%"></span>
+        </div>
+        <div class="wf-box" style="min-height:72px;padding:14px">
+          <strong>Ledger 4018</strong><br>
+          <span class="wf-text" data-lines="1" style="width:50%"></span>
+        </div>
+        <span class="wf-spacer"></span>
+        <span class="wf-heading" style="font-size:18px">Ledger 4021</span>
+        <span class="wf-text" data-lines="2"></span>
+        <span class="wf-table" data-rows="3" data-cols="2"></span>
+        <div class="wf-row" style="justify-content:flex-end;gap:8px">
+          <span class="wf-button ghost">Print</span>
+          <span class="wf-button primary">Mark as paid</span>
+        </div>
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="A list and its detail cannot sit side by side on a phone, so the list is the screen and the open invoice is the top of it. That is the one decision this frame forces."
+          style="top:120px;left:340px"></span>
+  </section>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,669 @@
+/*
+ * rshow theme "default": the adwaita skin, layer 3.
+ *
+ * A GNOME look-alike. libadwaita is the toolbox a modern GTK 4 app is built
+ * from, and what it draws is: a header bar with the window title in the middle
+ * and the window controls on the right, 6px corners on a control and 12px on a
+ * boxed list, one blue for a suggested action, pill shaped buttons for that
+ * action, and rows that are boxes rather than tables.
+ *
+ * Not GNOME's artwork: no Adwaita icon theme, no Cantarell file. Cantarell is
+ * the first name in the stack because a Linux reader has it installed, and the
+ * stack falls through to system-ui so a Mac reader still sees a header bar.
+ *
+ * Knobs: the custom.css set plus --mk-surface, --mk-surface-2, --mk-header,
+ * --mk-on-accent, --mk-accent-soft, --mk-radius-lg, --mk-radius-pill,
+ * --mk-ctl-h, --mk-line-h, --mk-shadow-1, --mk-shadow-6.
+ */
+
+/* --------------------------------------------------- the screen, light -- */
+
+[data-skin="adwaita"] {
+  --mk-bg: #fafafa;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #ebebeb;
+  --mk-chrome-bg-2: #deddda;
+  --mk-chrome-line: #d4d3d0;
+  --mk-chrome-fg: #2e3436;
+  --mk-surface: #ffffff;
+  --mk-surface-2: #f2f2f2;
+  --mk-header: #ebebeb;
+  --mk-fg: #2e3436;
+  --mk-muted: #5e5c64;
+  --mk-line: #deddda;
+  --mk-line-strong: #c0bfbc;
+  --mk-fill: #e8e8e8;
+
+  --mk-accent: #3584e4;
+  --mk-accent-hover: #1c71d8;
+  --mk-accent-soft: #e3f1fd;
+  --mk-on-accent: #ffffff;
+  --mk-focus: #3584e4;
+
+  /* a control is 6px, a boxed list is 12px, a suggested action is a pill */
+  --mk-radius: 6px;
+  --mk-radius-lg: 12px;
+  --mk-radius-pill: 100px;
+
+  --mk-font: Cantarell, "Cantarell Regular", -apple-system, "Segoe UI",
+    system-ui, sans-serif;
+  --mk-size: 14px;
+  --mk-line-h: 20px;
+  --mk-ctl-h: 34px;
+  --mk-gap: 14px;
+  --mk-pad: 20px;
+
+  --mk-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --mk-shadow-6: 0 3px 6px rgba(0, 0, 0, 0.14);
+}
+
+/* ---------------------------------------------------- the screen, dark -- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="adwaita"] {
+    --mk-bg: #242424;
+
+    /* the window chrome the frame draws, in the same two modes */
+    --mk-chrome-bg: #303030;
+    --mk-chrome-bg-2: #292929;
+    --mk-chrome-line: #3d3d3d;
+    --mk-chrome-fg: #ffffff;
+    --mk-surface: #303030;
+    --mk-surface-2: #292929;
+    --mk-header: #303030;
+    --mk-fg: #ffffff;
+    --mk-muted: #b5b5b5;
+    --mk-line: #3d3d3d;
+    --mk-line-strong: #565656;
+    --mk-fill: #3b3b3b;
+    --mk-accent: #78aeed;
+    --mk-accent-hover: #8fbcf0;
+    --mk-accent-soft: #1b3a5c;
+    --mk-on-accent: #00264d;
+    --mk-focus: #78aeed;
+    --mk-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --mk-shadow-6: 0 3px 6px rgba(0, 0, 0, 0.45);
+  }
+}
+
+:root[data-mode="dark"] [data-skin="adwaita"] {
+  --mk-bg: #242424;
+
+  /* the window chrome the frame draws, in the same two modes */
+  --mk-chrome-bg: #303030;
+  --mk-chrome-bg-2: #292929;
+  --mk-chrome-line: #3d3d3d;
+  --mk-chrome-fg: #ffffff;
+  --mk-surface: #303030;
+  --mk-surface-2: #292929;
+  --mk-header: #303030;
+  --mk-fg: #ffffff;
+  --mk-muted: #b5b5b5;
+  --mk-line: #3d3d3d;
+  --mk-line-strong: #565656;
+  --mk-fill: #3b3b3b;
+  --mk-accent: #78aeed;
+  --mk-accent-hover: #8fbcf0;
+  --mk-accent-soft: #1b3a5c;
+  --mk-on-accent: #00264d;
+  --mk-focus: #78aeed;
+  --mk-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --mk-shadow-6: 0 3px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* --------------------------------------------------------------- screen -- */
+
+[data-skin="adwaita"] .mk-screen {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) [data-skin="adwaita"] .mk-screen {
+    color-scheme: dark;
+  }
+}
+
+:root[data-mode="dark"] [data-skin="adwaita"] .mk-screen {
+  color-scheme: dark;
+}
+
+[data-skin="adwaita"] .mk-screen a {
+  color: var(--mk-accent);
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+[data-skin="adwaita"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+[data-skin="adwaita"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+[data-skin="adwaita"] .wf-row.wf-shell {
+  align-items: stretch;
+  gap: 0;
+}
+
+[data-skin="adwaita"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+[data-skin="adwaita"] .wf-spacer,
+[data-skin="adwaita"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+[data-skin="adwaita"] .wf-heading {
+  display: block;
+  width: 40%;
+  max-width: 20em;
+  height: 0.9em;
+  background: var(--mk-fg);
+  border-radius: 4px;
+  opacity: 0.85;
+}
+
+/* A GNOME title is bold and large: libadwaita has a title-1 through title-4. */
+[data-skin="adwaita"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 26px;
+  background: none;
+  opacity: 1;
+}
+
+[data-skin="adwaita"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * var(--mk-line-h));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--mk-line-strong) 0 7px,
+    transparent 7px var(--mk-line-h)
+  );
+  border-radius: 4px;
+  opacity: 0.65;
+}
+
+[data-skin="adwaita"] .wf-text[data-lines="1"] { --mk-lines: 1; }
+[data-skin="adwaita"] .wf-text[data-lines="2"] { --mk-lines: 2; }
+[data-skin="adwaita"] .wf-text[data-lines="3"] { --mk-lines: 3; }
+[data-skin="adwaita"] .wf-text[data-lines="4"] { --mk-lines: 4; }
+[data-skin="adwaita"] .wf-text[data-lines="5"] { --mk-lines: 5; }
+[data-skin="adwaita"] .wf-text[data-lines="6"] { --mk-lines: 6; }
+[data-skin="adwaita"] .wf-text[data-lines="7"] { --mk-lines: 7; }
+[data-skin="adwaita"] .wf-text[data-lines="8"] { --mk-lines: 8; }
+
+[data-skin="adwaita"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 14px;
+  line-height: var(--mk-line-h);
+  color: var(--mk-muted);
+  background: none;
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+/* A boxed list in libadwaita is one rounded box with a hairline between the
+   rows and no line on the outside, so a card has a border and a box does not. */
+[data-skin="adwaita"] .wf-box {
+  min-height: 48px;
+  padding: 12px;
+  background: var(--mk-surface);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-1);
+}
+
+/* A selected row in libadwaita is a filled row with the accent at 15 per cent,
+   and the row keeps its corners because it is a box in a boxed list. */
+[data-skin="adwaita"] .wf-box.is-active {
+  background: var(--mk-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--mk-accent);
+}
+
+[data-skin="adwaita"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  padding: 16px;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="adwaita"] .wf-image {
+  min-height: 120px;
+  background-color: var(--mk-fill);
+  background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% - 0.5px),
+      var(--mk-line-strong) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  border-radius: var(--mk-radius-lg);
+}
+
+[data-skin="adwaita"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  background: var(--mk-fill);
+  border-radius: 50%;
+}
+
+[data-skin="adwaita"] .wf-avatar[data-size="sm"] {
+  width: 24px;
+  height: 24px;
+}
+
+[data-skin="adwaita"] .wf-avatar[data-size="lg"] {
+  width: 48px;
+  height: 48px;
+}
+
+[data-skin="adwaita"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background: var(--mk-fill);
+  border-radius: 4px;
+}
+
+[data-skin="adwaita"] .wf-icon[data-size="lg"] {
+  width: 22px;
+  height: 22px;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+[data-skin="adwaita"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: var(--mk-ctl-h);
+  padding: 0 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mk-fg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--mk-surface-2);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+  box-shadow: var(--mk-shadow-1);
+}
+
+/* The suggested action is the one pill in the window, and the accent is a
+   token so a product with its own blue is one line of CSS. */
+[data-skin="adwaita"] .wf-button.primary {
+  color: var(--mk-on-accent);
+  background: var(--mk-accent);
+  border-color: transparent;
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="adwaita"] .wf-button.ghost {
+  color: var(--mk-fg);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+[data-skin="adwaita"] .wf-button[disabled] {
+  color: var(--mk-muted);
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+[data-skin="adwaita"] .wf-button:focus-visible,
+[data-skin="adwaita"] .wf-button[data-focus] {
+  outline: 2px solid var(--mk-focus);
+  outline-offset: 1px;
+}
+
+[data-skin="adwaita"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 10px;
+  font-size: 14px;
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="adwaita"] .wf-input[data-label]::before,
+[data-skin="adwaita"] .wf-select[data-label]::before,
+[data-skin="adwaita"] .wf-label {
+  position: absolute;
+  top: -17px;
+  left: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--mk-muted);
+}
+
+[data-skin="adwaita"] .wf-input[data-label]::before,
+[data-skin="adwaita"] .wf-select[data-label]::before {
+  content: attr(data-label);
+}
+
+[data-skin="adwaita"] .wf-input:focus-within {
+  border-color: var(--mk-accent);
+  box-shadow: 0 0 0 2px var(--mk-accent-soft);
+}
+
+/* An empty field still says what it is: the drawing's placeholder is read out
+   of the attribute, so a search box in a title bar is not a blank rectangle. */
+[data-skin="adwaita"] .wf-input[data-placeholder]:empty::after {
+  content: attr(data-placeholder);
+  color: var(--mk-muted);
+}
+
+[data-skin="adwaita"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--mk-ctl-h);
+  padding: 0 30px 0 10px;
+  font-size: 14px;
+  color: var(--mk-fg);
+  background: var(--mk-surface-2);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="adwaita"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-top: 4px solid var(--mk-muted);
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+[data-skin="adwaita"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: 4px;
+}
+
+[data-skin="adwaita"] .wf-checkbox[data-checked="true"] {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="adwaita"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 5px;
+  width: 4px;
+  height: 9px;
+  border: solid var(--mk-on-accent);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+[data-skin="adwaita"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 24px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line-strong);
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="adwaita"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--mk-surface);
+  border-radius: 50%;
+  box-shadow: var(--mk-shadow-1);
+}
+
+[data-skin="adwaita"] .wf-toggle.on {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+[data-skin="adwaita"] .wf-toggle.on::after {
+  left: 24px;
+}
+
+/* libadwaita calls this a view switcher: one pill around the row, a raised pill
+   under the active view. */
+[data-skin="adwaita"] .wf-tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--mk-surface-2);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="adwaita"] .wf-tabs > * {
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--mk-muted);
+  white-space: nowrap;
+  border-radius: var(--mk-radius-pill);
+}
+
+[data-skin="adwaita"] .wf-tabs > .is-active,
+[data-skin="adwaita"] .wf-tabs > [aria-selected="true"] {
+  color: var(--mk-fg);
+  background: var(--mk-surface);
+  box-shadow: var(--mk-shadow-1);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+/* The header bar: the window title in the middle, the controls on the right,
+   one hairline under the whole band. It is the one thing that makes a drawing
+   read as a GNOME window and not as a web page. */
+[data-skin="adwaita"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 12px;
+  font-weight: 600;
+  background: var(--mk-header);
+  border-bottom: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg) var(--mk-radius-lg) 0 0;
+}
+
+[data-skin="adwaita"] .wf-nav.wf-centered > strong,
+[data-skin="adwaita"] .wf-nav.wf-centered > .wf-heading {
+  margin: 0 auto;
+}
+
+[data-skin="adwaita"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+  width: 220px;
+  padding: 10px 8px;
+  background: var(--mk-surface-2);
+  border-right: 1px solid var(--mk-line);
+}
+
+[data-skin="adwaita"] .wf-sidebar > .wf-row {
+  gap: 10px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: var(--mk-radius);
+}
+
+[data-skin="adwaita"] .wf-sidebar > .wf-row.is-active,
+[data-skin="adwaita"] .wf-sidebar > .is-active {
+  background: var(--mk-fill);
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+/* libadwaita puts data in a boxed list: rows, a hairline between them, and no
+   vertical rules, because a GTK list is a list and not a spreadsheet. */
+[data-skin="adwaita"] .wf-table {
+  --mk-rows: 4;
+  --mk-cols: 3;
+  height: calc(var(--mk-rows) * 36px);
+  background-color: var(--mk-surface);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 35px,
+    var(--mk-line) 35px 36px
+  );
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-1);
+}
+
+[data-skin="adwaita"] .wf-table[data-rows="1"] { --mk-rows: 1; }
+[data-skin="adwaita"] .wf-table[data-rows="2"] { --mk-rows: 2; }
+[data-skin="adwaita"] .wf-table[data-rows="3"] { --mk-rows: 3; }
+[data-skin="adwaita"] .wf-table[data-rows="4"] { --mk-rows: 4; }
+[data-skin="adwaita"] .wf-table[data-rows="5"] { --mk-rows: 5; }
+[data-skin="adwaita"] .wf-table[data-rows="6"] { --mk-rows: 6; }
+[data-skin="adwaita"] .wf-table[data-rows="8"] { --mk-rows: 8; }
+[data-skin="adwaita"] .wf-table[data-rows="10"] { --mk-rows: 10; }
+
+/* A grid, when the mockup asks for one, keeps its columns. */
+[data-skin="adwaita"] .wf-table[data-cols] {
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 35px,
+      var(--mk-line) 35px 36px
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(100% / var(--mk-cols) - 1px),
+      var(--mk-line) calc(100% / var(--mk-cols) - 1px) calc(100% / var(--mk-cols))
+    );
+}
+
+[data-skin="adwaita"] .wf-table[data-cols="1"] { --mk-cols: 1; }
+[data-skin="adwaita"] .wf-table[data-cols="2"] { --mk-cols: 2; }
+[data-skin="adwaita"] .wf-table[data-cols="3"] { --mk-cols: 3; }
+[data-skin="adwaita"] .wf-table[data-cols="4"] { --mk-cols: 4; }
+[data-skin="adwaita"] .wf-table[data-cols="5"] { --mk-cols: 5; }
+[data-skin="adwaita"] .wf-table[data-cols="6"] { --mk-cols: 6; }
+
+[data-skin="adwaita"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+  padding: 0 0 0 1px;
+  border-bottom: 1px solid var(--mk-line);
+  border-left: 1px solid var(--mk-line);
+}
+
+[data-skin="adwaita"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 4px;
+  background: var(--mk-accent-soft);
+  border-radius: 4px 4px 0 0;
+}
+
+[data-skin="adwaita"] .wf-chart > .is-accent {
+  background: var(--mk-accent);
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+[data-skin="adwaita"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* A libadwaita dialog is a rounded surface with a header bar of its own. */
+[data-skin="adwaita"] .wf-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(440px, 84%);
+  max-height: 84%;
+  padding: 20px;
+  overflow: auto;
+  background: var(--mk-surface);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius-lg);
+  box-shadow: var(--mk-shadow-6);
+  transform: translate(-50%, -50%);
+}
+
+[data-skin="adwaita"] .wf-toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 84%;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--mk-on-accent);
+  background: var(--mk-fg);
+  border-radius: var(--mk-radius-pill);
+  box-shadow: var(--mk-shadow-6);
+  transform: translateX(-50%);
+}
