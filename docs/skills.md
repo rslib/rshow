@@ -4,24 +4,40 @@ rshow ships three skills, so a coding agent can write a page, a deck or a report
 
 ## Install them
 
-From a clone of the rshow repository:
+With the npm package:
+
+```sh
+rshow skills install
+```
+
+`rshow skills install` links the three skills into `~/.claude/skills`, `~/.pi/agent/skills` and `~/.codex/skills`, and uses every target whose parent folder exists.
+Name a target to pick one: `rshow skills install claude`.
+The default is a symlink to the skills folder that ships with rshow, so an upgrade of rshow is nothing to do.
+It copies instead when that folder sits in an npx cache, which npm may delete under a link; `--link` and `--copy` force either one.
+A copy carries a `.rshow-skill` marker with the version, so a newer rshow replaces its own copy and never a folder that is not from rshow.
+
+```sh
+rshow skills status
+rshow skills uninstall
+```
+
+`rshow skills status` prints one line per target and skill: `link -> <path>`, `copy v<version>`, `missing` or `foreign`.
+`rshow skills uninstall` removes the links and copies rshow made, and leaves everything else.
+`--dry-run` prints what would happen and changes nothing, and `--json` prints the same as data.
+A skill folder or link that is not from rshow is never touched: `rshow skills install` prints `skip <path>: exists and is not from rshow` and exits 6.
+
+From a clone of the rshow repository, `./install.sh` does the same for the checkout and links the CLI into `~/.local/bin`:
 
 ```sh
 ./install.sh
 ```
 
-`./install.sh` links the three skills into `~/.claude/skills`, `~/.pi/agent/skills` and `~/.codex/skills`, and links the CLI into `~/.local/bin`.
+`./install.sh` links the three skills into the same three folders, and links the CLI into `~/.local/bin`.
 It uses every target whose parent folder exists, and it takes one on the command line: `./install.sh claude`.
 `--dry-run` prints what it would do, `--list` shows each target, and `--uninstall` removes the links it made.
 It refuses to replace a link it did not make.
 
-From the npm package, copy the folder instead:
-
-```sh
-cp -R "$(npm root -g)/rshow/skills/." ~/.claude/skills/
-```
-
-The package ships the same three skill folders under `skills/`, so an upgrade of rshow is one copy again.
+`rshow doctor` says whether the installed skills match the rshow you are running, one `skills` line: `ok` when every detected target holds the three skills, `warn` with the reason when one does not.
 
 ## What each one does
 

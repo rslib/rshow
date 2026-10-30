@@ -18,6 +18,8 @@ To try it without installing it:
 npx rshow --help
 ```
 
+For a coding agent, `rshow skills install` puts the three rshow skills where Claude Code, pi or codex read them; [skills.md](skills.md) has the flags.
+
 ## Point rshow at your host
 
 `rshow init` writes `~/.config/rshow/config.json`, the file rshow reads first.
@@ -50,7 +52,7 @@ In CI, set `RSHOW_TOKEN` instead. rshow never reads a token from a file or a fla
 rshow doctor
 ```
 
-`rshow doctor` prints one line per check, `ok|warn|fail  <check>  <detail>`, for node, the config files, the token, the API, the art host and the theme.
+`rshow doctor` prints one line per check, `ok|warn|fail  <check>  <detail>`, for node, the config files, the token, the API, the art host, the theme and the skills.
 It exits 6 when a check fails, and it never prints the token.
 
 ## Publish a folder

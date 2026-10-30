@@ -9,6 +9,14 @@ import type { Ctx } from '../context.ts';
 import { EXIT } from '../exit.ts';
 import type { ExitCode } from '../exit.ts';
 import * as keychain from '../keychain.ts';
+import {
+  detectedTargets,
+  homeDir,
+  skillIsCurrent,
+  skillsSource,
+  skillsStatus,
+  skillStateLabel,
+} from '../skills.ts';
 import { DOCTOR_USAGE } from '../usage.ts';
 import { VERSION } from '../version.ts';
 import { resolvedTheme } from './config.ts';
@@ -174,6 +182,27 @@ async function themeCheck(config: AppConfig | undefined): Promise<Check | undefi
   }
 }
 
+// Skills never fail the run: an agent that reads them is a convenience, and a
+// machine with no claude, pi or codex folder has nothing to check.
+async function skillsCheck(): Promise<Check> {
+  const name = 'skills';
+  const home = homeDir(process.env);
+  const targets = await detectedTargets(home);
+  if (targets.length === 0) return { name, status: 'ok', detail: 'no target detected' };
+  const source = await skillsSource(process.env).catch(() => undefined);
+  if (source === undefined) return { name, status: 'warn', detail: 'no skills folder next to rshow' };
+  const list = await skillsStatus({ home, source, targets });
+  const problems: string[] = [];
+  for (const target of targets) {
+    const bad = list
+      .filter((item) => item.target === target && !skillIsCurrent(item.state, VERSION))
+      .map((item) => `${item.skill} ${skillStateLabel(item.state)}`);
+    if (bad.length > 0) problems.push(`${target}: ${bad.join(', ')}`);
+  }
+  if (problems.length === 0) return { name, status: 'ok', detail: targets.join(', ') };
+  return { name, status: 'warn', detail: `${problems.join('; ')} (run rshow skills install)` };
+}
+
 export async function run(argv: string[], ctx: Ctx): Promise<ExitCode> {
   const args = parseCommandArgs(argv, {}, 0, 1, DOCTOR_USAGE);
   const dir = args.positionals[0];
@@ -202,6 +231,7 @@ export async function run(argv: string[], ctx: Ctx): Promise<ExitCode> {
   ];
   const theme = await themeCheck(config);
   if (theme !== undefined) checks.push(theme);
+  checks.push(await skillsCheck());
 
   ctx.out.data({ checks });
   for (const check of checks) ctx.out.line(`${check.status}  ${check.name}  ${check.detail}`);

@@ -8,12 +8,13 @@ commands:
   preview <dir>           serve a folder on 127.0.0.1 for a look, offline
   config [dir]            print the merged config as JSON
   init --url u --art a    write the global config file
-  doctor [dir]            check node, config, token, api, art and theme
+  doctor [dir]            check node, config, token, api, art, theme, skills
   theme new <name>        write a preset folder from a built-in theme
   theme check <dir>       check a theme folder, preset or full
   theme preview <dir>     build a theme, serve it on 127.0.0.1 for a look
   theme publish <dir>     publish a theme folder as theme-<name>
   theme list              list theme artifacts
+  skills <cmd>            install, remove or show the agent skills, per target
   project <cmd>           create, list, show, share or delete a project
   tag <slug>              add or remove tags on an artifact
   list [filters]          list artifacts you own or share
@@ -155,8 +156,9 @@ Prints the path it wrote and the next step: rshow login. --json prints
 export const DOCTOR_USAGE = `usage: rshow doctor [dir] [--json]
 
 Checks the rshow version, the node version against the engines.node of the
-package, the config files, the token, the api, the art host and the theme, one
-line each: ok|warn|fail  <check>  <detail>. With [dir] it reads <dir>/rshow.json too.
+package, the config files, the token, the api, the art host, the theme and the
+skills, one line each: ok|warn|fail  <check>  <detail>. With [dir] it reads
+<dir>/rshow.json too. A skill line warns and never fails.
 Network calls time out after 5 s. Exit 0 when no check failed, 6 when one did.
 The token is never printed.`;
 
@@ -221,6 +223,57 @@ Prints /_themes/<name>@<n>/.`;
 export const THEME_LIST_USAGE = `usage: rshow theme list
 
 Lists artifacts whose slug starts with theme- and their served version.`;
+
+export const SKILLS_USAGE = `usage: rshow skills <install|uninstall|status> [target ...] [options]
+
+  skills install [target ...]    link or copy the three skills into an agent
+  skills uninstall [target ...]  remove the links and copies rshow made
+  skills status [target ...]     say what each target holds, per skill
+
+A target is where an agent reads its skills from:
+  claude   $HOME/.claude/skills
+  pi       $HOME/.pi/agent/skills
+  codex    $HOME/.codex/skills
+With no target, every target whose parent folder exists is used.`;
+
+export const SKILLS_INSTALL_USAGE = `usage: rshow skills install [target ...] [--link|--copy] [--dry-run]
+
+Puts the three skills rshow ships, rshow, rshow-slides and rshow-implement, in
+the skills folder of every target, so that claude, pi and codex read them:
+$HOME/.claude/skills, $HOME/.pi/agent/skills and $HOME/.codex/skills. With no
+target, every target whose parent folder exists is used; naming one of claude,
+pi and codex picks it, and a usage error names them when none is detected.
+Each skill is a symlink to the folder rshow reads it from, so an upgrade of
+rshow is nothing to do. --copy copies the folder and writes a .rshow-skill
+marker in it, {"version": <rshow version>, "source": "rshow"}, which is how a
+newer rshow knows the copy is its own. The default is a link, and a copy when
+that folder sits in an npx cache, which npm may delete under a link.
+A skill that is ours and current prints ok, and one of ours from another path or
+another version is replaced and prints updated. Anything else, a folder, a file
+or a link that rshow did not make, is left alone: skip goes to stderr, the rest
+is still installed, and the run exits 6.
+--dry-run prints what would happen, with would, and changes nothing.
+Prints one line per skill, then installed <n> skills for <targets>; --json
+prints {targets, actions: [{target, skill, action, path}]}.
+RSHOW_SKILLS_DIR reads the skills from another folder.`;
+
+export const SKILLS_UNINSTALL_USAGE = `usage: rshow skills uninstall [target ...] [--dry-run]
+
+Removes the skills rshow put in every target: a symlink into a skills folder
+that holds rshow skills, and a copy that carries the .rshow-skill marker.
+It removes nothing else, with no line and no error. With no target, every
+target whose parent folder exists is used.
+Prints removed <path> per skill, then removed <n> skills for <targets>, and
+--dry-run prints what would happen, with would, and changes nothing.`;
+
+export const SKILLS_STATUS_USAGE = `usage: rshow skills status [target ...] [--json]
+
+Prints one line per target and skill, <target>  <skill>  <state>, where the
+state is link -> <path>, copy v<version>, missing or foreign. It prints nothing
+for a target whose parent folder does not exist, and --json prints {targets,
+actions: [{target, skill, action, path}]}.
+A copy of another version also warns on stderr, because rshow skills install
+replaces it.`;
 
 export const LIST_USAGE = `usage: rshow list [--project p] [--tag t] [--q text]
 

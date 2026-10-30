@@ -24,12 +24,13 @@ test('doctor reports every check as ok', async (t) => {
   assert.equal(result.code, 0);
   assert.equal(result.stderr, '');
   assert.match(result.stdout, /^ok {2}rshow {2}\d+\.\d+\.\d+$/m);
-  assert.match(result.stdout, /^ok {2}node {2}v[0-9.]+ \(needs >=26\)$/m);
+  assert.match(result.stdout, /^ok {2}node {2}v[0-9.]+ \(needs >=22\)$/m);
   assert.match(result.stdout, /^ok {2}config {2}.*rshow\/config\.json$/m);
   assert.match(result.stdout, /^ok {2}token {2}source: env$/m);
   assert.match(result.stdout, /^ok {2}api {2}owner@example\.com \(scope full\)$/m);
   assert.match(result.stdout, /^ok {2}art {2}version 3$/m);
   assert.match(result.stdout, /^ok {2}theme {2}default@3$/m);
+  assert.match(result.stdout, /^ok {2}skills {2}no target detected$/m);
   assert.doesNotMatch(result.stdout, /rsh_secret/);
   assert.doesNotMatch(result.stderr, /rsh_secret/);
 });
@@ -44,7 +45,7 @@ test('doctor --json prints the checks', async (t) => {
   const checks = JSON.parse(result.stdout).checks as { name: string; status: string; detail: string }[];
   assert.deepEqual(
     checks.map((check) => `${check.name} ${check.status}`),
-    ['rshow ok', 'node ok', 'config ok', 'token ok', 'api ok', 'art ok'],
+    ['rshow ok', 'node ok', 'config ok', 'token ok', 'api ok', 'art ok', 'skills ok'],
   );
   assert.equal(checks.find((check) => check.name === 'api')?.detail, 'owner@example.com (scope full)');
 });

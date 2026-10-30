@@ -17,6 +17,7 @@ import {
   INIT_USAGE,
   DOCTOR_USAGE,
   THEME_USAGE,
+  SKILLS_USAGE,
   LIST_USAGE,
   SHOW_USAGE,
   SHARE_USAGE,
@@ -38,6 +39,7 @@ import { run as config } from './commands/config.ts';
 import { run as init } from './commands/init.ts';
 import { run as doctor } from './commands/doctor.ts';
 import { run as theme } from './commands/theme.ts';
+import { run as skills } from './commands/skills.ts';
 import { run as list } from './commands/list.ts';
 import { run as show } from './commands/show.ts';
 import { run as share } from './commands/share.ts';
@@ -63,6 +65,7 @@ const COMMANDS: Record<string, Command> = {
   init: { usage: INIT_USAGE, run: init },
   doctor: { usage: DOCTOR_USAGE, run: doctor },
   theme: { usage: THEME_USAGE, run: theme },
+  skills: { usage: SKILLS_USAGE, run: skills },
   project: { usage: PROJECT_USAGE, run: project },
   tag: { usage: TAG_USAGE, run: tag },
   list: { usage: LIST_USAGE, run: list },

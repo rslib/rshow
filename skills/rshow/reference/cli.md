@@ -10,6 +10,7 @@
 - projects
 - tags and list
 - theme, show, delete
+- skills
 - handoff and compare
 - Config files
 - Exit codes
@@ -26,7 +27,7 @@ This file is the whole surface, both config files and the exit codes.
 | `rshow publish <file-or-dir>` | upload a folder, or one file as `index.html`, as a new version |
 | `rshow config [dir] [--offline]` | print the merged config as JSON, with `theme` resolved to its current version, such as `default@3` |
 | `rshow init --url <admin-url> --art <viewer-url>` | write the global config file, with `--theme` and `--force` |
-| `rshow doctor [dir]` | check node, config, token, api, art and theme, one `ok\|warn\|fail` line each |
+| `rshow doctor [dir]` | check node, config, token, api, art, theme and skills, one `ok\|warn\|fail` line each |
 | `rshow list` | list artifacts you own or that are shared with you, with `--project`, `--tag` and `--q` filters |
 | `rshow show <slug>` | print the artifact, its versions, its shares, its project and its tags |
 | `rshow share <slug>` | set the mode, or add and remove shares |
@@ -41,6 +42,9 @@ This file is the whole surface, both config files and the exit codes.
 | `rshow theme preview <dir>` | build the theme, then serve its preview page on `127.0.0.1` |
 | `rshow theme publish <dir>` | publish a theme folder as `theme-<name>` and set it public |
 | `rshow theme list` | list theme artifacts and the version each one serves |
+| `rshow skills install [target ...]` | link or copy the three skills into `~/.claude/skills`, `~/.pi/agent/skills` or `~/.codex/skills` |
+| `rshow skills uninstall [target ...]` | remove the skill links and copies rshow made |
+| `rshow skills status [target ...]` | print `link`, `copy v<version>`, `missing` or `foreign` per target and skill |
 | `rshow login` | read a token from the terminal with no echo, check it and save it in the macOS Keychain. The person runs it, never the agent |
 | `rshow logout` | remove the saved token |
 
@@ -188,6 +192,23 @@ It names an unknown token, a colour value that is not `#hex`, `rgb()` or `var(--
 `theme preview` builds the preset on its base in a temporary folder and serves it on `127.0.0.1`, with the same offline theme lookup, local `_data` store and live reload as `rshow preview`, and prints the URL of `index.html`; the temporary folder goes when the server stops.
 `theme publish` runs the check first on a preset, then publishes the built folder, so `--no-check` skips both.
 
+## skills
+
+```bash
+rshow skills install [target ...] [--link|--copy] [--dry-run]
+rshow skills uninstall [target ...] [--dry-run]
+rshow skills status [target ...] [--json]
+```
+
+The three skills, `rshow`, `rshow-slides` and `rshow-implement`, teach an agent to publish; `rshow skills install` puts them where claude, pi and codex read them.
+A target is `claude` (`~/.claude/skills`), `pi` (`~/.pi/agent/skills`) or `codex` (`~/.codex/skills`), and with no target every one whose parent folder exists is used.
+The default is a symlink to the skills folder rshow reads from; `--copy` copies it and writes a `.rshow-skill` marker with the version, which a link does not need.
+The default copies in an npx cache, because npm may delete that folder under a live link.
+Each skill prints `ok`, `installed`, `updated` or `removed`, then a summary line.
+A folder, a file or a link that rshow did not make is left alone, with `skip <dst>: exists and is not from rshow` on stderr and exit 6 on the run.
+`rshow skills uninstall` removes only what rshow made: a link into a skills folder that holds rshow skills, or a copy with the marker.
+`rshow doctor` reports the skills on one `skills` line, which warns and never fails.
+
 ## handoff and compare
 
 ```bash
@@ -226,7 +247,7 @@ Later files win, and the environment beats both.
 
 `RSHOW_URL` overrides `url` and `RSHOW_ART` overrides `art`.
 `rshow init --url <admin-url> --art <viewer-url>` writes the global file with both, keeps its other fields, and prints the next step, `rshow login`.
-`rshow doctor [dir]` checks node, both config files, the token, the API, the art host and the theme, one line each, and exits 6 when a check failed. Run it on a config error and show its output to the person.
+`rshow doctor [dir]` checks node, both config files, the token, the API, the art host, the theme and the skills, one line each, and exits 6 when a check failed. Run it on a config error and show its output to the person.
 The token comes from `RSHOW_TOKEN`, else from the macOS Keychain, where `rshow login` saves it. It is never read from a file or from a flag.
 `XDG_CONFIG_HOME` moves the global config file away from `~/.config`.
 
@@ -238,5 +259,5 @@ The token comes from `RSHOW_TOKEN`, else from the macOS Keychain, where `rshow l
 | 2 | usage, which covers a bad flag, a bad slug, a missing `index.html` and a missing token |
 | 4 | auth, which covers an expired token, a revoked token and a token without the scope the command needs |
 | 5 | api or a failed build, which covers a taken slug, a refused request and a build command that exited non-zero |
-| 6 | `rshow check` found an error in the page |
+| 6 | `rshow check` found an error in the page, or a skill folder in the way is not from rshow |
 | 7 | `rshow compare` found a screen that drifted from the handoff |

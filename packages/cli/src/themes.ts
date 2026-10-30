@@ -18,6 +18,13 @@ export const BUILTIN_BASES: readonly string[] = [
   path.resolve(HERE, '../themes'),
 ];
 
+// The same two places for the skills rshow ships: <repo>/skills from src, and
+// <package>/skills next to dist when installed.
+export const BUILTIN_SKILL_BASES: readonly string[] = [
+  path.resolve(HERE, '../../../skills'),
+  path.resolve(HERE, '../skills'),
+];
+
 export const ROLE_TOKENS = ['--bg', '--fg', '--muted', '--accent', '--layer-01'];
 export const TEXT_ROLES = ['--fg', '--muted', '--accent'];
 export const GROUND_TOKENS = ['--bg', '--layer-01'];
@@ -133,6 +140,13 @@ export async function builtinThemeDir(
   for (const base of bases) {
     const dir = path.join(base, name);
     if (await isDir(dir)) return dir;
+  }
+  return undefined;
+}
+
+export async function builtinSkillsDir(bases: readonly string[] = BUILTIN_SKILL_BASES): Promise<string | undefined> {
+  for (const base of bases) {
+    if (await isDir(base)) return base;
   }
   return undefined;
 }

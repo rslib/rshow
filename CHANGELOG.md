@@ -5,6 +5,10 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Added
+
+- `rshow skills install`, `uninstall` and `status`, which link the three agent skills into `~/.claude/skills`, `~/.pi/agent/skills` and `~/.codex/skills`, or copy them with a `.rshow-skill` marker, and replace only what rshow made; `rshow doctor` reports them on a `skills` line.
+
 ## [0.0.1] - 2026-10-30
 
 ### Added

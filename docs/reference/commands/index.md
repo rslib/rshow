@@ -11,13 +11,17 @@ Every rshow command and subcommand. Each page holds the text that `rshow <comman
 | [`rshow preview`](preview.md) | serve a folder on 127.0.0.1 for a look, offline |
 | [`rshow config`](config.md) | print the merged config as JSON |
 | [`rshow init`](init.md) | write the global config file |
-| [`rshow doctor`](doctor.md) | check node, config, token, api, art and theme |
+| [`rshow doctor`](doctor.md) | check node, config, token, api, art, theme, skills |
 | [`rshow theme`](theme.md) | new, check, preview, publish or list |
 | [`rshow theme new`](theme-new.md) | write a preset folder from a built-in theme |
 | [`rshow theme check`](theme-check.md) | check a theme folder, preset or full |
 | [`rshow theme preview`](theme-preview.md) | build a theme, serve it on 127.0.0.1 for a look |
 | [`rshow theme publish`](theme-publish.md) | publish a theme folder as theme-<name> and go public |
 | [`rshow theme list`](theme-list.md) | list theme artifacts and their served version |
+| [`rshow skills`](skills.md) | install, remove or show the agent skills, per target |
+| [`rshow skills install`](skills-install.md) | link or copy the three skills into an agent |
+| [`rshow skills uninstall`](skills-uninstall.md) | remove the links and copies rshow made |
+| [`rshow skills status`](skills-status.md) | say what each target holds, per skill |
 | [`rshow project`](project.md) | create, list, show, share or delete a project |
 | [`rshow project create`](project-create.md) | creates a project and prints its slug, title and url |
 | [`rshow project list`](project-list.md) | lists the projects you own or are a member of |
