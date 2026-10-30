@@ -1,0 +1,482 @@
+/*
+ * rshow theme "default": project layout
+ *
+ * The landing page of a paper. Link order: fonts.css, tokens.css, project.css,
+ * then mode.js in <head> and project.js (defer).
+ *
+ * Markup: <div class="project"> with one <header class="project-head">, one
+ * <figure class="teaser wide">, one <main> and one <footer>. Every child of
+ * .project is one column of prose at --prose, which is about 72 characters at
+ * 18px, and a child marked .wide, such as the teaser, takes the wider --wide.
+ * Carbon's 16 column breakpoints set the padding: md at 672px, lg at 1056px.
+ *
+ * The teaser is an <img>, and the dark block inside teaser.svg resolves against
+ * this document's used color-scheme, which is why html takes color-scheme from
+ * the mode token: an explicit data-mode="dark" carries into the image too.
+ */
+
+:root {
+  /* A ch is the width of a zero, wider than an average letter, so 56ch of Plex
+     Sans at 18px is about 72 characters: the measure a reader can hold. */
+  --prose: 56ch;
+  --wide: 928px;
+  --tap: 44px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: var(--color-scheme);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--lh-read);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- layout -- */
+
+.project {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  max-width: 1584px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-05) var(--space-12);
+}
+
+.project > * {
+  width: 100%;
+  max-width: var(--prose);
+  min-width: 0;
+}
+
+.project > .wide {
+  max-width: var(--wide);
+}
+
+@media (min-width: 672px) {
+  .project {
+    padding: var(--space-11) var(--space-07) var(--space-13);
+  }
+}
+
+@media (min-width: 1056px) {
+  .project {
+    padding-top: var(--space-12);
+  }
+}
+
+/* ----------------------------------------------------------- title block -- */
+
+.project-head {
+  margin: 0 0 var(--space-08);
+}
+
+.project h1 {
+  max-width: 100%;
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.authors {
+  margin: var(--space-06) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.affiliations,
+.marks,
+.venue {
+  margin: var(--space-03) 0 0;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.marks {
+  margin-top: var(--space-02);
+}
+
+.venue {
+  margin-top: var(--space-05);
+}
+
+sup {
+  font-size: 0.7em;
+  line-height: 0;
+  vertical-align: super;
+}
+
+/* ---------------------------------------------------------------- links --- */
+
+/* A ghost button carries 16px of its own padding, so the row shifts left by
+   that much and the first label lines up with the title above it. */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-02) var(--space-03);
+  margin: var(--space-06) 0 0 calc(var(--space-05) * -1);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-03);
+  min-height: var(--tap);
+  padding: 0 var(--space-05);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Carbon fills a tertiary button with blue on hover. Here the hover is the
+   layer colour, so the label keeps its 4.5:1 contrast in both modes. */
+.btn:hover {
+  background: var(--layer-01);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.btn--tertiary {
+  border-color: var(--accent);
+}
+
+.btn .icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* ----------------------------------------------------------------- prose -- */
+
+.project h2 {
+  margin: var(--space-10) 0 var(--space-04);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0 0 var(--space-05);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+strong {
+  font-weight: 600;
+}
+
+ul,
+ol {
+  margin: 0 0 var(--space-05);
+  padding-left: var(--space-06);
+}
+
+li::marker {
+  color: var(--muted);
+}
+
+.tldr {
+  margin: var(--space-08) 0 var(--space-09);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.abstract {
+  margin: 0 0 var(--space-09);
+}
+
+.abstract h2 {
+  margin-top: 0;
+}
+
+.abstract p {
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+
+/* -------------------------------------------------------------- figures --- */
+
+figure {
+  margin: var(--space-07) 0 var(--space-08);
+}
+
+figure img,
+figure svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* A diagram fills the figure it is in, so it sits on the same axis as the text
+   under it instead of hugging the left edge of a wider box. */
+.teaser img {
+  width: 100%;
+}
+
+figcaption {
+  margin-top: var(--space-04);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.teaser figcaption {
+  max-width: 62ch;
+}
+
+/* ---------------------------------------------------------------- tables -- */
+
+.table {
+  margin: 0 0 var(--space-08);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+caption {
+  margin: 0 0 var(--space-03);
+  padding: 0;
+  text-align: left;
+  font-size: var(--text-2xs);
+  color: var(--muted);
+}
+
+th,
+td {
+  padding: var(--space-03) var(--space-05) var(--space-03) 0;
+  text-align: left;
+  vertical-align: baseline;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+thead th {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.num-cell {
+  text-align: right;
+  padding-right: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- bibtex -- */
+
+/* The entry wraps rather than scrolling, so a phone reader sees all of it. The
+   copy button hands over the text as written, newlines and all. */
+pre {
+  margin: 0;
+  padding: var(--space-05);
+  overflow-x: auto;
+  background: var(--layer-01);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: var(--lh-code);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.94em;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.copy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-03) var(--space-04);
+  margin: var(--space-04) 0 0 calc(var(--space-05) * -1);
+}
+
+/* The live region stays rendered and empty, because a region hidden with
+   display: none is dropped from the accessibility tree and is never read. */
+.copy-status {
+  margin: 0;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- footer -- */
+
+.project-foot {
+  margin-top: var(--space-11);
+  padding-top: var(--space-05);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--text-2xs);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.project-foot p {
+  margin: 0 0 var(--space-03);
+}
+
+.project-foot .ack {
+  font-size: var(--text-xs);
+}
+
+/* --------------------------------------------------------- narrow screens -- */
+
+@media (max-width: 671px) {
+  .project {
+    padding: var(--space-07) var(--space-05) var(--space-11);
+  }
+
+  .project h1 {
+    font-size: var(--text-xl);
+  }
+
+  .project h2 {
+    font-size: var(--text-md);
+  }
+
+  .tldr {
+    font-size: var(--text-sm);
+  }
+
+  .abstract p {
+    font-size: var(--text-sm);
+  }
+
+  /* A wide diagram or chart scrolls instead of shrinking to unreadable type. */
+  .teaser,
+  figure {
+    overflow-x: auto;
+  }
+
+  .teaser img {
+    min-width: 560px;
+  }
+
+  figure svg {
+    min-width: 560px;
+  }
+
+  .teaser figcaption,
+  figcaption {
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ----------------------------------------------------------------- print -- */
+
+@media print {
+  .project {
+    display: block;
+    max-width: none;
+    padding: 0;
+  }
+
+  .project > * {
+    max-width: none;
+  }
+
+  figure,
+  .table {
+    break-inside: avoid;
+  }
+
+  .teaser img,
+  figure svg {
+    min-width: 0;
+  }
+
+  .btn {
+    min-height: 0;
+    padding: 0;
+    border-color: transparent;
+    color: #000;
+  }
+
+  /* The copy button has nothing to do on paper, and a URL a reader cannot
+     click is printed in full. */
+  .copy-row {
+    display: none;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #525252;
+    overflow-wrap: anywhere;
+  }
+}

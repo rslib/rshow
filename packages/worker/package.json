@@ -1,0 +1,31 @@
+{
+  "name": "rshow-worker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "predev": "node scripts/embed-static.mjs",
+    "deploy": "wrangler deploy",
+    "migrate": "wrangler d1 migrations apply DB --remote",
+    "test": "vitest run",
+    "pretest": "node scripts/embed-static.mjs",
+    "build": "npm run bundle",
+    "bundle": "wrangler deploy --dry-run --outdir dist --config wrangler.example.jsonc",
+    "prebundle": "node scripts/embed-static.mjs",
+    "typecheck": "tsc --noEmit",
+    "pretypecheck": "node scripts/embed-static.mjs"
+  },
+  "dependencies": {
+    "hono": "^4.13.14",
+    "jose": "^6.2.13",
+    "rshow-shared": "*"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.11",
+    "@cloudflare/workers-types": "^5.20261030.1",
+    "typescript": "^5.9.3",
+    "vitest": "~5.0.5",
+    "wrangler": "4.156.0"
+  }
+}

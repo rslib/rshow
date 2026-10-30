@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Publish throughput, an experiment explorer</title>
+<!--
+  A results dashboard for a lab meeting. Link order: fonts.css, tokens.css,
+  dashboard.css, mode.js in the head (so the stored mode applies before the
+  body paints) and dashboard.js deferred. A published copy points at the theme
+  artifact instead, one pinned version per file:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/dashboard.css">
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/dashboard.js"></script>
+
+  The .dashboard element is the whole contract: data-src names the table to
+  read, data-facet splits the panels and the summary, data-x is the axis,
+  data-series splits a panel into lines, data-metric is the number that the
+  summary and the chart report, and data-filters lists the columns that get a
+  control. dashboard.js fills the four host elements below and nothing else,
+  so the page can be read as a document with JavaScript off.
+
+  Preview it from this folder with `rshow preview .` and open /dashboard.html.
+  Every row in results.csv is invented for this page.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../dashboard.css">
+<script src="../mode.js"></script>
+<script defer src="../dashboard.js"></script>
+</head>
+<body>
+
+<div class="dashboard"
+     data-src="results.csv"
+     data-facet="workload"
+     data-x="nodes"
+     data-series="system"
+     data-metric="throughput"
+     data-unit="publishes/s"
+     data-filters="system,workload,nodes,throughput">
+
+  <header class="dash-head">
+    <h1>Publish throughput across three store designs</h1>
+    <p class="dash-lede">Two versions of the rshow publish path and one
+    stand-in store, run over five folder shapes from one to eight nodes. Every
+    number on this page is example data, kept round on purpose.</p>
+    <p class="dash-note">Lab meeting, [Date]. [Author One] and [Author Two].
+    Venue: [Venue].</p>
+    <p class="dash-meta" data-dashboard-source>Reading results.csv.</p>
+    <noscript>
+      <p class="dash-note">The explorer needs JavaScript to read the table. The
+      rows it would show are in <a href="results.csv">results.csv</a>.</p>
+    </noscript>
+  </header>
+
+  <form class="dash-filters" data-dashboard-filters aria-label="Filters"></form>
+  <p class="dash-status" data-dashboard-status aria-live="polite"></p>
+
+  <section class="dash-section" aria-labelledby="summary-heading">
+    <h2 id="summary-heading">Summary by workload</h2>
+    <div class="dash-box" data-dashboard-summary></div>
+    <p class="dash-note">The metric above the table is the one the summary and
+    the chart both read. A run counts once, whatever its date.</p>
+  </section>
+
+  <section class="dash-section" aria-labelledby="chart-heading">
+    <h2 id="chart-heading">Throughput by node count</h2>
+    <figure class="dash-figure">
+      <div class="dash-facets" data-dashboard-facets></div>
+      <figcaption class="dash-caption" data-dashboard-caption></figcaption>
+    </figure>
+    <p class="dash-note">One panel per workload, on one shared vertical scale.
+    The line ends of the first panel name the systems, which is why there is no
+    legend box anywhere on this page.</p>
+  </section>
+
+  <section class="dash-section" aria-labelledby="runs-heading">
+    <h2 id="runs-heading">Runs</h2>
+    <div class="dash-toolbar" data-dashboard-toolbar></div>
+    <div class="dash-box" data-dashboard-table></div>
+    <p class="dash-note">Choose a column heading to sort by it, or press Enter
+    on the heading for the same result. A quote in the address bar carries the
+    filters, the metric and the sort, so a link reproduces this view.</p>
+  </section>
+
+  <footer class="dash-foot">
+    <p>Example data, not a measurement. The three systems, the five workloads
+    and every number in <a href="results.csv">results.csv</a> were invented to
+    show the shape of the evidence a lab meeting argues over; the harness that
+    would produce them, and the claim it would test, belong in the report that
+    cites this page.</p>
+    <p>The same layout reads a JSON file or an inline data block instead of a
+    CSV: point <code>data-src</code> at either, or give the page a script with
+    <code>id="data"</code> and a JSON body.</p>
+    <p><button type="button" data-rshow-mode-toggle>Mode</button></p>
+  </footer>
+
+</div>
+
+</body>
+</html>

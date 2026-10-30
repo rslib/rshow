@@ -1,0 +1,1078 @@
+/*
+ * rshow theme "default": mockup
+ *
+ * A mockup kit in three layers.
+ *
+ *   tool     this file and mockup.js: the canvas, the toolbar, the notes and
+ *            the comments. Carbon tokens, both modes, no colour of its own.
+ *   frames   this file again: a browser, a phone, a tablet, a desktop window
+ *            and a frameless window, drawn in CSS. Generic chrome, not any
+ *            vendor's artwork or icon set.
+ *   skins    skins/wire.css, skins/sketch.css, skins/custom.css: what is drawn
+ *            inside a screen. One skin loads at a time and mockup.js swaps the
+ *            link.
+ *
+ * Nothing here styles the content of a screen beyond the default it inherits.
+ * A screen is the target product, so it looks like the target product and not
+ * like rshow. That is why a screen carries its own --mk-* tokens: --mk-bg,
+ * --mk-fg, --mk-accent, --mk-radius, --mk-font and the rest, which the skin
+ * reads and a preset may overwrite.
+ *
+ * Markup
+ *
+ *   <main class="mockup" data-skin="wire" data-store="../_data/mockup-comments">
+ *     <section class="artboard" id="gallery" data-frame="browser"
+ *              data-title="Gallery" data-url="art.example.com/admin"
+ *              data-states="empty,loading,error" data-w="1280" data-h="800">
+ *       ...blocks in the skin's classes...
+ *     </section>
+ *   </main>
+ *
+ * mockup.js builds the toolbar, the frame chrome, the title, the state tabs,
+ * the notes panel and the comments panel. With JavaScript off the artboards are
+ * a plain column of screens and the skin still draws them: the mockup is a
+ * viewer for a designer's eye, so that is the whole no script story.
+ *
+ * Link order: fonts.css, tokens.css, mockup.css, one skin, then mode.js in the
+ * head and mockup.js (defer). The skin comes last so it restyles the screen.
+ */
+
+/* ------------------------------------------------------------ the ground -- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-shell, #f4f4f4);
+  color: var(--fg, #161616);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent, #0f62fe);
+  outline-offset: -2px;
+}
+
+.mockup {
+  /* The screen. A skin sets these and a preset in that skin may overwrite
+     them. They are the only colours a screen ever uses. */
+  --mk-bg: #ffffff;
+  --mk-fg: #161616;
+  --mk-muted: #6f6f6f;
+  --mk-line: #8d8d8d;
+  --mk-fill: #e8e8e8;
+  --mk-accent: #0f62fe;
+  --mk-radius: 2px;
+  --mk-font: var(--font-sans, system-ui, sans-serif);
+  --mk-size: 14px;
+  --mk-gap: 12px;
+  --mk-pad: 0px;
+
+  /* The frame around a screen. Neutral on purpose: a device is a drawing of
+     hardware, not a piece of the tool. */
+  --mk-chrome-bg: #ececec;
+  --mk-chrome-bg-2: #dedede;
+  --mk-chrome-line: #c9c9c9;
+  --mk-chrome-fg: #4a4a4a;
+  --mk-bezel: #dcdcdc;
+
+  /* Tool drawing that sits on top of a screen: the drag region of a frameless
+     window, a hotspot. Fixed, because it is never seen through a mode. */
+  --mk-annot: #0f62fe;
+
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "bar bar"
+    "nav side"
+    "stage side";
+  overflow: hidden;
+  background: var(--bg-shell, #f4f4f4);
+  color: var(--fg, #161616);
+}
+
+.mockup[data-view="focus"] {
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+
+/* --------------------------------------------------------------- toolbar -- */
+
+.mk-toolbar {
+  grid-area: bar;
+  z-index: 7;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-height: 48px;
+  padding: 8px 16px;
+  background: var(--bg, #ffffff);
+  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
+}
+
+.mk-toolbar > * {
+  flex: 0 0 auto;
+}
+
+.mk-name {
+  margin-right: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg, #161616);
+  white-space: nowrap;
+}
+
+.mk-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border-subtle, #e0e0e0);
+}
+
+.mk-button {
+  min-height: 32px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted, #525252);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mk-button:hover {
+  color: var(--fg, #161616);
+  background: var(--layer-01, #f4f4f4);
+  border-color: var(--border-subtle, #e0e0e0);
+}
+
+.mk-button[aria-pressed="true"] {
+  color: var(--bg, #ffffff);
+  background: var(--fg, #161616);
+  border-color: var(--fg, #161616);
+}
+
+.mk-button[disabled] {
+  color: var(--placeholder, #a8a8a8);
+  cursor: default;
+  background: transparent;
+  border-color: transparent;
+}
+
+.mk-zoom {
+  min-width: 48px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--muted, #525252);
+}
+
+.mk-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted, #525252);
+}
+
+.mk-field select {
+  height: 32px;
+  padding: 0 6px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--fg, #161616);
+  background: var(--bg, #ffffff);
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  border-radius: 0;
+}
+
+.mk-hint {
+  margin: 0 0 0 auto;
+  font-size: 12px;
+  color: var(--muted, #525252);
+}
+
+/* ------------------------------------------------------------------ nav --- */
+
+.mk-focusnav {
+  grid-area: nav;
+  z-index: 6;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--bg, #ffffff);
+  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
+}
+
+.mockup[data-view="focus"] .mk-focusnav,
+.mockup[data-view="play"] .mk-focusnav {
+  display: flex;
+}
+
+.mk-trail {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mk-count {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--muted, #525252);
+  font-variant-numeric: tabular-nums;
+}
+
+.mockup[data-view="play"] .mk-focusnav [data-mk="prev"],
+.mockup[data-view="play"] .mk-focusnav [data-mk="next"] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- stage --- */
+
+.mk-stage {
+  grid-area: stage;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  background: var(--bg-shell, #f4f4f4);
+}
+
+.mk-stage.is-panning {
+  cursor: grabbing;
+}
+
+.mk-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+  width: max-content;
+  padding: 56px;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.mk-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 64px;
+}
+
+/* ------------------------------------------------------------- artboard --- */
+
+.artboard {
+  position: relative;
+  width: max-content;
+  flex: 0 0 auto;
+  /* The default screen size, used before mockup.js reads data-w and data-h and
+     kept for the no script case. */
+  --mk-w: 1280px;
+  --mk-h: 800px;
+}
+
+.artboard[data-frame="phone"] {
+  --mk-w: 390px;
+  --mk-h: 844px;
+}
+
+.artboard[data-frame="tablet"] {
+  --mk-w: 834px;
+  --mk-h: 1112px;
+}
+
+.mk-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.mk-title {
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg, #161616);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mk-title:hover {
+  color: var(--accent, #0f62fe);
+}
+
+.mk-statebar {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.mk-state {
+  min-height: 24px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted, #525252);
+  background: transparent;
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.mk-state[aria-pressed="true"] {
+  color: var(--bg, #ffffff);
+  background: var(--fg, #161616);
+  border-color: var(--fg, #161616);
+}
+
+/* --------------------------------------------------------------- frames --- */
+
+.mk-frame {
+  position: relative;
+  width: max-content;
+  background: var(--mk-chrome-bg);
+  border: 1px solid var(--mk-chrome-line);
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.mk-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px;
+  overflow: hidden;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--mk-chrome-fg);
+  background: var(--mk-chrome-bg);
+  border-bottom: 1px solid var(--mk-chrome-line);
+  border-radius: 6px 6px 0 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mk-win-title {
+  overflow: hidden;
+  max-width: 60%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.artboard[data-flush] .mk-screen {
+  --mk-pad: 0px;
+}
+
+.mk-screen {
+  position: relative;
+  width: var(--mk-w);
+  height: var(--mk-h);
+  padding: var(--mk-pad, 0);
+  overflow: hidden;
+  color-scheme: light;
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  font-family: var(--mk-font);
+  font-size: var(--mk-size);
+  line-height: 1.45;
+  border-radius: 0 0 6px 6px;
+}
+
+/* ---- browser ---- */
+
+.artboard[data-frame="browser"] .mk-bar {
+  display: block;
+  height: auto;
+  padding: 0;
+  background: var(--mk-chrome-bg-2);
+}
+
+.mk-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 6px 8px 0;
+}
+
+.mk-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 110px;
+  max-width: 220px;
+  height: 26px;
+  padding: 0 10px;
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--mk-chrome-fg);
+  background: var(--mk-chrome-bg);
+  border: 1px solid var(--mk-chrome-line);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+}
+
+.mk-tab[aria-selected="true"] {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+}
+
+.mk-tab-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mk-tab-add {
+  padding: 0 8px 4px;
+  font-size: 14px;
+  color: var(--mk-chrome-fg);
+}
+
+.mk-addr-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--mk-chrome-bg);
+  border-top: 1px solid var(--mk-chrome-line);
+}
+
+.mk-addr {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 24px;
+  padding: 0 10px;
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--mk-chrome-fg);
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-chrome-line);
+  border-radius: 12px;
+}
+
+.mk-addr-lock {
+  display: block;
+  flex: 0 0 auto;
+  width: 8px;
+  height: 9px;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  opacity: 0.8;
+}
+
+.mk-addr-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mk-addr-menu {
+  flex: 0 0 auto;
+  width: 3px;
+  height: 12px;
+  margin-left: auto;
+  background: currentColor;
+  border-radius: 1px;
+  opacity: 0.45;
+}
+
+/* ---- phone and tablet ---- */
+
+.artboard[data-frame="phone"] .mk-frame {
+  padding: 10px;
+  background: var(--mk-bezel);
+  border-radius: 40px;
+}
+
+.artboard[data-frame="phone"] .mk-bar,
+.artboard[data-frame="tablet"] .mk-bar {
+  height: 30px;
+  padding: 0 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  border: 0;
+  border-radius: 30px 30px 0 0;
+}
+
+.artboard[data-frame="phone"] .mk-bar {
+  justify-content: space-between;
+}
+
+.artboard[data-frame="phone"] .mk-screen {
+  border-radius: 0 0 30px 30px;
+}
+
+.artboard[data-frame="tablet"] .mk-frame {
+  padding: 14px;
+  background: var(--mk-bezel);
+  border-radius: 26px;
+}
+
+.artboard[data-frame="tablet"] .mk-bar {
+  border-radius: 14px 14px 0 0;
+}
+
+.artboard[data-frame="tablet"] .mk-screen {
+  border-radius: 0 0 14px 14px;
+}
+
+.mk-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mk-status-icons i {
+  display: block;
+  width: 10px;
+  height: 7px;
+  border: 1px solid var(--mk-fg);
+  border-radius: 1px;
+  opacity: 0.6;
+}
+
+.mk-status-icons i:last-child {
+  width: 16px;
+}
+
+/* ---- desktop ---- */
+
+.artboard[data-frame="desktop"] .mk-bar {
+  height: 36px;
+}
+
+.artboard[data-frame="desktop"][data-os="mac"] .mk-bar {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  text-align: center;
+}
+
+.mk-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.mk-dots i {
+  display: block;
+  width: 11px;
+  height: 11px;
+  background: var(--mk-chrome-bg);
+  border: 1px solid #b4b4b4;
+  border-radius: 50%;
+}
+
+.mk-dots i:nth-child(2) {
+  opacity: 0.7;
+}
+
+.mk-dots i:nth-child(3) {
+  opacity: 0.45;
+}
+
+.artboard[data-frame="desktop"][data-os="windows"] .mk-bar {
+  position: relative;
+  justify-content: flex-start;
+  padding-right: 92px;
+}
+
+.artboard[data-frame="desktop"][data-os="linux"] .mk-bar {
+  position: relative;
+  justify-content: center;
+}
+
+.artboard[data-frame="desktop"][data-os="windows"] .mk-win-title,
+.artboard[data-frame="desktop"][data-os="linux"] .mk-win-title {
+  max-width: 70%;
+}
+
+.mk-win-controls {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mk-ctl {
+  position: relative;
+  display: block;
+  width: 11px;
+  height: 11px;
+  color: var(--mk-chrome-fg);
+  opacity: 0.7;
+}
+
+.mk-ctl--min::after {
+  content: "";
+  position: absolute;
+  right: 1px;
+  bottom: 3px;
+  left: 1px;
+  height: 1px;
+  background: currentColor;
+}
+
+.mk-ctl--max {
+  border: 1px solid currentColor;
+  border-radius: 1px;
+}
+
+.mk-ctl--close::before,
+.mk-ctl--close::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 11px;
+  height: 1px;
+  background: currentColor;
+}
+
+.mk-ctl--close::before {
+  transform: rotate(45deg);
+}
+
+.mk-ctl--close::after {
+  transform: rotate(-45deg);
+}
+
+.mk-ctl--round {
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+/* ---- frameless and bare ---- */
+
+.artboard[data-frame="bare"] .mk-frame {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+}
+
+.artboard[data-frame="bare"] .mk-screen {
+  border-radius: 0;
+}
+
+.artboard[data-frame="custom"] .mk-screen {
+  border-radius: 7px;
+}
+
+.mk-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mk-drag-zone,
+.mk-controls-zone {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+  padding: 3px 6px;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 10px;
+  line-height: 1;
+  color: var(--mk-annot);
+  border: 1px dashed var(--mk-annot);
+  border-top: 0;
+}
+
+.mk-drag-zone {
+  right: 0;
+  left: 0;
+  height: var(--mk-drag, 36px);
+  justify-content: flex-start;
+  border-radius: 0 0 3px 3px;
+}
+
+.mk-controls-zone {
+  right: 0;
+  width: 148px;
+  height: var(--mk-drag, 36px);
+  border-right: 0;
+  border-radius: 0 0 0 3px;
+}
+
+.artboard[data-frame="custom"] .mk-screen .drag-region {
+  outline: 1px dashed var(--mk-annot);
+  outline-offset: -1px;
+}
+
+.mockup[data-view="play"] .mk-overlay {
+  display: none;
+}
+
+.mockup[data-view="play"] .artboard[data-frame="custom"] .mk-screen .drag-region {
+  outline: 0;
+}
+
+/* ------------------------------------------------------------- the flow --- */
+
+.mk-screen a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mk-screen a,
+.mk-screen [data-goto] {
+  cursor: pointer;
+}
+
+/* Play is the product with no tool drawing over it, and a number on a screen
+   is tool drawing. */
+.mockup[data-view="play"] .note-pin {
+  display: none;
+}
+
+.mk-screen.mk-flash a,
+.mk-screen.mk-flash [data-goto] {
+  outline: 3px solid var(--mk-annot);
+  outline-offset: 2px;
+  background: rgba(15, 98, 254, 0.12);
+}
+
+/* ---------------------------------------------------------- annotations --- */
+
+.note-pin {
+  position: absolute;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: #ffffff;
+  background: #161616;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* ------------------------------------------------------------- the state -- */
+
+/* With JavaScript the tabs set data-state on the artboard and mockup.js shows
+   the blocks whose data-state list names the current state. A list may name
+   several, and "default" is the base screen, so data-state="default,error" is a
+   block that the error state keeps and the empty state drops. Without the
+   script only the blocks that name default are drawn. */
+.artboard:not([data-state]) .mk-screen [data-state]:not([data-state*="default"]) {
+  display: none;
+}
+
+/* ------------------------------------------------------------ side panel -- */
+
+.mk-side {
+  grid-area: side;
+  display: none;
+  flex-direction: column;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--bg, #ffffff);
+  border-left: 1px solid var(--border-subtle, #e0e0e0);
+}
+
+.mockup[data-view="focus"] .mk-side {
+  display: flex;
+}
+
+.mk-panel {
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--border-subtle, #e0e0e0);
+}
+
+.mk-panel h2 {
+  margin: 0;
+  padding: 14px 16px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted, #525252);
+}
+
+.mk-note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mk-note {
+  display: flex;
+  gap: 10px;
+  padding: 4px 16px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--fg, #161616);
+}
+
+.mk-note-n {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bg, #ffffff);
+  background: var(--fg, #161616);
+  border-radius: 50%;
+}
+
+.mk-empty {
+  margin: 0;
+  padding: 4px 16px 8px;
+  font-size: 13px;
+  color: var(--muted, #525252);
+}
+
+.mk-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 16px;
+}
+
+.mk-comment {
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  background: var(--layer-01, #f4f4f4);
+}
+
+.mk-comment p {
+  margin: 0;
+}
+
+.mk-comment-meta {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted, #525252);
+}
+
+.mk-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 16px 0;
+}
+
+.mk-form textarea {
+  width: 100%;
+  min-height: 56px;
+  padding: 8px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--fg, #161616);
+  background: var(--bg, #ffffff);
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  border-radius: 0;
+  resize: vertical;
+}
+
+.mk-form button {
+  align-self: flex-end;
+  min-height: 32px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--bg, #ffffff);
+  background: var(--accent, #0f62fe);
+  border: 1px solid var(--accent, #0f62fe);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.mk-form button[disabled] {
+  color: var(--muted, #525252);
+  background: transparent;
+  border-color: var(--border-subtle, #e0e0e0);
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* --------------------------------------------------------------- narrow --- */
+
+@media (max-width: 860px) {
+  .mockup,
+  .mockup[data-view="focus"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "bar"
+      "nav"
+      "stage"
+      "side";
+  }
+
+  .mockup[data-view="focus"] {
+    grid-template-rows: auto auto minmax(0, 1fr) minmax(120px, 38vh);
+  }
+
+  .mk-side {
+    grid-area: side;
+    border-top: 1px solid var(--border-subtle, #e0e0e0);
+    border-left: 0;
+  }
+
+  .mk-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .mk-toolbar {
+    flex-wrap: nowrap;
+    gap: 2px 6px;
+    padding: 6px 10px;
+    overflow-x: auto;
+  }
+
+  .mk-field-text {
+    display: none;
+  }
+
+  .mk-name {
+    font-size: 13px;
+  }
+}
+
+/* ---------------------------------------------------------------- views --- */
+
+@media screen {
+  .mockup[data-view="focus"] .artboard:not(.is-current),
+  .mockup[data-view="play"] .artboard:not(.is-current) {
+    display: none;
+  }
+
+  .mockup[data-view="play"] .mk-head {
+    display: none;
+  }
+
+  .mockup[data-view="play"] .mk-side {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- print --- */
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 8mm;
+  }
+
+  html,
+  body {
+    height: auto;
+    background: #ffffff;
+  }
+
+  .mockup,
+  .mockup[data-view] {
+    position: static;
+    display: block;
+    overflow: visible;
+    background: #ffffff;
+  }
+
+  .mk-toolbar,
+  .mk-focusnav,
+  .mk-side,
+  .mk-overlay,
+  .mk-statebar,
+  .mk-hint,
+  .rshow-mode-toggle {
+    display: none;
+  }
+
+  .mk-stage {
+    position: static;
+    overflow: visible;
+  }
+
+  .mk-world {
+    position: static;
+    display: block;
+    padding: 0;
+    /* The canvas transform is an inline style, so print has to outrank it. */
+    transform: none !important;
+  }
+
+  .mk-row {
+    display: block;
+  }
+
+  .artboard,
+  .artboard.is-current {
+    display: block;
+    margin: 0 0 6mm;
+    zoom: 0.6;
+    break-after: page;
+    break-inside: avoid;
+  }
+
+  .artboard:last-child {
+    break-after: auto;
+  }
+
+  .artboard .mk-head {
+    display: block;
+    margin-bottom: 2mm;
+  }
+
+  .mk-title {
+    color: #161616;
+  }
+
+  .mk-frame {
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,166 @@
+/*
+ * rshow theme "default": sketch viewer
+ *
+ * A hand drawn figure from Excalidraw, read in the page and edited in place.
+ * Link order: fonts.css, tokens.css, sketch.css, then sketch.js deferred.
+ *
+ *   <div class="sketch" data-src="drawing.excalidraw" data-store="sketch-main"></div>
+ *
+ * sketch.js loads React and Excalidraw from a pinned CDN build and fills the
+ * element with a bar of controls and a canvas. Everything in this file is the
+ * frame around that canvas: the bar, the buttons, the one line of status. The
+ * canvas itself is Excalidraw's, so its tool chrome is styled from the tokens
+ * below rather than from Carbon classes.
+ *
+ * The colours are the theme's, and the paper of the drawing is --bg, so a
+ * figure sits on the page with no card and no border weight around it, and the
+ * ink inverts with the mode (sketch.js owns that map).
+ *
+ * No shadow, no radius, no gradient: the same rules as the rest of the theme.
+ */
+
+.sketch {
+  /* Excalidraw's own chrome, handed to it as variables. The blue is the
+     theme's --accent, so the selection handle and the active tool are the same
+     blue as a link. */
+  --ui-font: var(--font-sans);
+  --island-bg-color: var(--bg);
+  --default-bg-color: var(--bg);
+  --input-bg-color: var(--bg);
+  --input-border-color: var(--border-strong);
+  --button-hover-bg: var(--layer-01);
+  --button-active-bg: var(--layer-02);
+  --color-primary: var(--accent);
+  --color-primary-darker: var(--accent);
+  --color-primary-darkest: var(--accent);
+  --color-primary-light: var(--accent);
+  --color-primary-light-darker: var(--accent);
+  --color-primary-hover: var(--accent);
+  --select-highlight-color: var(--accent);
+  --text-primary-color: var(--fg);
+  --popup-text-color: var(--fg);
+  --popup-secondary-text-color: var(--muted);
+  --popup-bg-color: var(--bg);
+  --popup-border-color: var(--border-subtle);
+  --dialog-border-color: var(--border-strong);
+  --sidebar-border-color: var(--border-subtle);
+  --sidebar-bg-color: var(--bg);
+  --sidebar-shadow: none;
+  --shadow-island: none;
+  --focus-highlight-color: var(--accent);
+
+  max-width: var(--sketch-max, 960px);
+  margin: var(--space-07) 0;
+}
+
+/* ------------------------------------------------------------------ bar --- */
+
+.sketch-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-02) var(--space-03);
+  margin: 0 0 var(--space-04) calc(var(--space-05) * -1);
+}
+
+.sketch-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--space-05);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  line-height: 1;
+  letter-spacing: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.sketch-btn:hover {
+  background: var(--layer-01);
+}
+
+.sketch-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.sketch-btn[disabled] {
+  color: var(--placeholder);
+  cursor: default;
+}
+
+.sketch-btn[disabled]:hover {
+  background: transparent;
+}
+
+/* The one button that carries the frame of a tertiary control, because it is
+   the one a reader is meant to press second. */
+.sketch-btn--primary {
+  border-color: var(--accent);
+}
+
+.sketch-btn--primary[disabled] {
+  border-color: transparent;
+}
+
+.sketch-status {
+  margin: 0 0 0 auto;
+  color: var(--muted);
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+  text-align: right;
+}
+
+/* --------------------------------------------------------------- canvas --- */
+
+.sketch-stage {
+  position: relative;
+  height: var(--sketch-height, 420px);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg);
+}
+
+/* Excalidraw draws its own text; this keeps its fallback font in the theme
+   while the Plex files load. */
+.sketch-stage .excalidraw {
+  --ui-font: var(--font-sans);
+  --ui-font-monospace: var(--font-mono);
+}
+
+/* Read only: the bar over the canvas already carries every action, so the
+   editor's main menu goes away with the rest of the editing chrome. */
+.sketch-stage .excalidraw--view-mode .App-bottom-bar {
+  display: none;
+}
+
+.sketch-lane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-06);
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* A sketch is drawn, not printed: paper keeps the figure whole and the bar
+   carries no information on paper. */
+@media print {
+  .sketch-bar {
+    display: none;
+  }
+
+  .sketch-stage {
+    border-color: var(--border-strong);
+    break-inside: avoid;
+  }
+}

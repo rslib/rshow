@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>A sketch, drawn by hand and edited in place</title>
+<!--
+  A figure from Excalidraw, read in the page. Link order: fonts.css, tokens.css,
+  sketch.css, mode.js in the head (so the stored mode applies before the body
+  paints) and sketch.js deferred. A published copy points at the theme artifact
+  instead, one pinned version per file:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/sketch.css">
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/sketch.js"></script>
+
+  sketch.js fetches its three libraries itself, at exact versions, from
+  cdn.jsdelivr.net:
+
+    https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js
+    https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js
+    https://cdn.jsdelivr.net/npm/@excalidraw/excalidraw@0.17.6/dist/excalidraw.production.min.js
+
+  0.17.6 is the last Excalidraw with a UMD bundle and its fonts come from the
+  same pinned dist folder. The page still reads with JavaScript off: the
+  drawing is a file next to the page and the link below it opens it.
+
+  The element is the whole contract: data-src names the .excalidraw file and
+  data-store names the artifact store key that holds a saved copy. The store is
+  the only network call the page makes, and it needs a signed in viewer to
+  write, so Save answers "Sign in to save" or "Saving works once published"
+  and Download writes a file that can be committed and published.
+
+  Preview it from this folder with `rshow preview .` and open /sketch.html.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../sketch.css">
+<script src="../mode.js"></script>
+<script defer src="../sketch.js"></script>
+<style>
+  body {
+    margin: 0;
+    padding: var(--space-11) var(--space-06) var(--space-13);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+
+  main {
+    max-width: 56ch;
+    margin: 0 auto;
+  }
+
+  h1 {
+    margin: 0 0 var(--space-05);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  h2 {
+    margin: var(--space-10) 0 var(--space-04);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0 0 var(--space-05);
+  }
+
+  .lede {
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .note {
+    color: var(--muted);
+    font-size: var(--text-xs);
+  }
+
+  figure {
+    margin: var(--space-07) 0;
+  }
+
+  /* The drawing is wider than a measure of prose, so the figure breaks out of it
+     and stops at 900px. */
+  figure.wide {
+    --wide: min(900px, calc(100vw - var(--space-06) * 2));
+    width: var(--wide);
+    margin-left: calc(50% - var(--wide) / 2);
+    margin-right: calc(50% - var(--wide) / 2);
+  }
+
+  figcaption {
+    margin-top: var(--space-04);
+    color: var(--muted);
+    font-size: var(--text-xs);
+  }
+
+  a {
+    color: var(--accent);
+    text-underline-offset: 2px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+  }
+
+  /* The drawing is wider than prose: it may take the whole measure and no
+     more, and it scrolls nowhere because Excalidraw fits it. */
+  .sketch {
+    --sketch-max: none;
+    --sketch-height: 300px;
+  }
+
+  @media (max-width: 640px) {
+    .sketch {
+      --sketch-height: 260px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main>
+
+<h1>Publish, version, share</h1>
+<p class="lede">A drawing that lives beside the page as a plain
+<code>.excalidraw</code> file. Read mode fits it to the frame, pan and zoom
+included; Edit opens the editor, Save writes the scene to the artifact store and
+Download writes the file back out.</p>
+
+<figure class="wide">
+  <div class="sketch" data-src="drawing.excalidraw" data-store="sketch-main"></div>
+  <figcaption>The three steps a publish takes, drawn in
+  <a href="drawing.excalidraw">drawing.excalidraw</a>. The file is the source of
+  truth: a saved copy in this artifact wins only while it is newer than the
+  file, and the bar says which one you are looking at.</figcaption>
+</figure>
+
+<h2>What Save does</h2>
+<p>Save puts the scene in the artifact store at <code>_data/sketch-main</code>,
+which is the one place a page may write. That store needs a signed in viewer, so
+a public visitor is told to sign in, a folder that has not been published yet is
+told that saving starts once it is, and a scene over 64 KiB is told to use
+Download instead.</p>
+<p class="note">Download writes <code>drawing.excalidraw</code> with the palette
+the drawing was authored in, whatever mode you were in, so the file can be
+committed and published as a new version. Publish that file and the sketch in
+the store stops being newer than it.</p>
+
+<h2>With JavaScript off</h2>
+<p class="note">The frame is empty and the drawing is still a file: open
+<a href="drawing.excalidraw">drawing.excalidraw</a> in the Excalidraw editor, or
+read it as JSON, which is what it is.</p>
+
+<p class="note"><button type="button" data-rshow-mode-toggle>Mode</button></p>
+
+</main>
+
+</body>
+</html>

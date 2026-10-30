@@ -1,0 +1,561 @@
+/*
+ * rshow theme "default": the wire skin, layer 3.
+ *
+ * The default skin: a grayscale wireframe kit. It reads as a drawing of an
+ * interface rather than an interface, so a reader looks at the structure and
+ * not at the colour. One accent, --mk-accent, for a primary action and for a
+ * focus ring, and nothing else in colour.
+ *
+ * Class list, all real content allowed inside any of them.
+ *
+ *   Layout     wf-row wf-col wf-spacer wf-grow
+ *   Type       wf-heading (real text or a bar) wf-text (gray lines,
+ *              data-lines="3", or real text)
+ *   Blocks     wf-box wf-card wf-image wf-icon wf-avatar
+ *   Controls   wf-button (.primary) wf-input (data-label) wf-select
+ *              wf-checkbox (data-checked) wf-toggle (.on) wf-tabs
+ *   Shell      wf-nav wf-sidebar
+ *   Data       wf-table (data-rows data-cols) wf-chart (one child per bar)
+ *   Overlay    wf-scrim wf-modal wf-toast
+ *
+ * A placeholder line is an empty element: <div class="wf-text" data-lines="3">
+ * </div> with nothing between the tags. Put text in one and the skin sets it in
+ * type instead, because real words beat a gray bar when the words exist.
+ *
+ * This skin carries the screen tokens that mockup.css reads, so a preset may
+ * overwrite any of them and the kit follows.
+ */
+
+.mockup[data-skin="wire"] {
+  --mk-bg: #ffffff;
+  --mk-fg: #161616;
+  --mk-muted: #6f6f6f;
+  --mk-line: #bdbdbd;
+  --mk-fill: #ededed;
+  --mk-accent: #0f62fe;
+  --mk-radius: 2px;
+  --mk-font: var(--font-sans, system-ui, sans-serif);
+  --mk-size: 14px;
+  --mk-gap: 12px;
+  --mk-pad: 20px;
+  --mk-line-h: 18px;
+}
+
+.mockup[data-skin="wire"] .mk-screen {
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+}
+
+/* --------------------------------------------------------------- layout -- */
+
+.mockup[data-skin="wire"] .wf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mk-gap);
+}
+
+.mockup[data-skin="wire"] .wf-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+}
+
+.mockup[data-skin="wire"] .wf-row.wf-shell {
+  align-items: stretch;
+}
+
+.mockup[data-skin="wire"] .wf-row.wf-top {
+  align-items: flex-start;
+}
+
+.mockup[data-skin="wire"] .wf-spacer,
+.mockup[data-skin="wire"] .wf-grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- type -- */
+
+.mockup[data-skin="wire"] .wf-heading {
+  display: block;
+  width: 44%;
+  max-width: 320px;
+  height: 15px;
+  background: var(--mk-fg);
+  border-radius: 1px;
+}
+
+.mockup[data-skin="wire"] .wf-heading:not(:empty) {
+  width: auto;
+  max-width: none;
+  height: auto;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  background: none;
+}
+
+.mockup[data-skin="wire"] .wf-text {
+  --mk-lines: 2;
+  display: block;
+  height: calc(var(--mk-lines) * var(--mk-line-h));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--mk-line) 0 7px,
+    transparent 7px var(--mk-line-h)
+  );
+  border-radius: 1px;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="1"] {
+  --mk-lines: 1;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="2"] {
+  --mk-lines: 2;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="3"] {
+  --mk-lines: 3;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="4"] {
+  --mk-lines: 4;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="5"] {
+  --mk-lines: 5;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="6"] {
+  --mk-lines: 6;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="7"] {
+  --mk-lines: 7;
+}
+
+.mockup[data-skin="wire"] .wf-text[data-lines="8"] {
+  --mk-lines: 8;
+}
+
+.mockup[data-skin="wire"] .wf-text:not(:empty) {
+  height: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mk-muted);
+  background: none;
+}
+
+/* --------------------------------------------------------------- blocks -- */
+
+.mockup[data-skin="wire"] .wf-box {
+  padding: 12px;
+  min-height: 48px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="wire"] .wf-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mk-gap);
+  padding: 16px;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="wire"] .wf-image {
+  min-height: 120px;
+  background-color: var(--mk-fill);
+  background-image: linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line) calc(50% - 0.5px),
+      var(--mk-line) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      var(--mk-line) calc(50% - 0.5px),
+      var(--mk-line) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="wire"] .wf-avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+.mockup[data-skin="wire"] .wf-avatar[data-size="sm"] {
+  width: 28px;
+  height: 28px;
+}
+
+.mockup[data-skin="wire"] .wf-avatar[data-size="lg"] {
+  width: 56px;
+  height: 56px;
+}
+
+.mockup[data-skin="wire"] .wf-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: 2px;
+}
+
+.mockup[data-skin="wire"] .wf-icon[data-size="lg"] {
+  width: 24px;
+  height: 24px;
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+.mockup[data-skin="wire"] .wf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--mk-fg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-fg);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="wire"] .wf-button.primary {
+  color: #ffffff;
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="wire"] .wf-button.ghost {
+  color: var(--mk-muted);
+  background: transparent;
+  border-color: var(--mk-line);
+}
+
+.mockup[data-skin="wire"] .wf-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="wire"] .wf-input[data-label]::before,
+.mockup[data-skin="wire"] .wf-label {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  padding: 0 4px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--mk-muted);
+  background: var(--mk-bg);
+}
+
+.mockup[data-skin="wire"] .wf-input[data-label]::before {
+  content: attr(data-label);
+}
+
+.mockup[data-skin="wire"] .wf-input:focus-within {
+  border-color: var(--mk-accent);
+  outline: 1px solid var(--mk-accent);
+  outline-offset: 0;
+}
+
+.mockup[data-skin="wire"] .wf-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 34px 0 12px;
+  font-size: 13px;
+  color: var(--mk-fg);
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="wire"] .wf-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-top: 5px solid var(--mk-fg);
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.mockup[data-skin="wire"] .wf-checkbox {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-fg);
+  border-radius: 2px;
+}
+
+.mockup[data-skin="wire"] .wf-checkbox[data-checked="true"] {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="wire"] .wf-checkbox[data-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 5px;
+  height: 9px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.mockup[data-skin="wire"] .wf-toggle {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 20px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-radius: 10px;
+}
+
+.mockup[data-skin="wire"] .wf-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-line);
+  border-radius: 50%;
+}
+
+.mockup[data-skin="wire"] .wf-toggle.on {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="wire"] .wf-toggle.on::after {
+  left: 18px;
+  border-color: var(--mk-accent);
+}
+
+.mockup[data-skin="wire"] .wf-tabs {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.mockup[data-skin="wire"] .wf-tabs > * {
+  padding: 10px 0;
+  font-size: 13px;
+  color: var(--mk-muted);
+  white-space: nowrap;
+}
+
+.mockup[data-skin="wire"] .wf-tabs > .is-active,
+.mockup[data-skin="wire"] .wf-tabs > [aria-selected="true"] {
+  color: var(--mk-fg);
+  border-bottom: 2px solid var(--mk-accent);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+.mockup[data-skin="wire"] .wf-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.mockup[data-skin="wire"] .wf-sidebar {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 8px;
+  width: 220px;
+  padding: 16px;
+  background: var(--mk-fill);
+  border-right: 1px solid var(--mk-line);
+}
+
+/* ----------------------------------------------------------------- data -- */
+
+.mockup[data-skin="wire"] .wf-table {
+  --mk-rows: 4;
+  --mk-cols: 3;
+  height: calc(var(--mk-rows) * 34px);
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 33px,
+      var(--mk-line) 33px 34px
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0 calc(100% / var(--mk-cols) - 1px),
+      var(--mk-line) calc(100% / var(--mk-cols) - 1px) calc(100% / var(--mk-cols))
+    );
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="1"] {
+  --mk-rows: 1;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="2"] {
+  --mk-rows: 2;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="3"] {
+  --mk-rows: 3;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="4"] {
+  --mk-rows: 4;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="5"] {
+  --mk-rows: 5;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="6"] {
+  --mk-rows: 6;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="8"] {
+  --mk-rows: 8;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-rows="10"] {
+  --mk-rows: 10;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-cols="1"] {
+  --mk-cols: 1;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-cols="2"] {
+  --mk-cols: 2;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-cols="3"] {
+  --mk-cols: 3;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-cols="4"] {
+  --mk-cols: 4;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-cols="5"] {
+  --mk-cols: 5;
+}
+
+.mockup[data-skin="wire"] .wf-table[data-cols="6"] {
+  --mk-cols: 6;
+}
+
+.mockup[data-skin="wire"] .wf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+  padding: 0 0 0 1px;
+  border-bottom: 1px solid var(--mk-line);
+  border-left: 1px solid var(--mk-line);
+}
+
+.mockup[data-skin="wire"] .wf-chart > * {
+  flex: 1 1 0;
+  min-height: 8px;
+  background: var(--mk-fill);
+  border: 1px solid var(--mk-line);
+  border-bottom: 0;
+}
+
+.mockup[data-skin="wire"] .wf-chart > .is-accent {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+/* -------------------------------------------------------------- overlay -- */
+
+.mockup[data-skin="wire"] .wf-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(22, 22, 22, 0.45);
+}
+
+.mockup[data-skin="wire"] .wf-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(460px, 82%);
+  max-height: 84%;
+  padding: 20px;
+  background: var(--mk-bg);
+  border: 1px solid var(--mk-fg);
+  border-radius: var(--mk-radius);
+  transform: translate(-50%, -50%);
+}
+
+.mockup[data-skin="wire"] .wf-toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 82%;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--mk-bg);
+  background: var(--mk-fg);
+  border-radius: var(--mk-radius);
+  transform: translateX(-50%);
+}

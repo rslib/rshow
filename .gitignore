@@ -1,0 +1,25 @@
+evals/results/
+node_modules/
+.wrangler/
+packages/worker/wrangler.jsonc
+.DS_Store
+
+# generated sources
+packages/worker/src/static.generated.ts
+
+# build output
+packages/worker/dist/
+packages/cli/dist/
+packages/cli/worker/
+packages/cli/skills/
+packages/cli/themes/
+packages/cli/LICENSE
+
+# docs site: its own npm project, the fetched theme and the synced docs
+site/node_modules/
+site/dist/
+site/.astro/
+site/.theme/
+site/src/content/docs/guides/
+site/src/content/docs/reference/
+site/src/generated/

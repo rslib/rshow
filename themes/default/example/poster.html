@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>rshow poster: publishing a folder as an artifact that keeps working</title>
+<!--
+  Theme links. A published poster points at the theme artifact with
+  root-relative URLs at one pinned version:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/poster.css">
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+    <script defer src="/_themes/<name>@<n>/poster.js"></script>
+
+  This copy links the theme folder itself, so it previews from a local checkout
+  with only the QR library coming from a CDN. mode.js runs in the head, before
+  the body paints. poster.js is deferred and runs after the QR library: it draws
+  the code from the URL in data-qr, scales the sheet to the window and copies the
+  sheet size into @page. If the library never loads, the address printed under
+  the code is the fallback and nothing else changes.
+
+  The four sheets are a0 (default), a1, 36x48 (the 3x4 ft sheet shown landscape)
+  and 48x36 (the same sheet stood portrait); ?size=a1 in the address picks one
+  without a click, which is what the print check uses.
+
+  The authors, the affiliations and the venue are placeholders. Every value in
+  the chart is example data and the figure says so twice.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../poster.css">
+<script src="../mode.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script defer src="../poster.js"></script>
+</head>
+<body>
+
+<div class="poster-toolbar">
+  <div class="poster-sizes" role="group" aria-label="Poster size">
+    <button type="button" data-poster-size="a0" aria-pressed="true">A0</button>
+    <button type="button" data-poster-size="a1" aria-pressed="false">A1</button>
+    <button type="button" data-poster-size="36x48" aria-pressed="false">36 × 48 in<span class="poster-size-face">, landscape</span></button>
+    <button type="button" data-poster-size="48x36" aria-pressed="false">48 × 36 in<span class="poster-size-face">, portrait</span></button>
+  </div>
+  <button type="button" data-poster-print>Print</button>
+  <span class="poster-status" data-poster-status>A0, 841 mm wide x 1189 mm tall, three columns</span>
+  <button type="button" data-rshow-mode-toggle></button>
+</div>
+
+<div class="poster-stage">
+
+  <div class="poster" data-size="a0">
+
+    <header class="poster-head">
+      <h1 class="poster-title">Publishing a folder as an artifact that keeps working</h1>
+      <div class="poster-byline">
+        <div class="poster-who">
+          <p class="poster-authors">[Author One]<sup>1</sup>, [Author Two]<sup>1</sup>, [Author Three]<sup>2</sup></p>
+          <p class="poster-affil"><sup>1</sup> [Affiliation, department]</p>
+          <p class="poster-affil"><sup>2</sup> [Second affiliation]</p>
+          <p class="poster-venue">[Conference name] [Year], poster [n]</p>
+        </div>
+        <p class="poster-logos">[Logo] [Logo] [Logo]</p>
+        <div class="poster-qr" data-qr="https://art.example.com/poster/">
+          <p class="poster-qr-url"><a href="https://art.example.com/poster/">art.example.com/poster</a></p>
+        </div>
+      </div>
+    </header>
+
+    <main class="poster-cols">
+
+      <section>
+        <h2>The problem</h2>
+        <p>A link sent in a calendar invite outlives the slide it points at. Most
+        publishing tools keep a mutable page behind a stable address, so every
+        edit silently rewrites what a reader will see next week, and a citation
+        to last year's talk opens this year's version of it.</p>
+        <p>rshow takes the other side. A publish writes a numbered version, a
+        version never changes, and the address that follows the newest version
+        is a separate promise from the address that holds one.</p>
+        <p>The claim under test is narrow: after the first publish, the bytes a
+        republish sends track the bytes that changed, not the size of the
+        folder.</p>
+      </section>
+
+      <section>
+        <h2>What a publish does</h2>
+        <p>rshow publishes a folder. It hashes every file, writes a manifest,
+        uploads what the host does not already hold and records the version
+        last, so a publish that fails leaves the previous version in place.</p>
+        <ol>
+          <li>Read the folder, and run the build command if <code>rshow.json</code> names one.</li>
+          <li>Hash every file and write the manifest.</li>
+          <li>Upload the files whose hash the host lacks.</li>
+          <li>Write the version row, then move the live link.</li>
+        </ol>
+        <p>The record is the only mutable object in the system: one row per
+        slug, holding the title, the owner, the mode, the newest version number
+        and the pin if there is one. Content addressing does the rest, because
+        a file is stored under the hash of its bytes, so the same picture in two
+        decks is stored once.</p>
+      </section>
+
+      <section>
+        <h2>What a republish sends</h2>
+        <figure>
+          <img src="poster-figure.svg" width="720" height="640" alt="Example data: horizontal bars of megabytes uploaded at each of six publishes of one folder, falling from 120 for the first publish to 6 for the last two.">
+          <figcaption>Example data, not a measurement: megabytes uploaded per
+          publish for six publishes of one folder. The bars are direct labels,
+          so no legend sits between the chart and the reader.</figcaption>
+        </figure>
+        <p>The first publish sends the whole folder, because the store is empty.
+        Every later one sends the files whose hash the host lacks, which is the
+        same rule the cache header follows: a versioned path never changes, so
+        it may be kept for a year, while the live link is rechecked on every
+        use.</p>
+      </section>
+
+      <section>
+        <h2>Key findings</h2>
+        <ul>
+          <li>A version path never changes, so a citation to it stays true.</li>
+          <li>A republish sends the files that changed, not the folder.</li>
+          <li>An immutable path may be cached for a year; the live link is rechecked every time.</li>
+          <li>A pin holds one version in place while the folder moves behind it.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Where it holds</h2>
+        <p>A version that never changes is also a version that is hard to
+        withdraw. A link that has reached one reader can be deleted from the
+        host but not from the copy that reader kept.</p>
+        <p>The record assumes one writer at a time. Two people publishing the
+        same slug in the same second resolve to one version, and the loser
+        publishes again; we take that over a lock, because the case is rare and
+        the recovery is cheap.</p>
+        <p>There is no per-link grant and no expiring URL. A closed artifact is
+        closed by the identity provider and the share list, not by a token in
+        the address.</p>
+      </section>
+
+      <section>
+        <h2>What comes next</h2>
+        <p>The experiment is one folder, edited as a person edits a talk:
+        publish after every edit, record the bytes the upload sent, and repeat
+        with the cache cold and warm. A cold cache measures the host; a warm one
+        measures the reader.</p>
+        <p>The chart above is the shape we expect and says nothing about the
+        size of a real folder. A result we would publish is the same chart with
+        the folder, the host and the date named beside it.</p>
+      </section>
+
+    </main>
+
+    <footer class="poster-foot">
+      <h2 class="poster-refs-title">References</h2>
+      <ol class="poster-refs">
+        <li>Fielding, R., Nottingham, M. and Reschke, J. (eds). HTTP/1.1
+        Caching. RFC 7234, IETF, June 2014.</li>
+        <li>Berners-Lee, T. Cool URIs don't change. W3C, 1998.</li>
+        <li>Fielding, R. T. Architectural Styles and the Design of Network-based
+        Software Architectures. Doctoral dissertation, University of California,
+        Irvine, 2000.</li>
+        <li>IBM. Carbon Design System. IBM Corporation, 2025.</li>
+        <li>Tufte, E. R. The Visual Display of Quantitative Information.
+        Graphics Press, Cheshire, Connecticut, 1983.</li>
+        <li>Arase, K. qrcode-generator, MIT licence, 2009 to 2024.</li>
+      </ol>
+    </footer>
+
+  </div>
+
+</div>
+
+</body>
+</html>

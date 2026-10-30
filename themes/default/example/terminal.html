@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Terminal captures: an ANSI screen and a recording</title>
+<!--
+  Two terminals in one window frame: a capture of a full screen program, and a
+  short recording of a command. Link order: fonts.css, tokens.css, terminal.css,
+  mode.js in the head so the stored mode applies before the body paints, and
+  terminal.js deferred. A published copy points at the theme artifact instead,
+  one pinned version per file:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/terminal.css">
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/terminal.js"></script>
+
+  terminal.js loads only what a figure needs, from cdn.jsdelivr.net, at exact
+  versions:
+
+    https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/lib/xterm.js
+    https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/css/xterm.css
+    https://cdn.jsdelivr.net/npm/@xterm/addon-unicode11@0.9.0/lib/addon-unicode11.js
+    https://cdn.jsdelivr.net/npm/asciinema-player@3.17.0/dist/bundle/asciinema-player.min.js
+    https://cdn.jsdelivr.net/npm/asciinema-player@3.17.0/dist/bundle/asciinema-player.css
+
+  The figures say what they are and nothing else. data-palette picks a sixteen
+  colour set out of terminal.css: default follows the page, dark and light pin a
+  ground, high-contrast is black on white or white on black. The ANSI capture is
+  read only: no stdin, no cursor, no scrollback.
+
+  With JavaScript off or a library missing, the ANSI capture still reads: the
+  escapes are stripped and the screen is set as text. Either way the files are
+  next to the page and the links below each figure open them.
+
+  Preview from this folder with `rshow preview .` and open /terminal.html.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../terminal.css">
+<script src="../mode.js"></script>
+<script defer src="../terminal.js"></script>
+<style>
+  body {
+    margin: 0;
+    padding: var(--space-11) var(--space-06) var(--space-13);
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+
+  main {
+    max-width: 62ch;
+    margin: 0 auto;
+  }
+
+  h1 {
+    margin: 0 0 var(--space-05);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  h2 {
+    margin: var(--space-10) 0 var(--space-04);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0 0 var(--space-05);
+  }
+
+  .lede {
+    color: var(--muted);
+    font-size: var(--text-base);
+  }
+
+  .note {
+    color: var(--muted);
+    font-size: var(--text-xs);
+  }
+
+  figure {
+    margin: var(--space-07) 0;
+  }
+
+  /* A terminal is as wide as its grid, and wider than prose. */
+  figure.wide {
+    --wide: min(940px, calc(100vw - var(--space-06) * 2));
+    width: var(--wide);
+    margin-left: calc(50% - var(--wide) / 2);
+    margin-right: calc(50% - var(--wide) / 2);
+  }
+
+  figcaption {
+    margin-top: var(--space-04);
+    color: var(--muted);
+    font-size: var(--text-xs);
+  }
+
+  a {
+    color: var(--accent);
+    text-underline-offset: 2px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  code,
+  pre {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+  }
+
+  pre {
+    margin: var(--space-05) 0;
+    padding: var(--space-05);
+    border: 1px solid var(--border-subtle);
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+
+  code {
+    color: var(--muted);
+  }
+
+  ul {
+    margin: 0 0 var(--space-05);
+    padding-left: var(--space-07);
+  }
+
+  li {
+    margin-bottom: var(--space-03);
+  }
+</style>
+</head>
+<body>
+
+<main>
+
+<h1>Two kinds of terminal</h1>
+<p class="lede">A capture is a screen: it keeps the escape sequences of a full
+screen program and loses the timing. A recording is a stream: it keeps the
+timing and replays it. Both sit in the same window frame here, and both read on
+a light and a dark ground.</p>
+
+<figure class="wide">
+  <div class="terminal"
+       data-mode="ansi"
+       data-src="capture.ans"
+       data-cols="100"
+       data-rows="24"
+       data-title="procview"
+       data-palette="default"></div>
+  <figcaption>A capture of a fictional process list, taken with
+  <code>tmux capture-pane</code>. The selected row is reverse video, the header
+  is bold, the status bar carries the key hints. The file is
+  <a href="capture.ans">capture.ans</a>.</figcaption>
+</figure>
+
+<figure class="wide">
+  <div class="terminal"
+       data-mode="cast"
+       data-src="demo.cast"
+       data-title="rshow publish ./deck"
+       data-palette="default"></div>
+  <figcaption>An asciicast of <code>rshow publish ./deck</code>, at rest on its
+  first frame. Press play and it types itself out. The file is
+  <a href="demo.cast">demo.cast</a>.</figcaption>
+</figure>
+
+<h2>How to take them</h2>
+<p>Both fit in a repository next to the page that shows them, and both are text,
+so a version diff is a readable diff.</p>
+<pre>tmux capture-pane -pet &lt;target&gt; &gt; capture.ans
+asciinema rec demo.cast</pre>
+<p class="note"><code>capture-pane -e</code> keeps the escape sequences and
+<code>-p</code> prints instead of pasting, so the result is the screen as it
+looks, ready to be committed. <code>-t</code> names the pane or window to copy.
+For the recording, <code>asciinema rec</code> writes an asciicast v2 file;
+<code>ctrl-d</code> ends it. Keep the capture to the grid it was taken on and say
+so in <code>data-cols</code> and <code>data-rows</code>, or the frame will be the
+wrong shape.</p>
+
+<h2>A palette per figure</h2>
+<p>Neither viewer carries colours of its own: the sixteen ANSI colours live in
+<code>terminal.css</code> and the viewer reads them back. <code>data-palette</code>
+picks the set.</p>
+<ul>
+  <li><code>default</code>: the page ground, light or dark, with a neutral
+  sixteen that holds on either, so nothing has to be recorded twice.</li>
+  <li><code>dark</code> and <code>light</code>: a fixed ground, for a capture
+  that is about being dark.</li>
+  <li><code>high-contrast</code>: black on white in a light page, white on black
+  in a dark one.</li>
+</ul>
+
+<figure class="wide">
+  <div class="terminal"
+       data-mode="ansi"
+       data-src="capture.ans"
+       data-cols="100"
+       data-rows="24"
+       data-title="procview — high-contrast"
+       data-palette="high-contrast"></div>
+  <figcaption>The same capture in the <code>high-contrast</code> palette.</figcaption>
+</figure>
+
+<h2>When a library does not arrive</h2>
+<p class="note">A missing CDN costs colour, not content: the capture falls back
+to plain text with the escapes stripped. A recording needs its player, so it says
+so and links to the file.</p>
+
+<p class="note"><button type="button" data-rshow-mode-toggle>Mode</button></p>
+
+</main>
+
+</body>
+</html>

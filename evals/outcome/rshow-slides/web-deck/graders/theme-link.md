@@ -1,0 +1,8 @@
+---
+type: regex
+weight: 2
+arm: both
+pattern: '/_themes/[a-z0-9-]+@[0-9]+/'
+match: contains
+target: {source: file, path: index.html}
+---

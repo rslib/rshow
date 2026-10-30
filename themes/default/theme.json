@@ -1,0 +1,149 @@
+{
+  "name": "default",
+  "description": "IBM Carbon v11 theme in two modes: white (light) and g100 (dark), system by default with a reader override. Plex Sans for text, Plex Mono for code and data, square corners, one blue for interactive elements and Carbon's eight colour data palette. Layouts: a 1280x720 deck canvas with twelve layouts, a 72 character prose page, a report with contents and side notes, a project page, an A0 poster, a metrics dashboard, mockups with eight skins, an Excalidraw sketch viewer, a terminal capture viewer and a cell grid tui kit.",
+  "defaultMode": "system",
+  "modes": ["system", "light", "dark"],
+  "layouts": {
+    "deck": {
+      "css": ["fonts.css", "tokens.css", "deck.css"],
+      "js": ["deck.js"],
+      "example": "example/index.html"
+    },
+    "page": {
+      "css": ["fonts.css", "tokens.css", "page.css"],
+      "js": ["mode.js"],
+      "example": "example/page.html"
+    },
+    "report": {
+      "css": ["fonts.css", "tokens.css", "report.css"],
+      "js": ["mode.js", "report.js"],
+      "example": "example/report.html"
+    },
+    "project": {
+      "css": ["fonts.css", "tokens.css", "project.css"],
+      "js": ["mode.js", "project.js"],
+      "example": "example/project.html"
+    },
+    "poster": {
+      "css": ["fonts.css", "tokens.css", "poster.css"],
+      "js": ["mode.js", "poster.js"],
+      "example": "example/poster.html"
+    },
+    "dashboard": {
+      "css": ["fonts.css", "tokens.css", "dashboard.css"],
+      "js": ["mode.js", "dashboard.js"],
+      "example": "example/dashboard.html"
+    },
+    "mockup": {
+      "css": ["fonts.css", "tokens.css", "mockup.css", "skins/wire.css"],
+      "js": ["mode.js", "mockup.js", "skins/sketch.js", "skins/fluent.js"],
+      "example": "example/mockup.html"
+    },
+    "sketch": {
+      "css": ["fonts.css", "tokens.css", "sketch.css"],
+      "js": ["mode.js", "sketch.js"],
+      "example": "example/sketch.html"
+    },
+    "terminal": {
+      "css": ["fonts.css", "tokens.css", "terminal.css"],
+      "js": ["mode.js", "terminal.js"],
+      "example": "example/terminal.html"
+    },
+    "tui": {
+      "css": ["fonts.css", "tokens.css", "mockup.css", "skins/wire.css", "tui.css"],
+      "js": ["mode.js", "mockup.js", "tui.js"],
+      "example": "example/tui.html"
+    }
+  },
+  "tokens": {
+    "--font-sans": "\"IBM Plex Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
+    "--font-mono": "\"IBM Plex Mono\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    "--text-2xs": "14px",
+    "--text-xs": "16px",
+    "--text-sm": "18px",
+    "--text-base": "20px",
+    "--text-md": "24px",
+    "--text-lg": "28px",
+    "--text-xl": "32px",
+    "--text-2xl": "42px",
+    "--text-3xl": "54px",
+    "--text-4xl": "60px",
+    "--text-5xl": "76px",
+    "--lh-flat": "1",
+    "--lh-heading": "1.25",
+    "--lh-list": "1.4",
+    "--lh-body": "1.45",
+    "--lh-read": "1.6",
+    "--lh-code": "1.6",
+    "--tracking-display": "-0.02em",
+    "--space-01": "2px",
+    "--space-02": "4px",
+    "--space-03": "8px",
+    "--space-04": "12px",
+    "--space-05": "16px",
+    "--space-06": "24px",
+    "--space-07": "32px",
+    "--space-08": "40px",
+    "--space-09": "48px",
+    "--space-10": "64px",
+    "--space-11": "80px",
+    "--space-12": "96px",
+    "--space-13": "160px",
+    "--radius": "0",
+    "--radius-sm": "0",
+    "--pad-x": "96px",
+    "--pad-y": "64px"
+  },
+  "modeTokens": {
+    "light": {
+      "--color-scheme": "light",
+      "--bg": "#ffffff",
+      "--bg-shell": "#f4f4f4",
+      "--layer-01": "#f4f4f4",
+      "--layer-02": "#ffffff",
+      "--border-subtle": "#e0e0e0",
+      "--border-strong": "#8d8d8d",
+      "--fg": "#161616",
+      "--muted": "#525252",
+      "--placeholder": "#a8a8a8",
+      "--accent": "#0f62fe",
+      "--focus": "#0f62fe",
+      "--support-error": "#da1e28",
+      "--support-success": "#24a148",
+      "--support-warning": "#f1c21b",
+      "--chart-1": "#6929c4",
+      "--chart-2": "#1192e8",
+      "--chart-3": "#005d5d",
+      "--chart-4": "#9f1853",
+      "--chart-5": "#fa4d56",
+      "--chart-6": "#570408",
+      "--chart-7": "#198038",
+      "--chart-8": "#002d9c"
+    },
+    "dark": {
+      "--color-scheme": "dark",
+      "--bg": "#161616",
+      "--bg-shell": "#262626",
+      "--layer-01": "#262626",
+      "--layer-02": "#393939",
+      "--border-subtle": "#393939",
+      "--border-strong": "#6f6f6f",
+      "--fg": "#f4f4f4",
+      "--muted": "#c6c6c6",
+      "--placeholder": "#6f6f6f",
+      "--accent": "#78a9ff",
+      "--focus": "#ffffff",
+      "--support-error": "#fa4d56",
+      "--support-success": "#42be65",
+      "--support-warning": "#f1c21b",
+      "--chart-1": "#8a3ffc",
+      "--chart-2": "#33b1ff",
+      "--chart-3": "#007d79",
+      "--chart-4": "#ff7eb6",
+      "--chart-5": "#fa4d56",
+      "--chart-6": "#fff1f1",
+      "--chart-7": "#6fdc8c",
+      "--chart-8": "#4589ff"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "rshow",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "observability": {
+    "enabled": true
+  },
+  // Workers Cache serves cached public responses without running the Worker.
+  // It bypasses private responses and requests with an Authorization header.
+  "cache": {
+    "enabled": true
+  },
+  // Both hostnames are custom domains on this Worker. No secrets here:
+  // Access teams and audiences are public identifiers, not credentials.
+  "routes": [
+    { "pattern": "<your-art-host>", "custom_domain": true },
+    { "pattern": "<your-admin-host>", "custom_domain": true }
+  ],
+  "vars": {
+    "ART_HOST": "<your-art-host>",
+    "ARTD_HOST": "<your-admin-host>",
+    "ACCESS_TEAM": "https://<your-team>.cloudflareaccess.com",
+    "ART_AUD": "<ART_AUD>",
+    "ARTD_AUD": "<ARTD_AUD>"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rshow",
+      "database_id": "<database-id>",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "rshow-blobs"
+    }
+  ]
+}

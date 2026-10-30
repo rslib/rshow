@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Mockup: a git tui in a cell grid</title>
+<!--
+  One terminal screen, two states: the branch list on the left, the commit log in
+  the middle, the diff on the right, a status bar, and the key hints every TUI
+  needs and half of them forget.
+
+  State 1, default: the log has the keyboard, a toast says what was staged.
+  State 2, confirm-dialog: a discard confirmation, and the keyboard is in the
+  dialog.
+
+  What this file demonstrates about the kit:
+
+    - it is a grid. 100 columns by 27 rows, every block a whole number of cells,
+      the frame around a pane drawn with box-drawing characters and the pane's
+      title inside its top border;
+    - it is one focused surface. The log pane has data-focus, the frame of the
+      focused pane is double and its title is bold, so it does not depend on the
+      accent colour;
+    - it has no app binding on Ctrl+C, Ctrl+Z or Ctrl+\. The key hints use plain
+      letters, because a terminal owns those three chords;
+    - it degrades. Change data-palette to dark, light, high-contrast or mono, or
+      data-depth to 16, and the same drawing still reads: + and - carry the diff,
+      not the green and the red.
+
+  Open it straight from disk and it works the same as inside the mockup: the kit
+  is a stylesheet and a script, not a frame.
+
+  Every branch name, hash and author below is a placeholder for a drawing.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../mockup.css">
+<link rel="stylesheet" href="../skins/wire.css" id="mk-skin" data-mk-skin>
+<link rel="stylesheet" href="../tui.css">
+<script src="../mode.js"></script>
+<script defer src="../mockup.js"></script>
+<script defer src="../tui.js"></script>
+</head>
+<body>
+
+<main class="mockup" data-name="Ledger" data-skin="wire">
+
+  <section class="artboard" id="git-tui" data-frame="bare" data-flush
+           data-title="git tui · cell grid"
+           data-states="default,confirm-dialog"
+           data-w="1240" data-h="796">
+
+    <div class="tui" id="tui-git" data-cols="100" data-rows="27"
+         data-palette="default" data-depth="256" data-size="20px">
+      <div class="tui-screen">
+        <div class="tui-body">
+
+          <div class="tui-line tui-dim"> ledger · git</div>
+          <div class="tui-line"><span class="tui-accent tui-bold">repository</span> ~/code/ledger <span class="tui-dim">· branch main · 3 files changed</span></div>
+
+          <div class="tui-main">
+
+            <div class="tui-pane" data-title="branches" data-cols="24" data-lines="23">
+              <div class="tui-body-lines">
+                <div class="tui-list">
+                  <div class="tui-list-item" data-marker="* ">main</div>
+                  <div class="tui-list-item" data-marker="  ">feature/cell-grid</div>
+                  <div class="tui-list-item" data-marker="  ">fix/login-redirect</div>
+                  <div class="tui-list-item" data-marker="  ">release/0.4</div>
+                  <div class="tui-list-item" data-marker="  ">hotfix/a11y</div>
+                  <div class="tui-list-item" data-marker="  ">wip/undo</div>
+                </div>
+                <div class="tui-rule">───────────────────</div>
+                <div class="tui-line tui-dim">remotes</div>
+                <div class="tui-list">
+                  <div class="tui-list-item" data-marker="  ">origin/main</div>
+                  <div class="tui-list-item" data-marker="  ">origin/release/0.4</div>
+                </div>
+                <div class="tui-line tui-dim">tags</div>
+                <div class="tui-list">
+                  <div class="tui-list-item" data-marker="  ">v0.3.2</div>
+                  <div class="tui-list-item" data-marker="  ">v0.3.1</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tui-gap"></div>
+
+            <div class="tui-pane" data-title="commits" data-focus data-cols="38" data-lines="23">
+              <div class="tui-body-lines">
+                <div class="tui-table" style="--tui-table-cols: 7ch 1fr 3ch">
+                  <div class="tui-table-row" data-head>
+                    <span>hash</span><span>message</span><span data-align="right">age</span>
+                  </div>
+                  <div class="tui-table-row tui-reverse">
+                    <span>a1b2c3d</span><span>draw the cell grid</span><span data-align="right">2d</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>b7e4f01</span><span>add the resize gate</span><span data-align="right">3d</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>c0d9a12</span><span>one focused pane</span><span data-align="right">4d</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>dd44e07</span><span>palette: high contrast</span><span data-align="right">4d</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>e6f1b88</span><span>gauge in blocks</span><span data-align="right">5d</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>f2a77c1</span><span>key hints, not prose</span><span data-align="right">6d</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>0b1c2d3</span><span>sparkline from data</span><span data-align="right">6d</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>1c2d3e4</span><span>drop the ctrl bindings</span><span data-align="right">1w</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>2d3e4f5</span><span>diff gutter alignment</span><span data-align="right">1w</span>
+                  </div>
+                  <div class="tui-table-row">
+                    <span>3e4f5a6</span><span>mono palette check</span><span data-align="right">2w</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tui-gap"></div>
+
+            <div class="tui-pane" data-title="diff · tui.css" data-cols="36" data-lines="23">
+              <div class="tui-body-lines">
+                <div class="tui-line tui-dim">--- a/tui.css</div>
+                <div class="tui-line tui-dim">+++ b/tui.css</div>
+                <div class="tui-line tui-accent">@@ -12,7 +12,9 @@</div>
+                <div class="tui-line"> .tui {</div>
+                <div class="tui-line tui-add">+  --tui-cell-h: 1.4em;</div>
+                <div class="tui-line tui-del">-  line-height: 1.2;</div>
+                <div class="tui-line tui-add">+  line-height: var(--tui-line);</div>
+                <div class="tui-line">   font-size: var(--tui-size);</div>
+                <div class="tui-line"> }</div>
+                <div class="tui-line tui-accent">@@ -28,3 +30,4 @@</div>
+                <div class="tui-line"> .tui-pane {</div>
+                <div class="tui-line tui-add">+  padding: 1lh 1ch;</div>
+                <div class="tui-line"> }</div>
+                <div class="tui-rule">──────────────────────────────</div>
+                <div class="tui-line"><span class="tui-dim">staged  </span><span class="tui-gauge" data-value="67" data-width="12" data-show-value></span></div>
+                <div class="tui-line"><span class="tui-dim">tests   </span><span class="tui-gauge" data-value="100" data-width="12" data-show-value></span></div>
+                <div class="tui-line"><span class="tui-dim">coverage </span><span class="tui-gauge" data-value="41" data-width="12" data-show-value data-tone="warn"></span></div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="tui-statusbar">
+            <span class="tui-bold">main</span>
+            <span class="tui-dim">·</span>
+            <span>clean</span>
+            <span class="tui-dim">·</span>
+            <span>1 ahead</span>
+            <span class="tui-dim">·</span>
+            <span class="tui-accent">a1b2c3d</span>
+            <span class="tui-grow"></span>
+            <span class="tui-dim">commits/wk</span>
+            <span class="tui-sparkline" data-values="2,4,3,6,5,9,7,11,8,12,6,4"></span>
+            <span class="tui-dim">utf-8</span>
+            <span class="tui-dim">100x27</span>
+          </div>
+
+          <div class="tui-keys">
+            <kbd>j</kbd> next
+            <kbd>k</kbd> previous
+            <kbd>s</kbd> stage
+            <kbd>c</kbd> commit
+            <kbd>d</kbd> diff
+            <kbd>r</kbd> refresh
+            <kbd>?</kbd> help
+            <kbd>q</kbd> quit
+          </div>
+
+        </div>
+
+        <div data-state="default">
+          <div class="tui-toast" data-tone="ok">
+            <span class="tui-add">staged</span> tui.css · tui.js
+            <span class="tui-dim">2 files, 144 cells</span>
+          </div>
+        </div>
+
+        <div data-state="confirm-dialog">
+          <div class="tui-dialog" data-title="discard" data-focus data-cols="52" data-lines="9">
+            <div class="tui-dialog-body">
+              <div class="tui-line tui-bold">Discard 2 staged files?</div>
+              <div class="tui-line tui-dim">tui.css · tui.js</div>
+              <div class="tui-line"> </div>
+              <div class="tui-rule">──────────────────────────────────────────────────</div>
+              <div class="tui-line tui-dim">The change is in a1b2c3d already.</div>
+              <div class="tui-dialog-actions">
+                <span class="tui-button" data-variant="default">&gt; discard</span>
+                <span class="tui-button" data-variant="quiet">cancel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <span class="note-pin" data-note="The frame is drawn with box characters and the pane title lives inside the top border, which is the one place a terminal can put a label without spending a row."
+          style="top:84px;left:1180px"></span>
+
+    <span class="note-pin" data-note="Focus is a double frame and a bold title, never the accent colour alone: the same drawing has to say which pane has the keyboard in the mono palette."
+          style="top:196px;left:1180px"></span>
+
+    <span class="note-pin" data-note="Key hints are letters. Ctrl+C, Ctrl+Z and Ctrl+\ belong to the terminal, so the tool does not bind them and the footer does not print them."
+          style="bottom:36px;left:1180px"></span>
+  </section>
+
+</main>
+
+</body>
+</html>

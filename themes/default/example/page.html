@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How rshow serves a version</title>
+<!--
+  A page artifact, not a deck: fonts.css, tokens.css, page.css, and mode.js in
+  the head so the stored mode applies before the body paints. A published page
+  points at the theme artifact instead, with root-relative URLs:
+
+    <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/page.css">
+    <script src="/_themes/<name>@<n>/mode.js"></script>
+
+  One theme, two modes, system by default. The button in the footer carries
+  data-rshow-mode-toggle, so mode.js fills that one in instead of mounting its
+  own fixed button in the corner.
+
+  Preview it from this folder with `rshow preview .` and open /page.html.
+  The figure is inline SVG so it takes its colours from the tokens and reads in
+  both grounds.
+-->
+<link rel="stylesheet" href="../fonts.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../page.css">
+<script src="../mode.js"></script>
+</head>
+<body>
+<main>
+
+  <h1>How rshow serves a version</h1>
+  <p class="lede">A published folder is stored once, named by the hash of its
+  files, and served under a slug that never changes.</p>
+
+  <h2>What a publish does</h2>
+  <p>Publishing walks the folder and hashes every file. The host answers with
+  the hashes it already holds, so the client uploads only the files that are
+  missing. The version record is the manifest: a list of path, hash, size and
+  media type. Nothing is rebuilt and nothing is copied, because a version is a
+  set of names for files that are already on disk.</p>
+  <p>Two consequences follow. A republish of a mostly unchanged folder is
+  cheap, and an old version keeps serving after a new one is published. The
+  link at <code>art.example.com/&lt;slug&gt;/</code> points at the newest version
+  unless the artifact is pinned, in which case it points at the pinned one.</p>
+
+  <figure>
+<svg viewBox="0 0 720 145" role="img" aria-label="Publish hashes the folder, compares the hashes with the host, uploads only the missing files and records a version that the link serves.">
+      <g style="font-family: var(--font-sans); fill: var(--fg)">
+        <g style="fill: var(--layer-01)">
+          <rect x="0" y="10" width="160" height="120"></rect>
+          <rect x="186" y="10" width="160" height="120"></rect>
+          <rect x="372" y="10" width="160" height="120"></rect>
+          <rect x="558" y="10" width="160" height="120"></rect>
+        </g>
+        <g style="font-size: 20px; font-weight: 600">
+          <text x="16" y="46">Publish</text>
+          <text x="202" y="46">Compare</text>
+          <text x="388" y="46">Upload</text>
+          <text x="574" y="46">Record</text>
+        </g>
+        <g style="font-size: 17px; fill: var(--muted)">
+          <text x="16" y="76">every file,</text>
+          <text x="16" y="96">hashed</text>
+          <text x="202" y="76">which hashes</text>
+          <text x="202" y="96">exist</text>
+          <text x="388" y="76">only what</text>
+          <text x="388" y="96">is new</text>
+          <text x="574" y="76">a numbered</text>
+          <text x="574" y="96">version</text>
+        </g>
+        <g style="stroke: var(--accent); stroke-width: 2">
+          <line x1="160" y1="70" x2="178" y2="70" marker-end="url(#arrow)"></line>
+          <line x1="346" y1="70" x2="364" y2="70" marker-end="url(#arrow)"></line>
+          <line x1="532" y1="70" x2="550" y2="70" marker-end="url(#arrow)"></line>
+        </g>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"></path>
+          </marker>
+        </defs>
+      </g>
+    </svg>
+    <figcaption>The three steps between a folder and a version. The compare
+    step is what makes a republish small. The link serves one version of the
+    manifest this records, at art.example.com/&lt;slug&gt;/.</figcaption>
+  </figure>
+
+  <h2>One artifact, several versions</h2>
+  <p>The table below is example data. It shows the shape of a version list
+  rather than a measurement of any run.</p>
+
+  <div class="table">
+    <table>
+      <caption>Example data: five publishes of one folder.</caption>
+      <thead>
+        <tr>
+          <th scope="col">Version</th>
+          <th scope="col">Label</th>
+          <th scope="col" class="num-cell">Files changed</th>
+          <th scope="col" class="num-cell">Uploaded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>v1</td><td>first draft</td><td class="num-cell">7</td><td class="num-cell">240 KB</td></tr>
+        <tr><td>v2</td><td>fix the chart</td><td class="num-cell">1</td><td class="num-cell">18 KB</td></tr>
+        <tr><td>v3</td><td>add the appendix</td><td class="num-cell">3</td><td class="num-cell">96 KB</td></tr>
+        <tr><td>v4</td><td>tidy the notes</td><td class="num-cell">1</td><td class="num-cell">12 KB</td></tr>
+        <tr><td>v5</td><td>after the dry run</td><td class="num-cell">2</td><td class="num-cell">31 KB</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>A token override</h2>
+  <p>A page that needs one colour of its own sets it after the theme links, in
+  a single <code>:root</code> block. The rest of the palette keeps its roles.</p>
+
+  <pre><code>&lt;style&gt;
+:root { --accent: #0f62fe; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) { --accent: #78a9ff; }
+}
+:root[data-mode="dark"] { --accent: #78a9ff; }
+&lt;/style&gt;</code></pre>
+  <p>A token that carries text has to be set for both modes, because a colour
+  that reads on white is not a colour that reads on g100. A token that only
+  fills a shape can be set once.</p>
+
+  <h2>What the reader sees</h2>
+  <p>Body text sits at 18px on a 1.6 line and stops at about 72 characters. A
+  heading above a paragraph is a weight change, not a colour change, and there
+  is no label above a heading. Tables rule their rows in the lightest line in
+  the palette and give numbers a tabular figure, so columns line up.</p>
+  <ul>
+    <li>A row rule is information: it separates one record from the next.</li>
+    <li>An axis line is information: it marks zero on a chart.</li>
+    <li>Anything else would be decoration, so the theme ships none.</li>
+  </ul>
+
+  <p>The report layout in <code>report.css</code> and <code>report.js</code>
+  numbers the sections, figures and tables, resolves cross-references and puts
+  footnotes in the margin.</p>
+
+  <footer>
+    <p>Example page for the rshow theme <strong>default</strong>. The numbers in
+    the table and the figure are illustrative, not measured.</p>
+    <p><button type="button" data-rshow-mode-toggle>Mode</button></p>
+  </footer>
+
+</main>
+</body>
+</html>
