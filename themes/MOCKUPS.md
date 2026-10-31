@@ -146,6 +146,26 @@ A freeform drawing is an Excalidraw file and not a hand written SVG: `<div class
 Rough boxes, an arrow drawn by hand and a scribbled label belong here, next to the mockup that needs one diagram of the flow.
 The ink is the theme's and the paper is `--bg`, so a sketch sits on the page with no card around it.
 
+## Keys
+
+A reader can work the whole canvas without the mouse.
+
+| Key | What it does |
+|---|---|
+| `w` `a` `s` `d`, arrows | pan the canvas; in focus view a step moves along the flow |
+| `Shift` with a pan key | pan a quarter of the stage |
+| `+` `-` | zoom around the middle of the stage |
+| `0`, `z` | fit every screen, zoom to 100% |
+| `[` `]`, `Shift+Tab` `Tab` | select the previous and next screen |
+| `Enter`, `Esc` | open the selected screen, go back to the canvas |
+| `1` to `9` | pick a state of the screen the keys are on, `1` being Default |
+| `?` | the list of keys, which `Esc` closes first |
+
+The selected screen carries an outline in the canvas, and in focus view the arrows and `a` `d` step to the next screen in `boards` order.
+A screen taller than the stage pans with `w` and `s` once it is open.
+No key fires with Ctrl, meta or alt held, and a field keeps its own keys, so a comment can be typed without the canvas moving.
+There is also a quiet `? keys` button in the bottom left corner of the stage, for a reader who never guesses the key.
+
 ## Look at it
 
 `rshow check <dir>` exits 0 before anything is published.

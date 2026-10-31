@@ -110,6 +110,7 @@ Never present invented data as if somebody measured it.
 
 - `rshow check <dir>` exits 0, then `rshow preview <dir>`.
 - Look at the canvas, the focus view and Play mode, in both modes, at desktop width and at 360px.
+- Press `?` on the page for the keys: `w` `a` `s` `d` or the arrows pan, `[` `]` step between screens, `Enter` opens one, `1` to `9` pick a state, so tell the person about that list.
 - Switch the skin in the toolbar and check the drawing still reads.
 - Print puts one artboard on a page with no tool chrome, which is what a review meeting wants on paper.
 - `rshow publish <dir> --slug <slug> --label "<what changed>"`, then read `rshow-implement` before anybody writes code from it.

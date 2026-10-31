@@ -5,6 +5,14 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Added
+
+- Add keyboard control to mockups: pan with w, a, s, d or the arrows, jump between screens with [ and ], open one with Enter, pick a state with 1 to 9 and press ? for the list.
+
+### Fixed
+
+- Fix the state buttons above a mockup screen, which did not take a click on the canvas.
+
 ## [0.0.5] - 2026-10-31
 
 ### Changed

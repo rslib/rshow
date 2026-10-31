@@ -55,6 +55,13 @@
  * link holds a screen. Escape goes back to the canvas. ?skin= and ?view= and
  * ?screen= set the first frame, which is what a screenshot wants.
  *
+ * Keys
+ *
+ *   w a s d and the arrows pan the canvas, + - 0 and z zoom it, [ ] and Tab
+ *   pick a screen, Enter opens it and Escape goes back to the canvas. 1 to 9
+ *   pick a state of the screen the keys are on, and ? lists every one of them.
+ *   A field keeps its own keys and a chord with meta, ctrl or alt is never ours.
+ *
  * Comments are read and written at data-store, default ../_data/mockup-comments
  * relative to the page, and the store holds {value: [{id, artboard, text, at}]}.
  * The server records who wrote it: this file never sends an author.
@@ -464,7 +471,7 @@
   modeHost.appendChild(modeButton);
   toolbar.appendChild(modeHost);
 
-  var hints = el('span', 'mk-hint', 'Drag to pan, Ctrl and wheel to zoom, Enter on a title to focus');
+  var hints = el('span', 'mk-hint', 'Drag to pan, Ctrl and wheel to zoom, ? for the keys');
   toolbar.appendChild(hints);
 
   // The bar that names the screen in focus and in play.
@@ -528,6 +535,54 @@
   main.appendChild(focusnav);
   main.appendChild(stage);
   main.appendChild(side);
+
+  // ---------------------------------------------------------------- keys ---
+
+  var KEYS = [
+    ['w a s d', 'Pan the canvas'],
+    ['arrow keys', 'Pan the canvas, or step between screens'],
+    ['Shift and a key', 'Pan a quarter of the stage'],
+    ['+ -', 'Zoom in and out'],
+    ['0', 'Fit every screen'],
+    ['z', 'Zoom to 100%'],
+    ['[ ] or Tab', 'Previous and next screen'],
+    ['Enter', 'Open the selected screen'],
+    ['1 to 9', 'Pick a state of that screen'],
+    ['Esc', 'Back to the canvas, or close this list'],
+    ['?', 'Show or hide this list']
+  ];
+
+  var keysOpen = false;
+
+  var keysPanel = el('div', 'mk-keys');
+  keysPanel.setAttribute('role', 'dialog');
+  keysPanel.setAttribute('aria-label', 'Keys');
+  keysPanel.hidden = true;
+  var keysList = el('dl', 'mk-keys-list');
+  KEYS.forEach(function (row) {
+    keysList.appendChild(el('dt', null, row[0]));
+    keysList.appendChild(el('dd', null, row[1]));
+  });
+  keysPanel.appendChild(keysList);
+  stage.appendChild(keysPanel);
+
+  // The corner button says what it is, so a reader who never guesses ? still
+  // finds the list. The pointerdown guard leaves the buttons of the stage alone.
+  var keysButton = el('button', 'mk-keys-toggle', '? keys');
+  keysButton.type = 'button';
+  keysButton.setAttribute('aria-label', 'Keys');
+  keysButton.setAttribute('aria-expanded', 'false');
+  keysButton.setAttribute('title', 'Every key (?)');
+  keysButton.addEventListener('click', function () {
+    setKeys(!keysOpen);
+  });
+  stage.appendChild(keysButton);
+
+  function setKeys(open) {
+    keysOpen = open === true;
+    keysPanel.hidden = !keysOpen;
+    keysButton.setAttribute('aria-expanded', keysOpen ? 'true' : 'false');
+  }
 
   // Rows: wide screens and phones pack side by side, everything stays in the
   // same visual order as the markup.
@@ -605,6 +660,7 @@
   }
 
   function fitAll() {
+    stopAnimation();
     var box = stageBox();
     var w = world.offsetWidth;
     var h = world.offsetHeight;
@@ -616,24 +672,33 @@
     applyTransform(true);
   }
 
-  function clamp() {
+  function clampPoint(x, y) {
     var box = stageBox();
     var w = world.offsetWidth * zoom;
     var h = world.offsetHeight * zoom;
     var pad = 80;
+    var at = { x: x, y: y };
     if (w <= box.width) {
-      tx = (box.width - w) / 2;
+      at.x = (box.width - w) / 2;
     } else {
-      tx = Math.min(pad, Math.max(box.width - w - pad, tx));
+      at.x = Math.min(pad, Math.max(box.width - w - pad, at.x));
     }
     if (h <= box.height) {
-      ty = (box.height - h) / 2;
+      at.y = (box.height - h) / 2;
     } else {
-      ty = Math.min(pad, Math.max(box.height - h - pad, ty));
+      at.y = Math.min(pad, Math.max(box.height - h - pad, at.y));
     }
+    return at;
+  }
+
+  function clamp() {
+    var at = clampPoint(tx, ty);
+    tx = at.x;
+    ty = at.y;
   }
 
   function zoomTo(next, clientX, clientY) {
+    stopAnimation();
     var box = stageBox();
     var sx = clientX === undefined ? box.width / 2 : clientX - box.left;
     var sy = clientY === undefined ? box.height / 2 : clientY - box.top;
@@ -670,6 +735,144 @@
     zoomTo(0.1);
   }
 
+  // ------------------------------------------------------------ selection --
+
+  var selectedId = null;
+  var panAnimation = null;
+
+  function markSelected() {
+    for (var b = 0; b < boards.length; b += 1) {
+      boards[b].el.classList.toggle('is-selected', boards[b].id === selectedId);
+    }
+  }
+
+  function selectedBoard() {
+    return view === 'canvas' ? boardById(selectedId) : current();
+  }
+
+  function pickState(index) {
+    var board = selectedBoard();
+    if (!board) {
+      return false;
+    }
+    var names = [''].concat(board.states);
+    if (index < 0 || index >= names.length) {
+      return false;
+    }
+    setState(board, names[index]);
+    return true;
+  }
+
+  // Where a board sits in the stage, measured with the canvas transform out of
+  // the way, so a selection lands on it at whatever the zoom is.
+  function boardAt(board) {
+    var box = stageBox();
+    var saved = world.style.transform;
+    world.style.transform = 'translate(0px,0px) scale(1)';
+    var rect = board.el.getBoundingClientRect();
+    world.style.transform = saved;
+    return { x: rect.left - box.left, y: rect.top - box.top, w: rect.width, h: rect.height };
+  }
+
+  function stopAnimation() {
+    if (panAnimation !== null) {
+      if (typeof window.cancelAnimationFrame === 'function') {
+        window.cancelAnimationFrame(panAnimation.frame);
+      }
+      window.clearTimeout(panAnimation.timer);
+      panAnimation = null;
+    }
+  }
+
+  function animateTo(x, y) {
+    stopAnimation();
+    var run = { frame: null, timer: null };
+    panAnimation = run;
+
+    function finish() {
+      if (panAnimation !== run) {
+        return;
+      }
+      panAnimation = null;
+      tx = x;
+      ty = y;
+      applyTransform(true);
+    }
+
+    if (typeof window.requestAnimationFrame !== 'function') {
+      finish();
+      return;
+    }
+    var fromX = tx;
+    var fromY = ty;
+    var started = null;
+
+    function frame(now) {
+      if (panAnimation !== run) {
+        return;
+      }
+      var at = typeof now === 'number' ? now : 0;
+      if (started === null) {
+        started = at;
+      }
+      var t = Math.min(1, (at - started) / 220);
+      var eased = 1 - (1 - t) * (1 - t) * (1 - t);
+      tx = fromX + (x - fromX) * eased;
+      ty = fromY + (y - fromY) * eased;
+      applyTransform(true);
+      if (t < 1) {
+        run.frame = window.requestAnimationFrame(frame);
+        return;
+      }
+      finish();
+    }
+
+    run.frame = window.requestAnimationFrame(frame);
+    // A window that draws no frames, such as the headless one behind a
+    // screenshot, still lands on the screen the keys picked.
+    run.timer = window.setTimeout(finish, 320);
+  }
+
+  function centreOn(board, animate) {
+    var at = boardAt(board);
+    var box = stageBox();
+    var to = clampPoint(
+      (box.width - at.w * zoom) / 2 - at.x * zoom,
+      (box.height - at.h * zoom) / 2 - at.y * zoom
+    );
+    if (animate !== true) {
+      tx = to.x;
+      ty = to.y;
+      applyTransform(true);
+      return;
+    }
+    animateTo(to.x, to.y);
+  }
+
+  function selectBoard(index) {
+    var count = boards.length;
+    if (count === 0) {
+      return;
+    }
+    var at = ((index % count) + count) % count;
+    selectedId = boards[at].id;
+    markSelected();
+    if (view === 'canvas') {
+      centreOn(boards[at], true);
+    }
+  }
+
+  function stepSelection(delta) {
+    if (boards.length === 0) {
+      return;
+    }
+    var at = selectedId === null ? -1 : boardIndex(selectedId);
+    if (at < 0) {
+      at = delta < 0 ? boards.length : -1;
+    }
+    selectBoard(at + delta);
+  }
+
   function markCurrent() {
     for (var b = 0; b < boards.length; b += 1) {
       boards[b].el.classList.toggle('is-current', boards[b].id === currentId);
@@ -677,6 +880,7 @@
   }
 
   function layoutCurrent() {
+    stopAnimation();
     var board = current();
     if (!board) {
       return;
@@ -744,6 +948,8 @@
       canvasState = { zoom: zoom, tx: tx, ty: ty };
     }
     currentId = id;
+    selectedId = id;
+    markSelected();
     setView('focus');
     writeHash(id);
   }
@@ -756,13 +962,21 @@
       canvasState = { zoom: zoom, tx: tx, ty: ty };
     }
     currentId = id;
+    selectedId = id;
+    markSelected();
     setView('play');
     writeHash(id);
   }
 
   function backToCanvas() {
+    if (view !== 'canvas' && currentId !== null) {
+      // The screen the reader was on stays the selected one, so the keys can
+      // open it again or step from it.
+      selectedId = currentId;
+    }
     currentId = null;
     setView('canvas');
+    markSelected();
     writeHash('');
     zoom = canvasState.zoom;
     tx = canvasState.tx;
@@ -1105,6 +1319,17 @@
   var flashTimer = null;
   var suppressHash = false;
 
+  // A control placed over the canvas owns its own pointer and its own keys.
+  var CONTROLS =
+    'button, a[href], input, select, textarea, label, summary, [role="button"], [tabindex]:not([tabindex="-1"])';
+
+  function control(node) {
+    if (!node || !node.closest) {
+      return null;
+    }
+    return node.closest(CONTROLS);
+  }
+
   toolbar.addEventListener('click', function (event) {
     var button = event.target.closest ? event.target.closest('[data-mk]') : null;
     if (!button) {
@@ -1198,6 +1423,7 @@
   });
 
   function startPan(event) {
+    stopAnimation();
     dragging = { x: event.clientX, y: event.clientY, tx: tx, ty: ty };
     stage.classList.add('is-panning');
     if (stage.setPointerCapture) {
@@ -1215,12 +1441,8 @@
     }
     // A control above the screen keeps its own click: capturing the pointer
     // here would retarget that click to the stage.
-    var control = event.target.closest
-      ? event.target.closest(
-          'button, a[href], input, select, textarea, label, summary, [role="button"], [tabindex]:not([tabindex="-1"])'
-        )
-      : null;
-    if (!spaceDown && control !== null && control !== stage) {
+    var taken = control(event.target);
+    if (!spaceDown && taken !== null && taken !== stage) {
       return;
     }
     var inScreen = event.target.closest ? event.target.closest('.mk-screen') : null;
@@ -1264,6 +1486,7 @@
         return;
       }
       event.preventDefault();
+      stopAnimation();
       if (event.ctrlKey || event.metaKey) {
         zoomTo(zoom * (event.deltaY < 0 ? 1.12 : 1 / 1.12), event.clientX, event.clientY);
         return;
@@ -1284,6 +1507,32 @@
     return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || node.isContentEditable === true;
   }
 
+  // Tab and Enter belong to the page while a reader is in the toolbar, the
+  // panel or a screen: only the stage itself takes them over.
+  function fromStage(node) {
+    return node === document.body || node === document.documentElement || node === stage;
+  }
+
+  function panSize(event) {
+    if (event.shiftKey === true) {
+      var box = stageBox();
+      return { x: Math.round(box.width / 4), y: Math.round(box.height / 4) };
+    }
+    return { x: 64, y: 64 };
+  }
+
+  // A screen taller than the stage scrolls under it. One that fits has nowhere
+  // to go, so up and down leave it alone.
+  function panTall(direction, event) {
+    var board = current();
+    var box = stageBox();
+    if (!board || board.el.offsetHeight * zoom <= box.height) {
+      return;
+    }
+    ty -= direction * panSize(event).y;
+    applyTransform(false);
+  }
+
   document.addEventListener('keydown', function (event) {
     if (event.metaKey || event.ctrlKey || event.altKey || typing(event.target)) {
       return;
@@ -1292,6 +1541,29 @@
     if (key === ' ' || key === 'Spacebar') {
       spaceDown = true;
       if (event.target === document.body) {
+        event.preventDefault();
+      }
+      return;
+    }
+    if (key === '?') {
+      event.preventDefault();
+      setKeys(!keysOpen);
+      return;
+    }
+    if (key === 'Escape') {
+      if (keysOpen) {
+        event.preventDefault();
+        setKeys(false);
+        return;
+      }
+      if (view !== 'canvas') {
+        event.preventDefault();
+        backToCanvas();
+      }
+      return;
+    }
+    if (key >= '1' && key <= '9' && key.length === 1) {
+      if (pickState(Number(key) - 1)) {
         event.preventDefault();
       }
       return;
@@ -1313,33 +1585,67 @@
       }
       return;
     }
-    if (key === 'Escape') {
-      if (view !== 'canvas') {
-        event.preventDefault();
-        backToCanvas();
-      }
-      return;
-    }
-    if (key === 'ArrowRight' || key === 'ArrowLeft') {
-      var delta = key === 'ArrowRight' ? 1 : -1;
+    if (key === 'z' || key === 'Z') {
       if (view === 'canvas') {
-        tx -= delta * 64;
-        clamp();
-        applyTransform(true);
-      } else {
         event.preventDefault();
-        step(delta);
+        zoomTo(1);
       }
       return;
     }
-    if (key === 'ArrowDown' || key === 'ArrowUp') {
-      if (view !== 'canvas') {
+    if (key === ']' || key === '[') {
+      event.preventDefault();
+      var order = key === ']' ? 1 : -1;
+      if (view === 'canvas') {
+        stepSelection(order);
+      } else {
+        step(order);
+      }
+      return;
+    }
+    if (key === 'Tab') {
+      if (view === 'canvas' && fromStage(event.target) && control(event.target) === null) {
+        event.preventDefault();
+        stepSelection(event.shiftKey === true ? -1 : 1);
+      }
+      return;
+    }
+    if (key === 'Enter') {
+      if (view !== 'canvas' || selectedId === null || control(event.target) !== null) {
         return;
       }
-      ty -= (key === 'ArrowDown' ? 1 : -1) * 64;
+      event.preventDefault();
+      focus(selectedId);
+      return;
+    }
+    var dx = 0;
+    var dy = 0;
+    if (key === 'ArrowRight' || key === 'd' || key === 'D') {
+      dx = 1;
+    } else if (key === 'ArrowLeft' || key === 'a' || key === 'A') {
+      dx = -1;
+    } else if (key === 'ArrowDown' || key === 's' || key === 'S') {
+      dy = 1;
+    } else if (key === 'ArrowUp' || key === 'w' || key === 'W') {
+      dy = -1;
+    }
+    if (dx === 0 && dy === 0) {
+      return;
+    }
+    event.preventDefault();
+    if (view === 'canvas') {
+      var stepSize = panSize(event);
+      stopAnimation();
+      tx -= dx * stepSize.x;
+      ty -= dy * stepSize.y;
       clamp();
       applyTransform(true);
+      return;
     }
+    if (dx !== 0) {
+      step(dx);
+      return;
+    }
+    panTall(dy, event);
   });
 
   document.addEventListener('keyup', function (event) {

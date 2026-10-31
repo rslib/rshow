@@ -279,6 +279,74 @@ body {
   will-change: transform;
 }
 
+/* The key list and the small button that toggles it. Both sit in the free
+   bottom left corner of the stage, over the canvas and never in its way. */
+
+.mk-keys-toggle {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 4;
+  min-height: 28px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted, #525252);
+  background: var(--bg, #ffffff);
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  border-radius: 0;
+  cursor: pointer;
+  opacity: 0.75;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mk-keys-toggle:hover,
+.mk-keys-toggle[aria-expanded="true"] {
+  opacity: 1;
+  color: var(--fg, #161616);
+  border-color: var(--border-strong, #8d8d8d);
+}
+
+.mk-keys {
+  position: absolute;
+  left: 12px;
+  bottom: 48px;
+  z-index: 5;
+  width: 340px;
+  max-width: calc(100% - 24px);
+  padding: 12px 14px;
+  background: var(--bg, #ffffff);
+  border: 1px solid var(--border-subtle, #e0e0e0);
+  box-shadow: 0 2px 6px var(--border-subtle, #e0e0e0);
+}
+
+.mk-keys[hidden] {
+  display: none;
+}
+
+.mk-keys-list {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.mk-keys-list dt {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  color: var(--fg, #161616);
+  white-space: nowrap;
+}
+
+.mk-keys-list dd {
+  margin: 0;
+  color: var(--muted, #525252);
+}
+
 .mk-row {
   display: flex;
   align-items: flex-start;
@@ -305,6 +373,18 @@ body {
 .artboard[data-frame="tablet"] {
   --mk-w: 834px;
   --mk-h: 1112px;
+}
+
+/* The board the keys picked. It is a choice in the canvas and not a second
+   frame around the screen a reader is already looking at. */
+.artboard.is-selected {
+  outline: 2px solid var(--accent, #0f62fe);
+  outline-offset: 6px;
+}
+
+.mockup[data-view="focus"] .artboard.is-selected,
+.mockup[data-view="play"] .artboard.is-selected {
+  outline: none;
 }
 
 .mk-head {
@@ -996,7 +1076,9 @@ body {
     display: none;
   }
 
-  .mockup[data-view="play"] .mk-side {
+  .mockup[data-view="play"] .mk-side,
+  .mockup[data-view="play"] .mk-keys,
+  .mockup[data-view="play"] .mk-keys-toggle {
     display: none;
   }
 }
@@ -1029,8 +1111,14 @@ body {
   .mk-overlay,
   .mk-statebar,
   .mk-hint,
+  .mk-keys,
+  .mk-keys-toggle,
   .rshow-mode-toggle {
     display: none;
+  }
+
+  .artboard.is-selected {
+    outline: none;
   }
 
   .mk-stage {
