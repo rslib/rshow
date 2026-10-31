@@ -77,7 +77,7 @@ Its `package.json` depends on the published rshow package, which ships the Worke
   "name": "rshow-deploy",
   "private": true,
   "dependencies": {
-    "rshow": "^0.0.2"
+    "rshow": "^0.0.3"
   }
 }
 ```

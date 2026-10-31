@@ -5,18 +5,25 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
-### Fixed
+## [0.0.3] - 2026-10-31
 
-- Fix `rshow doctor` to name the store the token came from, `env`, `keychain`, `keyring` or `file` with its path.
-- Fix every request on a cluster failing with `network error: fetch failed` by trusting the system certificate store before the first request.
-- Fix a failed request to name its host and reason, such as `network error: artd.example.com: certificate not trusted`, and to print one hint on what to try next.
+### Changed
+
+- Make `rshow doctor` name where the token came from, such as the macOS Keychain, the Linux keyring or a file.
 
 ### Added
 
-- Add `rshow login` on Linux, which keeps the token in the Secret Service keyring through `secret-tool`, or in `${XDG_CONFIG_HOME:-$HOME/.config}/rshow/credentials` with mode 600 when there is none, and prints where it went; `RSHOW_TOKEN_STORE` forces one store and `rshow logout` clears them all.
-- Add `RSHOW_SECRET_TOOL_BIN`, the keyring tool `rshow login` calls, as `RSHOW_SECURITY_BIN` stands in for the macOS Keychain.
-- Add `RSHOW_EXTRA_CA_FILE`, a PEM file of roots to trust besides the system store, and `RSHOW_SYSTEM_CA=0` to leave the store out.
-- Add proxy support: `https_proxy`, `http_proxy` and `no_proxy` work in the binary, and in an npm install with `NODE_USE_ENV_PROXY=1`.
+- Add `rshow login` on Linux.
+  It keeps the token in the Linux keyring when one runs, and else in `~/.config/rshow/credentials` with mode 600.
+- Add proxy support through `https_proxy`, `http_proxy` and `no_proxy`.
+  An npm install needs `NODE_USE_ENV_PROXY=1` as well.
+- Add `RSHOW_EXTRA_CA_FILE` to trust an extra root certificate, and `RSHOW_SYSTEM_CA=0` to stop rshow from using the system certificates.
+
+### Fixed
+
+- Fix `network error: fetch failed` on networks that inspect HTTPS with their own root certificate.
+  rshow now trusts the system certificates, as curl does.
+- Fix network errors to name the host and the cause, such as `certificate not trusted` or `host not found`, with a hint on what to try.
 
 ## [0.0.2] - 2026-10-30
 
@@ -51,6 +58,7 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - A publish of a folder that did not change adds no version: `publish` and `theme publish` name the version that is already live, and `--force` publishes anyway.
 - `rshow --version` prints the version, and `doctor` opens with it.
 
-[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/rslib/rshow/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/rslib/rshow/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/rslib/rshow/releases/tag/v0.0.1
