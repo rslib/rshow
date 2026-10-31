@@ -32,6 +32,7 @@ import {
   HANDOFF_USAGE,
   COMPARE_USAGE,
   DOCS_USAGE,
+  COMPLETION_USAGE,
 } from './usage.ts';
 import { run as publish } from './commands/publish.ts';
 import { run as check } from './commands/check.ts';
@@ -51,6 +52,7 @@ import { run as tag } from './commands/tag.ts';
 import { run as handoff } from './commands/handoff.ts';
 import { run as compare } from './commands/compare.ts';
 import { run as docs } from './commands/docs.ts';
+import { run as completion } from './commands/completion.ts';
 import { run as login } from './commands/login.ts';
 import { run as logout } from './commands/logout.ts';
 
@@ -76,6 +78,7 @@ const COMMANDS: Record<string, Command> = {
   delete: { usage: DELETE_USAGE, run: remove },
   login: { usage: LOGIN_USAGE, run: login },
   logout: { usage: LOGOUT_USAGE, run: logout },
+  completion: { usage: COMPLETION_USAGE, run: completion },
   // Kept out of the general help: the docs site runs it, a person rarely does.
   docs: { usage: DOCS_USAGE, run: docs },
 };

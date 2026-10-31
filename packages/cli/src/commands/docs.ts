@@ -7,6 +7,7 @@ import { builtinThemeDir, themeTokenSets } from '../themes.ts';
 import {
   CHECK_USAGE,
   COMPARE_USAGE,
+  COMPLETION_USAGE,
   CONFIG_USAGE,
   DELETE_USAGE,
   DOCS_USAGE,
@@ -78,6 +79,7 @@ const USAGE: Record<string, string> = {
   delete: DELETE_USAGE,
   login: LOGIN_USAGE,
   logout: LOGOUT_USAGE,
+  completion: COMPLETION_USAGE,
 };
 
 // What each exit code means, keyed by its name in `exit.ts`, so a new code

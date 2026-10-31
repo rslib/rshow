@@ -24,6 +24,7 @@ commands:
   delete <slug> --yes     delete an artifact
   login [--url u]         save the API token for this account
   logout [--url u]        remove the saved token for a server
+  completion <shell>      print a completion script for bash, zsh or fish
 
 global:
   --json                  print the API reply JSON
@@ -321,6 +322,20 @@ export const LOGOUT_USAGE = `usage: rshow logout [--url u]
 
 Removes the token this server has from every store that holds it: the macOS
 Keychain, the Linux keyring and the 0600 credentials file.`;
+
+export const COMPLETION_USAGE = `usage: rshow completion <bash|zsh|fish>
+
+Prints a completion script for that shell on stdout. It lists every command
+and its long options, and it completes files and folders for the commands that
+take one. It is static: a completion never calls the API.
+
+load it once per machine:
+  bash  rshow completion bash > ~/.local/share/bash-completion/completions/rshow
+  zsh   rshow completion zsh > ~/.local/share/zsh/site-functions/_rshow
+        (that folder must be on $fpath, before compinit)
+  fish  rshow completion fish > ~/.config/fish/completions/rshow.fish
+
+The curl installer writes all three, and an npm install runs one of them.`;
 
 export const PROJECT_USAGE = `usage: rshow project <create|list|show|share|delete> [options]
 

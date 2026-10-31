@@ -78,6 +78,11 @@ rshow --help
 ok 0 "--help"
 contains "$OUT" "usage: rshow" || die "rshow --help printed no usage: $OUT"
 
+step "rshow completion bash"
+rshow completion bash
+ok 0 "completion bash"
+contains "$OUT" "complete -F" || die "rshow completion bash printed no complete -F: $OUT"
+
 step "rshow doctor names the binary"
 rshow doctor
 contains "$OUT" "(binary)" || die "rshow doctor printed no (binary): $OUT"
