@@ -14,14 +14,23 @@ With curl, as one file that carries its own Node, so no Node is needed on the ma
 curl -fsSL https://rslib.github.io/rshow/install.sh | sh
 ```
 
-The installer reads `uname` to pick the file, checks it against the `SHA256SUMS` of the release, and writes `rshow` into `~/.local/bin`, mode 755.
+The installer reads `uname` to pick the tarball, checks it against the `SHA256SUMS` of the release, unpacks it and writes `rshow` into `~/.local/bin`, mode 755.
+It writes the bash, zsh and fish completions of that tarball too, and says where each one went; `RSHOW_NO_COMPLETIONS=1` leaves them out.
 It prints the installed version, and says how to put that folder on `PATH` when it is not there yet.
-`RSHOW_VERSION=0.0.2` installs a named release, `RSHOW_INSTALL_DIR` writes somewhere else, and `RSHOW_DOWNLOAD_BASE` downloads from a mirror.
+`RSHOW_VERSION=0.0.5` installs a named release, `RSHOW_INSTALL_DIR` writes somewhere else, and `RSHOW_DOWNLOAD_BASE` downloads from a mirror.
 
 With npm, which needs Node 22 or later:
 
 ```sh
 npm i -g rshow
+```
+
+An npm install writes the same completion scripts itself:
+
+```sh
+rshow completion bash > ~/.local/share/bash-completion/completions/rshow
+rshow completion zsh > ~/.local/share/zsh/site-functions/_rshow   # that folder must be on $fpath
+rshow completion fish > ~/.config/fish/completions/rshow.fish
 ```
 
 From a clone of this repository, which links the CLI into `~/.local/bin` and needs Node 26:

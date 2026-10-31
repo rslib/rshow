@@ -12,11 +12,20 @@ curl -fsSL https://rslib.github.io/rshow/install.sh | sh
 ```
 
 The installer checks the download against the release `SHA256SUMS` and puts `rshow` in `~/.local/bin`; `RSHOW_VERSION`, `RSHOW_INSTALL_DIR` and `RSHOW_DOWNLOAD_BASE` change what it fetches and where it writes.
+It also writes the bash, zsh and fish completions for `rshow completion bash|zsh|fish`; `RSHOW_NO_COMPLETIONS=1` leaves them out.
 
 With npm, which needs Node 22 or later:
 
 ```sh
 npm i -g rshow
+```
+
+An npm install writes the same scripts itself:
+
+```sh
+rshow completion bash > ~/.local/share/bash-completion/completions/rshow
+rshow completion zsh > ~/.local/share/zsh/site-functions/_rshow   # that folder must be on $fpath
+rshow completion fish > ~/.config/fish/completions/rshow.fish
 ```
 
 From a clone of this repository, which links the CLI and the skills into place:

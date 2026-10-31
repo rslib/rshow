@@ -5,12 +5,18 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Changed
+
+- Ship each release binary as `rshow-<target>.tar.gz` with its completions, and make the curl installer set up completions for bash, zsh and fish.
+
 ### Added
 
+- Add `rshow completion bash|zsh|fish` to print a shell completion script.
 - Add keyboard control to mockups: pan with w, a, s, d or the arrows, jump between screens with [ and ], open one with Enter, pick a state with 1 to 9 and press ? for the list.
 
 ### Fixed
 
+- Fix the curl installer telling Linux users to set RSHOW_TOKEN, since `rshow login` works there.
 - Fix the state buttons above a mockup screen, which did not take a click on the canvas.
 
 ## [0.0.5] - 2026-10-31

@@ -117,10 +117,25 @@ jobs:
         run: node packages/cli/scripts/sea.mjs --out rshow-${{ matrix.target }}
       - name: The binary runs its commands
         run: bash tests/sea-smoke.sh ./rshow-${{ matrix.target }}
+      - name: Pack the binary with its completions as a tarball
+        run: |
+          set -eu
+          name=rshow-${{ matrix.target }}
+          mv "$name" "$RUNNER_TEMP/rshow.bin"
+          mkdir -p "$name/completions"
+          cp "$RUNNER_TEMP/rshow.bin" "$name/rshow"
+          chmod 755 "$name/rshow"
+          cp LICENSE README.md "$name/"
+          # The binary writes its own scripts, so a release cannot drift from one.
+          "./$name/rshow" completion bash > "$name/completions/rshow.bash"
+          "./$name/rshow" completion zsh > "$name/completions/_rshow"
+          "./$name/rshow" completion fish > "$name/completions/rshow.fish"
+          tar -czf "$name.tar.gz" "$name"
+          tar -tzf "$name.tar.gz"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: rshow-${{ matrix.target }}
-          path: rshow-${{ matrix.target }}
+          path: rshow-${{ matrix.target }}.tar.gz
           if-no-files-found: error
 
   attach:
@@ -134,13 +149,13 @@ jobs:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           merge-multiple: true
-      - name: Checksums for the binaries
+      - name: Checksums for the tarballs
         run: |
           set -eu
-          sha256sum rshow-* > SHA256SUMS
+          sha256sum rshow-*.tar.gz > SHA256SUMS
           cat SHA256SUMS
       # No checkout in this job, so gh needs the repository named.
-      - name: Upload the binaries and the checksums to the release
+      - name: Upload the tarballs and the checksums to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$GITHUB_REF_NAME" rshow-* SHA256SUMS --clobber --repo "$GITHUB_REPOSITORY"
+        run: gh release upload "$GITHUB_REF_NAME" rshow-*.tar.gz SHA256SUMS --clobber --repo "$GITHUB_REPOSITORY"
