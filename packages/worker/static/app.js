@@ -233,12 +233,15 @@
           if (body) {
             var tr = document.createElement("tr");
             var cells = [data.name, data.scope.charAt(0).toUpperCase() + data.scope.slice(1), String(data.created_at).slice(0, 10), "Never"];
+            var labels = [null, "Scope", "Created", "Last used"];
             for (var i = 0; i < cells.length; i += 1) {
               var td = document.createElement("td");
               td.textContent = cells[i];
+              if (labels[i]) td.setAttribute("data-label", labels[i]);
               tr.appendChild(td);
             }
             var last = document.createElement("td");
+            last.setAttribute("data-label", "Actions");
             var button = document.createElement("button");
             button.type = "button";
             button.className = "btn-link";
@@ -307,6 +310,15 @@
     if (!el || !el.matches || !el.matches("[data-submit-on-change]")) return;
     if (el.form) el.form.requestSubmit();
   });
+
+  var navBar = document.querySelector(".sidenav");
+  var activeNav = navBar ? navBar.querySelector(".nav-item.is-active") : null;
+  if (navBar && activeNav && navBar.scrollWidth > navBar.clientWidth) {
+    var delta = activeNav.getBoundingClientRect().left - navBar.getBoundingClientRect().left;
+    if (delta < 0 || delta + activeNav.offsetWidth > navBar.clientWidth) {
+      navBar.scrollLeft = Math.max(0, navBar.scrollLeft + delta - 16);
+    }
+  }
 
   var nodes = document.querySelectorAll("[data-island]");
   for (var i = 0; i < nodes.length; i += 1) {

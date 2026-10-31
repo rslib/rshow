@@ -34,19 +34,19 @@ function ArtifactRow(props: { env: Env; artifact: UiArtifact; projectTitle: stri
           {slugPath}
         </a>
       </td>
-      <td class="muted">
+      <td class="muted" data-label="Project">
         {artifact.project ? (
           <a href={`/p/${artifact.project}`}>{props.projectTitle ?? artifact.project}</a>
         ) : (
           <span class="muted">No project</span>
         )}
       </td>
-      <td class="muted">{artifact.tags.length === 0 ? "No tags" : artifact.tags.join(", ")}</td>
-      <td>
+      <td class="muted" data-label="Tags">{artifact.tags.length === 0 ? "No tags" : artifact.tags.join(", ")}</td>
+      <td data-label="Sharing">
         <Pill mode={artifact.mode} />
       </td>
-      <td class="mono">{artifact.served === null ? "No version" : `v${artifact.served}`}</td>
-      <td class="muted">
+      <td class="mono" data-label="Live version">{artifact.served === null ? "No version" : `v${artifact.served}`}</td>
+      <td class="muted" data-label="Updated">
         <time datetime={artifact.updated_at}>{shortDate(artifact.updated_at)}</time>
       </td>
     </tr>

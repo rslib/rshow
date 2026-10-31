@@ -392,6 +392,77 @@ describe("new project and tokens pages", () => {
   });
 });
 
+interface ParsedTable {
+  headers: string[];
+  rows: { label: string | null }[][];
+}
+
+function textOf(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
+function parseTables(body: string): ParsedTable[] {
+  return [...body.matchAll(/<table[^>]*>([\s\S]*?)<\/table>/g)].map((table) => {
+    const inner = table[1] ?? "";
+    const headers = [...inner.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((th) => textOf(th[1] ?? ""));
+    const rows = [...inner.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)]
+      .map((tr) => [...(tr[1] ?? "").matchAll(/<td([^>]*)>/g)].map((td) => ({ label: /data-label="([^"]*)"/.exec(td[1] ?? "")?.[1] ?? null })))
+      .filter((cells) => cells.length > 0);
+    return { headers, rows };
+  });
+}
+
+function expectLabelsMatchHeaders(body: string): void {
+  const tables = parseTables(body).filter((table) => table.headers.length > 0);
+  expect(tables.length).toBeGreaterThan(0);
+  for (const table of tables) {
+    for (const row of table.rows) {
+      if (row.length !== table.headers.length) continue;
+      expect(row[0]?.label).toBeNull();
+      for (let index = 1; index < row.length; index += 1) {
+        expect(row[index]?.label).toBe(table.headers[index]);
+      }
+    }
+  }
+}
+
+describe("mobile table labels", () => {
+  it("labels every stacked cell with its column header on the gallery, project and tokens tables", async () => {
+    await createProject("label-team", OWNER, { title: "Label team" });
+    await createArtifact("label-doc", OWNER, "Label doc");
+    await moveToProject("label-doc", "label-team");
+    await api("POST", "/api/tokens", { body: { name: "label-token", scope: "publish" } });
+
+    const gallery = await (await api("GET", "/")).text();
+    expectLabelsMatchHeaders(gallery);
+    expect(gallery).toContain('data-label="Project"');
+    expect(gallery).toContain('data-label="Live version"');
+
+    const project = await (await api("GET", "/p/label-team")).text();
+    expectLabelsMatchHeaders(project);
+    expect(project).toContain('data-label="Kind"');
+
+    const tokens = await (await api("GET", "/tokens")).text();
+    expectLabelsMatchHeaders(tokens);
+    expect(tokens).toContain('data-label="Scope"');
+    expect(tokens).toContain('data-label="Actions"');
+  });
+
+  it("styles the stacked cells and the scrolling side menu in the stylesheet", async () => {
+    const css = await (await api("GET", "/static/app.css")).text();
+    expect(css).toContain("td[data-label]::before{content:attr(data-label)");
+    expect(css).toContain(".sidenav{width:auto;display:flex;flex-wrap:nowrap");
+    expect(css).toContain("overflow-x:auto");
+    expect(css).toContain(".topbar{height:48px;flex:0 0 auto");
+  });
+});
+
 describe("admin ui islands", () => {
   it("serves island mounting code without inline handlers", async () => {
     const res = await api("GET", "/static/app.js");

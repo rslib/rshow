@@ -72,14 +72,14 @@ export function tokensPage(env: Env, email: string, tokens: UiToken[], projects:
                   {tokens.map((token) => (
                     <tr data-token-id={token.id}>
                       <td>{token.name}</td>
-                      <td class="muted">{titleCase(token.scope)}</td>
-                      <td class="muted">
+                      <td class="muted" data-label="Scope">{titleCase(token.scope)}</td>
+                      <td class="muted" data-label="Created">
                         <time datetime={token.created_at}>{formatDate(token.created_at)}</time>
                       </td>
-                      <td class="muted">
+                      <td class="muted" data-label="Last used">
                         {token.last_used_at === null ? "Never" : <time datetime={token.last_used_at}>{formatDate(token.last_used_at)}</time>}
                       </td>
-                      <td>
+                      <td data-label="Actions">
                         <button type="button" class="btn-link" data-action="revoke" data-id={token.id}>
                           Revoke
                         </button>

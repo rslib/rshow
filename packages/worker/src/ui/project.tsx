@@ -167,12 +167,12 @@ export function projectPage(
                             {`${artifact.slug}/`}
                           </a>
                         </td>
-                        <td class="muted">{kindOf(artifact.tags)}</td>
-                        <td>
+                        <td class="muted" data-label="Kind">{kindOf(artifact.tags)}</td>
+                        <td data-label="Sharing">
                           <Pill mode={artifact.mode} />
                         </td>
-                        <td class="mono">{artifact.served === null ? "No version" : `v${artifact.served}`}</td>
-                        <td class="muted">
+                        <td class="mono" data-label="Live">{artifact.served === null ? "No version" : `v${artifact.served}`}</td>
+                        <td class="muted" data-label="Updated">
                           <time datetime={artifact.updated_at}>{shortDate(artifact.updated_at)}</time>
                         </td>
                       </tr>
