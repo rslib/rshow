@@ -5,8 +5,10 @@ import { Client } from '../client.ts';
 import { requireUrl } from '../config.ts';
 import type { Ctx } from '../context.ts';
 import { ApiError, UsageError } from '../exit.ts';
-import { choose } from '../tokenstore.ts';
+import { choose, fileStore, forced } from '../tokenstore.ts';
+import type { Store } from '../tokenstore.ts';
 import { LOGIN_USAGE } from '../usage.ts';
+import { warn } from '../warn.ts';
 
 async function hiddenLine(): Promise<string> {
   process.stderr.write('token: ');
@@ -55,6 +57,20 @@ async function tokenFromStdin(): Promise<string> {
   return token;
 }
 
+async function saveIn(store: Store, url: string, token: string): Promise<void> {
+  await store.save(url, token);
+  if ((await store.read(url)) !== token) {
+    throw new ApiError(`cannot save the token in ${store.description}`);
+  }
+}
+
+// secret-tool prints GLib noise first and its own reason last.
+function reasonOf(err: unknown): string {
+  const text = (err instanceof Error ? err.message : String(err)).replace(/^cannot save the token in the keyring: /, '');
+  const lines = text.split('\n').map((part) => part.trim()).filter((part) => part !== '');
+  return lines.at(-1) ?? '';
+}
+
 export async function run(argv: string[], ctx: Ctx, platform: string = process.platform): Promise<void> {
   const args = parseCommandArgs(argv, { url: { type: 'string' } }, 0, 0, LOGIN_USAGE);
   const settings = await ctx.config();
@@ -66,10 +82,20 @@ export async function run(argv: string[], ctx: Ctx, platform: string = process.p
   const email = typeof me?.email === 'string' ? me.email : '';
   const scope = typeof me?.scope === 'string' ? me.scope : '';
 
-  const store = await choose(process.env, platform);
-  await store.save(url, token);
-  if ((await store.read(url)) !== token) {
-    throw new ApiError(`cannot save the token in ${store.description}`);
+  let store = await choose(process.env, platform);
+  if (store.backend === 'keyring' && forced(process.env) === undefined) {
+    // A Linux desktop can answer the keyring probe and still refuse to store,
+    // so the token goes to a file rather than closing the only way in.
+    try {
+      await saveIn(store, url, token);
+    } catch (err) {
+      warn(`the Linux keyring cannot save the token (${reasonOf(err)}); saving it in a file`);
+      await store.remove(url).catch(() => {});
+      store = fileStore(process.env);
+      await saveIn(store, url, token);
+    }
+  } else {
+    await saveIn(store, url, token);
   }
   ctx.out.data({ email, scope, url });
   ctx.out.line(`logged in as ${email} (scope ${scope}) for ${url}, saved in ${store.description}`);

@@ -5,6 +5,11 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix `rshow login` on a Linux keyring that cannot store a secret.
+  rshow now warns and keeps the token in `~/.config/rshow/credentials` with mode 600.
+
 ## [0.0.3] - 2026-10-31
 
 ### Changed

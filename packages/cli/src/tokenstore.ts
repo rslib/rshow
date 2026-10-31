@@ -72,6 +72,12 @@ export async function choose(env: Env = process.env, platform: string = process.
   return storeOf('file', env);
 }
 
+// A keyring that answers the probe can still refuse to store, so login falls
+// back to the file with this store.
+export function fileStore(env: Env = process.env): Store {
+  return storeOf('file', env);
+}
+
 // Every store this machine may hold a token in, so that logout leaves nothing
 // behind after a switch of backend.
 export async function every(env: Env = process.env, platform: string = process.platform): Promise<Store[]> {
@@ -80,4 +86,28 @@ export async function every(env: Env = process.env, platform: string = process.p
   if (keyring.canUse(env, platform) && (await keyring.usable(env))) stores.push(storeOf('keyring', env));
   stores.push(storeOf('file', env));
   return stores;
+}
+
+// A token may sit in a store login fell back to, which choose does not name, so
+// a read walks every store this machine may hold one in.
+export async function find(
+  env: Env,
+  url: string,
+  platform: string = process.platform,
+): Promise<{ store: Store; token: string } | undefined> {
+  const forcedBackend = forced(env);
+  const stores = forcedBackend === undefined ? await every(env, platform) : [storeOf(forcedBackend, env)];
+  let failed = false;
+  let firstError: unknown;
+  for (const store of stores) {
+    try {
+      const token = await store.read(url);
+      if (token !== undefined) return { store, token };
+    } catch (err) {
+      if (!failed) firstError = err;
+      failed = true;
+    }
+  }
+  if (failed) throw firstError;
+  return undefined;
 }

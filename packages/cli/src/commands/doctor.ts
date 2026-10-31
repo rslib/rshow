@@ -10,7 +10,7 @@ import type { Ctx } from '../context.ts';
 import { EXIT } from '../exit.ts';
 import type { ExitCode } from '../exit.ts';
 import { networkDetail, readyNetwork } from '../network.ts';
-import { choose } from '../tokenstore.ts';
+import { find } from '../tokenstore.ts';
 import {
   detectedTargets,
   homeDir,
@@ -113,9 +113,8 @@ async function tokenOf(url: string | undefined): Promise<Token> {
   if (env !== '') return { token: env, source: 'env' };
   if (url === undefined) return {};
   try {
-    const store = await choose(process.env);
-    const saved = await store.read(url);
-    if (saved !== undefined) return { token: saved, source: store.detail };
+    const found = await find(process.env, url);
+    if (found !== undefined) return { token: found.token, source: found.store.detail };
     return {};
   } catch (err) {
     return { error: messageOf(err) };

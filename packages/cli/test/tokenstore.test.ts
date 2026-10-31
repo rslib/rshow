@@ -8,7 +8,7 @@ import type { TestContext } from 'node:test';
 import { run as login } from '../src/commands/login.ts';
 import type { Ctx } from '../src/context.ts';
 import { EXIT } from '../src/exit.ts';
-import { choose } from '../src/tokenstore.ts';
+import { choose, find } from '../src/tokenstore.ts';
 import { makeTempDir, runCli, startFakeApi } from './helpers.ts';
 import type { FakeApi, RecordedRequest, RouteReply } from './helpers.ts';
 
@@ -74,6 +74,12 @@ if (command === 'lookup') {
 }
 if (command === 'store') {
   const token = (await readStdin()).trim();
+  if (process.env.FAKE_SECRET_TOOL_STORE_FAILS === '1') {
+    process.stderr.write(
+      "secret-tool: No such interface 'org.freedesktop.Secret.Collection' on object at path /org/freedesktop/secrets/collection/login\n",
+    );
+    process.exit(1);
+  }
   if (process.env.FAKE_SECRET_TOOL_IGNORE_STORE === '1') process.exit(0);
   const store = items();
   store[account] = token;
@@ -136,6 +142,62 @@ function credentialsIn(xdg: string): string {
 
 function modeOf(file: string): Promise<number> {
   return stat(file).then((info) => info.mode & 0o777);
+}
+
+// login picks its store from process.platform, and takes the platform as an
+// argument, so a Linux only store is reached here without a Linux node.
+async function loginOnLinux(
+  env: Record<string, string | undefined>,
+  token: string,
+): Promise<{ lines: string[]; stderr: string }> {
+  const lines: string[] = [];
+  let stderr = '';
+  const ctx = {
+    config: async () => ({ url: env.RSHOW_URL, out: 'dist' }),
+    api: async () => {
+      throw new Error('login called the api');
+    },
+    out: {
+      data: () => {},
+      line: (text: string) => lines.push(text),
+      raw: () => {},
+    },
+  } as unknown as Ctx;
+
+  const stdin = process.stdin;
+  const realStderr = process.stderr;
+  const saved: Record<string, string | undefined> = {};
+  for (const key of Object.keys(env)) saved[key] = process.env[key];
+  Object.defineProperty(process, 'stdin', {
+    value: Readable.from([Buffer.from(`${token}\n`)]),
+    configurable: true,
+    writable: true,
+  });
+  Object.defineProperty(process, 'stderr', {
+    value: {
+      write: (text: string) => {
+        stderr += text;
+        return true;
+      },
+    },
+    configurable: true,
+    writable: true,
+  });
+  for (const [key, value] of Object.entries(env)) {
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
+  try {
+    await login([], ctx, 'linux');
+  } finally {
+    Object.defineProperty(process, 'stdin', { value: stdin, configurable: true, writable: true });
+    Object.defineProperty(process, 'stderr', { value: realStderr, configurable: true, writable: true });
+    for (const [key, value] of Object.entries(saved)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
+  return { lines, stderr };
 }
 
 test('the file store keeps a token in a 0600 file inside a 0700 folder', async (t) => {
@@ -386,4 +448,99 @@ test('doctor names the file the token came from', async (t) => {
   const line = result.stdout.split('\n').find((text) => text.startsWith('ok  token'));
   assert.equal(line, `ok  token  source: file ${credentialsIn(xdg)}`);
   assert.doesNotMatch(`${result.stdout}${result.stderr}`, new RegExp(TOKEN));
+});
+
+test('a keyring that cannot store keeps the token in a file, and every read finds it', async (t) => {
+  const api = await apiFor(t, TOKEN);
+  const bin = await secretTool();
+  const xdg = await makeTempDir({});
+  // No keychain binary and no forced backend, so the keyring is the store login
+  // picks, just as on a Linux desktop.
+  const loginEnv = {
+    XDG_CONFIG_HOME: xdg,
+    RSHOW_URL: api.url,
+    RSHOW_SECRET_TOOL_BIN: bin,
+    RSHOW_SECURITY_BIN: undefined,
+    RSHOW_TOKEN_STORE: undefined,
+    FAKE_SECRET_TOOL_STORE_FAILS: '1',
+  };
+  const env = {
+    XDG_CONFIG_HOME: xdg,
+    RSHOW_URL: api.url,
+    RSHOW_SECRET_TOOL_BIN: bin,
+    RSHOW_SECURITY_BIN: NO_SECURITY,
+  };
+  const file = credentialsIn(xdg);
+
+  const result = await loginOnLinux(loginEnv, TOKEN);
+
+  assert.deepEqual(result.lines, [
+    `logged in as me@example.com (scope full) for ${api.url}, saved in ${file} (mode 600)`,
+  ]);
+  const warnings = result.stderr.split('\n').filter((text) => text !== '');
+  assert.equal(warnings.length, 1);
+  assert.match(
+    warnings[0],
+    /the Linux keyring cannot save the token .*No such interface.*; saving it in a file/,
+  );
+  assert.doesNotMatch(`${result.lines.join('\n')}${result.stderr}`, new RegExp(TOKEN));
+  assert.deepEqual(JSON.parse(await readFile(file, 'utf8')), { version: 1, tokens: { [api.url]: TOKEN } });
+  assert.equal(await modeOf(file), 0o600);
+  assert.deepEqual(await itemsOf(bin), {});
+
+  const doctor = await runCli(['doctor'], { ...env, RSHOW_URL: api.url });
+  const tokenLine = doctor.stdout.split('\n').find((text) => text.startsWith('ok  token'));
+  assert.equal(tokenLine, `ok  token  source: file ${file}`);
+  const apiLine = doctor.stdout.split('\n').find((text) => text.startsWith('ok  api'));
+  assert.equal(apiLine, 'ok  api  me@example.com (scope full)');
+  assert.doesNotMatch(`${doctor.stdout}${doctor.stderr}`, new RegExp(TOKEN));
+
+  const list = await runCli(['list'], { ...env, RSHOW_URL: api.url });
+  assert.equal(list.code, EXIT.ok);
+  assert.equal(list.stdout, 'no artifacts\n');
+  assert.equal(bearer(api.requests.at(-1) as RecordedRequest), TOKEN);
+});
+
+test('a keyring that cannot store fails the login when RSHOW_TOKEN_STORE forces it', async (t) => {
+  const api = await apiFor(t, TOKEN);
+  const bin = await secretTool();
+  const xdg = await makeTempDir({});
+
+  const result = await runCli(
+    ['login'],
+    {
+      XDG_CONFIG_HOME: xdg,
+      RSHOW_URL: api.url,
+      RSHOW_TOKEN_STORE: 'keyring',
+      RSHOW_SECRET_TOOL_BIN: bin,
+      FAKE_SECRET_TOOL_STORE_FAILS: '1',
+    },
+    { input: `${TOKEN}\n` },
+  );
+
+  assert.notEqual(result.code, EXIT.ok);
+  assert.doesNotMatch(result.stdout, /logged in/);
+  assert.match(result.stderr, /cannot save the token in the keyring/);
+  assert.doesNotMatch(result.stderr, /saving it in a file/);
+  await assert.rejects(stat(credentialsIn(xdg)), { code: 'ENOENT' });
+  assert.doesNotMatch(`${result.stdout}${result.stderr}`, new RegExp(TOKEN));
+});
+
+test('find reads the token of a usable keyring machine from the file store', async () => {
+  const bin = await secretTool();
+  const url = 'https://art.example.com';
+  const xdg = await makeTempDir({
+    'rshow/credentials': JSON.stringify({ version: 1, tokens: { [url]: TOKEN } }),
+  });
+  const file = credentialsIn(xdg);
+  await chmod(file, 0o600);
+  const env = { XDG_CONFIG_HOME: xdg, RSHOW_SECRET_TOOL_BIN: bin };
+
+  assert.equal((await choose(env, 'linux')).backend, 'keyring');
+  const found = await find(env, url, 'linux');
+  assert.equal(found?.store.detail, `file ${file}`);
+  assert.equal(found?.token, TOKEN);
+  assert.equal((await find(env, 'https://other.example.com', 'linux')), undefined);
+  assert.equal((await find({ ...env, RSHOW_TOKEN_STORE: 'keyring' }, url, 'linux')), undefined);
+  assert.equal((await find({ ...env, RSHOW_TOKEN_STORE: 'file' }, url, 'linux'))?.token, TOKEN);
 });
