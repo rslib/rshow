@@ -96,7 +96,7 @@ Only the owner can share, rename or delete.
 
 On 2, fix the command and do not retry the same line.
 On a config error (`no server configured`, no token, or a config file that will not load), run `rshow doctor` and show its output to the person.
-On 4, or on exit 2 with `no token`, never ask for a token in chat. Tell the person to run `rshow login` in their own terminal, which saves the token in the Keychain.
+On 4, or on exit 2 with `no token`, never ask for a token in chat. Tell the person to run `rshow login` in their own terminal, which saves the token where only their account can read it.
 On 5, retry once and then report the message verbatim.
 On 6, fix the page, never `--no-check` past it.
 

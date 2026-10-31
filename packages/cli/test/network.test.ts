@@ -7,12 +7,9 @@ import path from 'node:path';
 import process from 'node:process';
 import test from 'node:test';
 import tls from 'node:tls';
-import { run as login } from '../src/commands/login.ts';
-import type { Ctx } from '../src/context.ts';
 import { EXIT } from '../src/exit.ts';
 import { canSave } from '../src/keychain.ts';
 import { faultOf, installCaCertificates, networkDetail, pemCertificatesOf } from '../src/network.ts';
-import { Output } from '../src/output.ts';
 import { artifact, makeTempDir, runCli } from './helpers.ts';
 
 function openssl(): boolean {
@@ -237,22 +234,7 @@ test('a proxy variable node will ignore is named once', async () => {
   assert.doesNotMatch(enabled.stderr, /NODE_USE_ENV_PROXY/);
 });
 
-test('login off macOS says what to do before it asks for a token', async () => {
-  const ctx: Ctx = {
-    config: () => {
-      throw new Error('login read the config');
-    },
-    api: () => {
-      throw new Error('login called the api');
-    },
-    out: new Output(false),
-  };
-
-  await assert.rejects(login([], ctx, 'linux'), {
-    name: 'UsageError',
-    message: 'rshow login keeps the token in the macOS Keychain; on this system set RSHOW_TOKEN instead (see rshow doctor)',
-  });
-
+test('the keychain is offered on macOS or with a stand-in binary', () => {
   assert.equal(canSave('linux', undefined), false);
   assert.equal(canSave('linux', '/fake/security'), true);
   assert.equal(canSave('darwin', undefined), true);

@@ -34,5 +34,5 @@ Every rshow command and subcommand. Each page holds the text that `rshow <comman
 | [`rshow share`](share.md) | set mode or change shares |
 | [`rshow pin`](pin.md) | serve version n, or live for the newest |
 | [`rshow delete`](delete.md) | delete an artifact |
-| [`rshow login`](login.md) | save the API token in the macOS Keychain |
+| [`rshow login`](login.md) | save the API token for this account |
 | [`rshow logout`](logout.md) | remove the saved token for a server |

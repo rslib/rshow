@@ -102,4 +102,6 @@ The **admin host** serves the person who publishes:
 - `/api/...`, the JSON API, with a bearer token or the Access session of the browser.
 
 Access guards the admin host by email, bypasses `api/*` so the CLI can send its token, and allows everyone on `/_auth/*` of the viewer host, which lets a reader sign in through one cookie for the whole host.
+
+A token comes from the Tokens page of the admin host, and the CLI reads it from `RSHOW_TOKEN`, else from the macOS Keychain, the Linux keyring, or `${XDG_CONFIG_HOME:-$HOME/.config}/rshow/credentials` with mode 600. `rshow login` writes the first store the machine has and `rshow logout` removes the token from every store that holds it.
 [self-host.md](self-host.md) has the three applications.

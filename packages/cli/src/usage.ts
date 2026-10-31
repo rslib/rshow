@@ -22,7 +22,7 @@ commands:
   share <slug>            set mode or change shares
   pin <slug> <n|live>     serve version n, or live for the newest
   delete <slug> --yes     delete an artifact
-  login [--url u]         save the API token in the macOS Keychain
+  login [--url u]         save the API token for this account
   logout [--url u]        remove the saved token for a server
 
 global:
@@ -33,9 +33,10 @@ global:
 environment:
   RSHOW_URL               API base URL, overrides the config file
   RSHOW_ART               art base URL, overrides the config file
-  RSHOW_TOKEN             the API token, else the token saved by rshow login
-                          in the macOS Keychain; never read from a file
-  XDG_CONFIG_HOME         where to find rshow/config.json (default ~/.config)
+  RSHOW_TOKEN             the API token, else the token rshow login saved in
+                          the macOS Keychain, the Linux keyring or a 0600 file
+  RSHOW_TOKEN_STORE       force the keychain, keyring or file token store
+  XDG_CONFIG_HOME         where rshow keeps config.json and credentials
   RSHOW_SYSTEM_CA         set to 0 to trust only the roots node bundles
   RSHOW_EXTRA_CA_FILE     a PEM file of extra roots, such as a cluster's CA
   NODE_USE_ENV_PROXY      set to 1 so fetch uses https_proxy (Node 24+)
@@ -140,8 +141,8 @@ files win. Run rshow init to write url and art.
 A theme with no version, or @latest, is looked up on the art host and printed
 as <name>@<n>; when that fails a warning goes to stderr. --offline skips it, and
 so does a config with no art host.
-The token is RSHOW_TOKEN, else the token saved by rshow login in the macOS
-Keychain; never read from a file.`;
+The token is RSHOW_TOKEN, else the token rshow login saved in the macOS
+Keychain, the Linux keyring or a file with mode 600.`;
 
 export const INIT_USAGE = `usage: rshow init --url <admin-url> --art <viewer-url> [--theme <name>] [--force]
 
@@ -163,6 +164,7 @@ package, the config files, the token, the api, the art host, the theme and the
 skills, one line each: ok|warn|fail  <check>  <detail>. With [dir] it reads
 <dir>/rshow.json too. A skill line warns and never fails.
 Network calls time out after 5 s. Exit 0 when no check failed, 6 when one did.
+The token line names its source: env, keychain, keyring, or file and its path.
 The token is never printed.`;
 
 export const THEME_USAGE = `usage: rshow theme <new|check|preview|publish|list> [options]
@@ -305,15 +307,20 @@ Deletes the artifact and needs --yes.`;
 
 export const LOGIN_USAGE = `usage: rshow login [--url u]
 
-Reads the token from stdin, checks it against the API, then saves it in the
-macOS Keychain. On a terminal it asks for the token with echo off, so it is
-never typed on a command line or pasted anywhere. The API base URL is the
-account, so each server keeps its own token; --url logs in to another one.
-RSHOW_TOKEN still wins over the saved token.`;
+Reads the token from stdin, checks it with the API, then saves it in the macOS
+Keychain, in the Linux keyring, or in $XDG_CONFIG_HOME/rshow/credentials with
+mode 600: the first store this machine has, and it reads it back to confirm.
+On a terminal it asks for the token with echo off, so it is never typed on a
+command line or pasted anywhere. The API base URL is the account, so each
+server keeps its own token; --url logs in to another one.
+Prints the email, the scope and where the token went.
+RSHOW_TOKEN still wins over the saved token, and RSHOW_TOKEN_STORE forces one
+of keychain, keyring or file.`;
 
 export const LOGOUT_USAGE = `usage: rshow logout [--url u]
 
-Removes the token this server has in the macOS Keychain.`;
+Removes the token this server has from every store that holds it: the macOS
+Keychain, the Linux keyring and the 0600 credentials file.`;
 
 export const PROJECT_USAGE = `usage: rshow project <create|list|show|share|delete> [options]
 

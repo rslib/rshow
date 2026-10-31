@@ -63,9 +63,9 @@ Then save it:
 rshow login
 ```
 
-`rshow login` reads the token from stdin, with no echo on a terminal, checks it with `GET /api/me` and saves it in the macOS Keychain.
-It prints the email and the scope it found.
-In CI, set `RSHOW_TOKEN` instead. rshow never reads a token from a file or a flag.
+`rshow login` reads the token from stdin, with no echo on a terminal, checks it with `GET /api/me` and saves it in the macOS Keychain, in the Linux keyring, or in `${XDG_CONFIG_HOME:-$HOME/.config}/rshow/credentials` with mode 600: the first of the three this machine has.
+It prints the email, the scope and where the token went.
+In CI, set `RSHOW_TOKEN` instead; rshow reads a token from the environment, never from a flag.
 
 ## Check the setup
 
@@ -97,7 +97,7 @@ export NODE_USE_ENV_PROXY=1
 
 A request that fails says which host and why, such as `network error: artd.example.com: certificate not trusted`, followed by one line on what to try next.
 
-`rshow login` saves the token in the macOS Keychain, so on a Linux cluster set `RSHOW_TOKEN` instead and every command reads that.
+`rshow login` needs no keychain on Linux: it saves the token in the keyring, or in `~/.config/rshow/credentials` with mode 600 when there is none, and prints the path it used.
 
 ## Publish a folder
 

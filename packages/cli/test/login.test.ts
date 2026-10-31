@@ -140,7 +140,7 @@ test('login reads the token from stdin and saves it in the keychain', async (t) 
 
   assert.equal(result.stderr, '');
   assert.equal(result.code, EXIT.ok);
-  assert.equal(result.stdout, `logged in as me@example.com (scope full) for ${api.url}\n`);
+  assert.equal(result.stdout, `logged in as me@example.com (scope full) for ${api.url}, saved in the macOS Keychain\n`);
   assert.deepEqual(await keychain.items(), { [api.url]: TOKEN });
   for (const argv of await keychain.argv()) {
     assert.doesNotMatch(argv.join(' '), new RegExp(TOKEN));
@@ -283,7 +283,7 @@ test('logout removes the saved token, and a second logout has nothing to remove'
 
   const first = await runCli(['logout'], env);
   assert.equal(first.code, EXIT.ok);
-  assert.equal(first.stdout, `logged out of ${api.url}\n`);
+  assert.equal(first.stdout, `logged out of ${api.url}, removed from the macOS Keychain\n`);
   assert.deepEqual(await keychain.items(), {});
 
   const second = await runCli(['logout'], env);
@@ -308,10 +308,10 @@ test('login and logout take the url from --url over the config', async (t) => {
 
   const login = await runCli(['login', '--url', other.url], env, { input: `${TOKEN}\n` });
   assert.equal(login.code, EXIT.ok);
-  assert.equal(login.stdout, `logged in as me@example.com (scope full) for ${other.url}\n`);
+  assert.equal(login.stdout, `logged in as me@example.com (scope full) for ${other.url}, saved in the macOS Keychain\n`);
   assert.deepEqual(await keychain.items(), { [other.url]: TOKEN });
 
   const logout = await runCli(['logout', '--url', other.url], env);
-  assert.equal(logout.stdout, `logged out of ${other.url}\n`);
+  assert.equal(logout.stdout, `logged out of ${other.url}, removed from the macOS Keychain\n`);
   assert.deepEqual(await keychain.items(), {});
 });

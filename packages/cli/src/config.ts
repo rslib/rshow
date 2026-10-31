@@ -2,8 +2,8 @@ import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import path from 'node:path';
 import { UsageError } from './exit.ts';
-import * as keychain from './keychain.ts';
 import { normalizeTags } from './tags.ts';
+import { choose } from './tokenstore.ts';
 
 export const DEFAULT_OUT = 'dist';
 export const GLOBAL_DIR = 'rshow';
@@ -176,7 +176,8 @@ export function requireArt(config: AppConfig): string {
 export async function readToken(env: Env, url: string): Promise<string> {
   const token = (env.RSHOW_TOKEN ?? '').trim();
   if (token !== '') return token;
-  const saved = await keychain.read(url);
+  const store = await choose(env);
+  const saved = await store.read(url);
   if (saved !== undefined) return saved;
   throw new UsageError('no token: run rshow login, or set RSHOW_TOKEN');
 }

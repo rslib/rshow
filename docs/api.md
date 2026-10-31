@@ -133,7 +133,7 @@ Merged in this order, later wins:
 
 `rshow config [dir]` prints the merged config as JSON. It resolves `theme` to a fixed version: no theme means `default@latest`, and `<name>` or `<name>@latest` becomes `<name>@<n>` from `/_themes/<name>.json`. A fixed `<name>@<n>` is left as it is. If the lookup fails, it prints a warning and leaves the value as it was. `--offline` skips the lookup.
 
-The token comes from `RSHOW_TOKEN`, else from the macOS Keychain (service `rshow`, account = the API URL), where `rshow login` saves it. It is never read from a file or a flag.
+The token comes from `RSHOW_TOKEN`, else from the macOS Keychain (service `rshow`, account = the API URL), the Linux keyring (same service and account), or `${XDG_CONFIG_HOME:-$HOME/.config}/rshow/credentials`, a JSON file `{"version": 1, "tokens": {"<url>": "<token>"}}` with mode 600. `rshow login` picks the first store the machine has and saves there, and `RSHOW_TOKEN_STORE` forces `keychain`, `keyring` or `file`.
 
 ## Blob index
 
@@ -186,7 +186,7 @@ Admin pages link the viewer URLs on the art host, not on artd, so every link ope
 
 The CLI is one client of this API. [commands/index.md](reference/commands/index.md) has every command with its flags, and [exit-codes.md](reference/exit-codes.md) has every exit code.
 
-Every command takes `--json` (print the API reply JSON), `--help` and `--version` (`rshow <version>`). The token is read from `RSHOW_TOKEN`, else from the Keychain item that `rshow login` saved. `rshow login [--url u]` reads the token from stdin (no echo on a terminal), checks it with `GET /api/me`, saves it, then reads it back to confirm. `rshow logout [--url u]` removes it.
+Every command takes `--json` (print the API reply JSON), `--help` and `--version` (`rshow <version>`). The token is read from `RSHOW_TOKEN`, else from the macOS Keychain, the Linux keyring or the 0600 credentials file, in that order, which is where `rshow login` put it. `rshow login [--url u]` reads the token from stdin (no echo on a terminal), checks it with `GET /api/me`, saves it in the first store the machine has, then reads it back to confirm, and prints where it went. `rshow logout [--url u]` removes it from every store that holds it.
 
 `rshow publish` follows the publish flow above and prints `version-url` and `live-url`. A folder whose paths and hashes already match the latest version adds no version: it prints `unchanged: <slug> is already v<n>`, and `--force` publishes anyway. `rshow check` reads a folder against the page contract and exits 6 on an error, and `rshow publish` runs it first unless `--no-check` is given.
 `rshow theme publish` publishes a folder as `theme-<name>`, and `rshow config` prints the merged config and resolves the theme version.

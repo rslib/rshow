@@ -45,7 +45,7 @@ This file is the whole surface, both config files and the exit codes.
 | `rshow skills install [target ...]` | link or copy the three skills into `~/.claude/skills`, `~/.pi/agent/skills` or `~/.codex/skills` |
 | `rshow skills uninstall [target ...]` | remove the skill links and copies rshow made |
 | `rshow skills status [target ...]` | print `link`, `copy v<version>`, `missing` or `foreign` per target and skill |
-| `rshow login` | read a token from the terminal with no echo, check it and save it in the macOS Keychain. The person runs it, never the agent |
+| `rshow login` | read a token from the terminal with no echo, check it and save it in the macOS Keychain, the Linux keyring or a 0600 file. The person runs it, never the agent |
 | `rshow logout` | remove the saved token |
 
 `--help` on its own prints the general usage, and `--help` after a command prints that command.
@@ -248,9 +248,9 @@ Later files win, and the environment beats both.
 `RSHOW_URL` overrides `url` and `RSHOW_ART` overrides `art`.
 `rshow init --url <admin-url> --art <viewer-url>` writes the global file with both, keeps its other fields, and prints the next step, `rshow login`.
 `rshow doctor [dir]` checks node, both config files, the token, the API, the art host, the theme and the skills, one line each, and exits 6 when a check failed. Run it on a config error and show its output to the person.
-The token comes from `RSHOW_TOKEN`, else from the macOS Keychain, where `rshow login` saves it. It is never read from a file or from a flag.
+The token comes from `RSHOW_TOKEN`, else from the macOS Keychain, the Linux keyring or the 0600 credentials file, where `rshow login` put it. It is never read from a flag, and you never ask for one in chat: the person runs `rshow login`.
 On a cluster, rshow trusts the system certificate store and any PEM file in `RSHOW_EXTRA_CA_FILE`, and `RSHOW_SYSTEM_CA=0` keeps the store out; `https_proxy` is used by the binary, and by an npm install with `NODE_USE_ENV_PROXY=1`.
-`rshow login` needs the macOS Keychain, so on Linux set `RSHOW_TOKEN` instead.
+`rshow login` needs no keychain on Linux: it uses the keyring, or writes `${XDG_CONFIG_HOME:-$HOME/.config}/rshow/credentials` with mode 600.
 `XDG_CONFIG_HOME` moves the global config file away from `~/.config`.
 
 ## Exit codes

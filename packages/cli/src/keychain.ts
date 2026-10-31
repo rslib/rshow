@@ -1,18 +1,16 @@
-import { spawn } from 'node:child_process';
 import process from 'node:process';
-import { ApiError, UsageError } from './exit.ts';
+import { UsageError } from './exit.ts';
+import { runTool, toolFailure } from './tool.ts';
 
 export const SERVICE = 'rshow';
 
 const MISSING = 44;
-export const NEEDS_KEYCHAIN =
-  'rshow login keeps the token in the macOS Keychain; on this system set RSHOW_TOKEN instead (see rshow doctor)';
-const NO_KEYCHAIN = 'the keychain needs macOS; set RSHOW_TOKEN instead';
 
-type Run = { code: number; stdout: string; stderr: string; absent: boolean };
+type Env = Record<string, string | undefined>;
 
-function bin(): string {
-  return process.env.RSHOW_SECURITY_BIN ?? 'security';
+function bin(env: Env): string {
+  const set = (env.RSHOW_SECURITY_BIN ?? '').trim();
+  return set === '' ? 'security' : set;
 }
 
 // RSHOW_SECURITY_BIN stands in for the keychain in a test, on any system.
@@ -20,68 +18,38 @@ export function canSave(
   platform: string = process.platform,
   securityBin: string | undefined = process.env.RSHOW_SECURITY_BIN,
 ): boolean {
-  return platform === 'darwin' || securityBin !== undefined;
-}
-
-export function assertCanSave(
-  platform: string = process.platform,
-  securityBin: string | undefined = process.env.RSHOW_SECURITY_BIN,
-): void {
-  if (!canSave(platform, securityBin)) throw new UsageError(NEEDS_KEYCHAIN);
-}
-
-function run(args: string[], input?: string): Promise<Run> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(bin(), args, { stdio: ['pipe', 'pipe', 'pipe'] });
-    let stdout = '';
-    let stderr = '';
-    child.stdout.setEncoding('utf8');
-    child.stdout.on('data', (chunk: string) => {
-      stdout += chunk;
-    });
-    child.stderr.setEncoding('utf8');
-    child.stderr.on('data', (chunk: string) => {
-      stderr += chunk;
-    });
-    child.stdin.on('error', () => {});
-    child.on('error', (err: NodeJS.ErrnoException) => {
-      if (err.code === 'ENOENT') resolve({ code: -1, stdout, stderr, absent: true });
-      else reject(new ApiError(`keychain: ${err.message}`));
-    });
-    child.on('close', (code) => resolve({ code: code ?? -1, stdout, stderr, absent: false }));
-    child.stdin.end(input ?? '');
-  });
-}
-
-function failure(doing: string, result: Run, secret?: string): ApiError {
-  const text = secret === undefined ? result.stderr : result.stderr.split(secret).join('[redacted]');
-  const detail = text.trim();
-  return new ApiError(`${doing}: ${detail === '' ? `exit ${result.code}` : detail}`);
+  return platform === 'darwin' || (securityBin ?? '').trim() !== '';
 }
 
 // The token goes to `security -i` on stdin, so that it never shows up in argv
 // where ps sees it, and never in a shell history.
-export async function save(url: string, token: string): Promise<void> {
-  assertCanSave();
+export async function save(url: string, token: string, env: Env = process.env): Promise<void> {
+  if (!canSave(process.platform, env.RSHOW_SECURITY_BIN)) {
+    throw new UsageError('the keychain needs macOS; set RSHOW_TOKEN instead');
+  }
   const line = `add-generic-password -U -s ${SERVICE} -a ${url} -w ${token}\n`;
-  const result = await run(['-i'], line);
-  if (result.code !== 0) throw failure('cannot save the token in the keychain', result, token);
-  if ((await read(url)) !== token) throw failure('cannot save the token in the keychain', result, token);
+  const result = await runTool(bin(env), ['-i'], line, env);
+  if (result.code !== 0) throw toolFailure('cannot save the token in the keychain', result, token);
+  if ((await read(url, env)) !== token) {
+    throw toolFailure('cannot save the token in the keychain', result, token);
+  }
 }
 
-export async function read(url: string): Promise<string | undefined> {
-  if (!canSave()) return undefined;
-  const result = await run(['find-generic-password', '-s', SERVICE, '-a', url, '-w']);
+export async function read(url: string, env: Env = process.env): Promise<string | undefined> {
+  if (!canSave(process.platform, env.RSHOW_SECURITY_BIN)) return undefined;
+  const args = ['find-generic-password', '-s', SERVICE, '-a', url, '-w'];
+  const result = await runTool(bin(env), args, undefined, env);
   if (result.absent || result.code === MISSING) return undefined;
-  if (result.code !== 0) throw failure('cannot read the token from the keychain', result);
+  if (result.code !== 0) throw toolFailure('cannot read the token from the keychain', result);
   const token = result.stdout.trim();
   return token === '' ? undefined : token;
 }
 
-export async function remove(url: string): Promise<boolean> {
-  if (!canSave()) throw new UsageError(NO_KEYCHAIN);
-  const result = await run(['delete-generic-password', '-s', SERVICE, '-a', url]);
+export async function remove(url: string, env: Env = process.env): Promise<boolean> {
+  if (!canSave(process.platform, env.RSHOW_SECURITY_BIN)) return false;
+  const args = ['delete-generic-password', '-s', SERVICE, '-a', url];
+  const result = await runTool(bin(env), args, undefined, env);
   if (result.absent || result.code === MISSING) return false;
-  if (result.code !== 0) throw failure('cannot remove the token from the keychain', result);
+  if (result.code !== 0) throw toolFailure('cannot remove the token from the keychain', result);
   return true;
 }

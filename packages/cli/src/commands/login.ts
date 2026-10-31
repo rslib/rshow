@@ -4,8 +4,8 @@ import { parseCommandArgs, stringValue } from '../args.ts';
 import { Client } from '../client.ts';
 import { requireUrl } from '../config.ts';
 import type { Ctx } from '../context.ts';
-import { UsageError } from '../exit.ts';
-import * as keychain from '../keychain.ts';
+import { ApiError, UsageError } from '../exit.ts';
+import { choose } from '../tokenstore.ts';
 import { LOGIN_USAGE } from '../usage.ts';
 
 async function hiddenLine(): Promise<string> {
@@ -57,7 +57,6 @@ async function tokenFromStdin(): Promise<string> {
 
 export async function run(argv: string[], ctx: Ctx, platform: string = process.platform): Promise<void> {
   const args = parseCommandArgs(argv, { url: { type: 'string' } }, 0, 0, LOGIN_USAGE);
-  keychain.assertCanSave(platform);
   const settings = await ctx.config();
   const given = (stringValue(args, 'url') ?? '').trim();
   const url = (given === '' ? requireUrl(settings) : given).replace(/\/+$/, '');
@@ -67,7 +66,11 @@ export async function run(argv: string[], ctx: Ctx, platform: string = process.p
   const email = typeof me?.email === 'string' ? me.email : '';
   const scope = typeof me?.scope === 'string' ? me.scope : '';
 
-  await keychain.save(url, token);
+  const store = await choose(process.env, platform);
+  await store.save(url, token);
+  if ((await store.read(url)) !== token) {
+    throw new ApiError(`cannot save the token in ${store.description}`);
+  }
   ctx.out.data({ email, scope, url });
-  ctx.out.line(`logged in as ${email} (scope ${scope}) for ${url}`);
+  ctx.out.line(`logged in as ${email} (scope ${scope}) for ${url}, saved in ${store.description}`);
 }

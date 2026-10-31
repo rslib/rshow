@@ -9,8 +9,8 @@ import type { AppConfig } from '../config.ts';
 import type { Ctx } from '../context.ts';
 import { EXIT } from '../exit.ts';
 import type { ExitCode } from '../exit.ts';
-import * as keychain from '../keychain.ts';
 import { networkDetail, readyNetwork } from '../network.ts';
+import { choose } from '../tokenstore.ts';
 import {
   detectedTargets,
   homeDir,
@@ -27,7 +27,7 @@ const TIMEOUT_MS = 5000;
 
 type Status = 'ok' | 'warn' | 'fail';
 type Check = { name: string; status: Status; detail: string };
-type Token = { token?: string; source: 'env' | 'keychain' | 'none'; error?: string };
+type Token = { token?: string; source?: string; error?: string };
 
 function messageOf(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
@@ -111,13 +111,14 @@ async function nodeCheck(): Promise<Check> {
 async function tokenOf(url: string | undefined): Promise<Token> {
   const env = (process.env.RSHOW_TOKEN ?? '').trim();
   if (env !== '') return { token: env, source: 'env' };
-  if (url === undefined) return { source: 'none' };
+  if (url === undefined) return {};
   try {
-    const saved = await keychain.read(url);
-    if (saved !== undefined) return { token: saved, source: 'keychain' };
-    return { source: 'none' };
+    const store = await choose(process.env);
+    const saved = await store.read(url);
+    if (saved !== undefined) return { token: saved, source: store.detail };
+    return {};
   } catch (err) {
-    return { source: 'none', error: messageOf(err) };
+    return { error: messageOf(err) };
   }
 }
 
@@ -152,7 +153,7 @@ function tokenCheck(token: Token): Check {
     const reason = token.error === undefined ? '' : ` (${token.error})`;
     return { name, status: 'fail', detail: `none${reason}: run rshow login, or set RSHOW_TOKEN` };
   }
-  return { name, status: 'ok', detail: `source: ${token.source}` };
+  return { name, status: 'ok', detail: `source: ${token.source ?? 'none'}` };
 }
 
 async function apiCheck(url: string | undefined, token: Token): Promise<Check> {
