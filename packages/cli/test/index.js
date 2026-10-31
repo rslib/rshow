@@ -26,6 +26,7 @@ import './handoff.test.ts';
 import './handoff.chrome.test.ts';
 import './cdp.cleanup.test.ts';
 import './login.test.ts';
+import './network.test.ts';
 import './themepreset.test.ts';
 import './docs.test.ts';
 import './version.test.ts';

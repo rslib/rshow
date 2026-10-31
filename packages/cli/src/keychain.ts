@@ -5,7 +5,9 @@ import { ApiError, UsageError } from './exit.ts';
 export const SERVICE = 'rshow';
 
 const MISSING = 44;
-const NO_MACOS = 'the keychain needs macOS; set RSHOW_TOKEN instead';
+export const NEEDS_KEYCHAIN =
+  'rshow login keeps the token in the macOS Keychain; on this system set RSHOW_TOKEN instead (see rshow doctor)';
+const NO_KEYCHAIN = 'the keychain needs macOS; set RSHOW_TOKEN instead';
 
 type Run = { code: number; stdout: string; stderr: string; absent: boolean };
 
@@ -13,8 +15,19 @@ function bin(): string {
   return process.env.RSHOW_SECURITY_BIN ?? 'security';
 }
 
-function usable(): boolean {
-  return process.platform === 'darwin' || process.env.RSHOW_SECURITY_BIN !== undefined;
+// RSHOW_SECURITY_BIN stands in for the keychain in a test, on any system.
+export function canSave(
+  platform: string = process.platform,
+  securityBin: string | undefined = process.env.RSHOW_SECURITY_BIN,
+): boolean {
+  return platform === 'darwin' || securityBin !== undefined;
+}
+
+export function assertCanSave(
+  platform: string = process.platform,
+  securityBin: string | undefined = process.env.RSHOW_SECURITY_BIN,
+): void {
+  if (!canSave(platform, securityBin)) throw new UsageError(NEEDS_KEYCHAIN);
 }
 
 function run(args: string[], input?: string): Promise<Run> {
@@ -49,7 +62,7 @@ function failure(doing: string, result: Run, secret?: string): ApiError {
 // The token goes to `security -i` on stdin, so that it never shows up in argv
 // where ps sees it, and never in a shell history.
 export async function save(url: string, token: string): Promise<void> {
-  if (!usable()) throw new UsageError(NO_MACOS);
+  assertCanSave();
   const line = `add-generic-password -U -s ${SERVICE} -a ${url} -w ${token}\n`;
   const result = await run(['-i'], line);
   if (result.code !== 0) throw failure('cannot save the token in the keychain', result, token);
@@ -57,7 +70,7 @@ export async function save(url: string, token: string): Promise<void> {
 }
 
 export async function read(url: string): Promise<string | undefined> {
-  if (!usable()) return undefined;
+  if (!canSave()) return undefined;
   const result = await run(['find-generic-password', '-s', SERVICE, '-a', url, '-w']);
   if (result.absent || result.code === MISSING) return undefined;
   if (result.code !== 0) throw failure('cannot read the token from the keychain', result);
@@ -66,7 +79,7 @@ export async function read(url: string): Promise<string | undefined> {
 }
 
 export async function remove(url: string): Promise<boolean> {
-  if (!usable()) throw new UsageError(NO_MACOS);
+  if (!canSave()) throw new UsageError(NO_KEYCHAIN);
   const result = await run(['delete-generic-password', '-s', SERVICE, '-a', url]);
   if (result.absent || result.code === MISSING) return false;
   if (result.code !== 0) throw failure('cannot remove the token from the keychain', result);

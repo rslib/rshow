@@ -10,6 +10,7 @@ import type { Ctx } from '../context.ts';
 import { EXIT } from '../exit.ts';
 import type { ExitCode } from '../exit.ts';
 import * as keychain from '../keychain.ts';
+import { networkDetail, readyNetwork } from '../network.ts';
 import {
   detectedTargets,
   homeDir,
@@ -123,6 +124,7 @@ async function tokenOf(url: string | undefined): Promise<Token> {
 async function getJson(url: string, token?: string): Promise<{ status: number; body?: unknown }> {
   const headers: Record<string, string> = {};
   if (token !== undefined) headers.authorization = `Bearer ${token}`;
+  await readyNetwork();
   const reply = await fetch(url, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
   if (reply.status !== 200) return { status: reply.status };
   const body: unknown = await reply.json().catch(() => undefined);
@@ -165,7 +167,7 @@ async function apiCheck(url: string | undefined, token: Token): Promise<Check> {
     const scope = typeof body.scope === 'string' ? body.scope : '';
     return { name, status: 'ok', detail: `${email} (scope ${scope})` };
   } catch (err) {
-    return { name, status: 'fail', detail: messageOf(err) };
+    return { name, status: 'fail', detail: networkDetail(err, `${url}/api/me`) };
   }
 }
 
@@ -181,7 +183,7 @@ async function artCheck(art: string | undefined): Promise<Check> {
     }
     return { name, status: 'ok', detail: `version ${version}` };
   } catch (err) {
-    return { name, status: 'warn', detail: messageOf(err) };
+    return { name, status: 'warn', detail: networkDetail(err, `${art}/_themes/default.json`) };
   }
 }
 

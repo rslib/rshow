@@ -5,6 +5,17 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix every request on a cluster failing with `network error: fetch failed` by trusting the system certificate store before the first request.
+- Fix a failed request to name its host and reason, such as `network error: artd.example.com: certificate not trusted`, and to print one hint on what to try next.
+- Fix `rshow login` on a system without the macOS Keychain to say that the token belongs in `RSHOW_TOKEN` before it asks for one.
+
+### Added
+
+- Add `RSHOW_EXTRA_CA_FILE`, a PEM file of roots to trust besides the system store, and `RSHOW_SYSTEM_CA=0` to leave the store out.
+- Add proxy support: `https_proxy`, `http_proxy` and `no_proxy` work in the binary, and in an npm install with `NODE_USE_ENV_PROXY=1`.
+
 ## [0.0.2] - 2026-10-30
 
 ### Changed

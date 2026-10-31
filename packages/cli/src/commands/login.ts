@@ -55,8 +55,9 @@ async function tokenFromStdin(): Promise<string> {
   return token;
 }
 
-export async function run(argv: string[], ctx: Ctx): Promise<void> {
+export async function run(argv: string[], ctx: Ctx, platform: string = process.platform): Promise<void> {
   const args = parseCommandArgs(argv, { url: { type: 'string' } }, 0, 0, LOGIN_USAGE);
+  keychain.assertCanSave(platform);
   const settings = await ctx.config();
   const given = (stringValue(args, 'url') ?? '').trim();
   const url = (given === '' ? requireUrl(settings) : given).replace(/\/+$/, '');

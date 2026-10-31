@@ -4,6 +4,7 @@ import { MAX_BLOB_BYTES, MAX_VERSION_BYTES, MAX_VERSION_FILES } from 'rshow-shar
 import { CheckError, UsageError } from './exit.ts';
 import type { Output } from './output.ts';
 import { mockupWarnings } from './mockup.ts';
+import { networkDetail, readyNetwork } from './network.ts';
 import { styleWarnings } from './style.ts';
 
 export type Severity = 'error' | 'warning';
@@ -62,10 +63,6 @@ type Scan = {
   fetchImpl: typeof fetch;
   themes: Map<string, ThemeRef>;
 };
-
-function messageOf(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
-}
 
 function add(scan: Scan, file: string, line: number, severity: Severity, message: string): void {
   scan.findings.push({ path: file, line, severity, message });
@@ -326,11 +323,12 @@ async function collect(scan: Scan, dir: string, prefix: string, entries: Entry[]
 async function checkThemeFile(scan: Scan, key: string, rel: string, where: Where): Promise<void> {
   const url = `${scan.art}/_themes/${key}/${rel}`;
   let status: number;
+  await readyNetwork();
   try {
     const reply = await scan.fetchImpl(url, { method: 'HEAD' });
     status = reply.status;
   } catch (err) {
-    add(scan, where.file, where.line, 'warning', `cannot check theme ${key}/${rel}: ${messageOf(err)}`);
+    add(scan, where.file, where.line, 'warning', `cannot check theme ${key}/${rel}: ${networkDetail(err, url)}`);
     return;
   }
   if (status === 404) add(scan, where.file, where.line, 'error', `theme ${key} has no ${rel} (${url})`);
@@ -343,11 +341,12 @@ async function checkTheme(scan: Scan, key: string, where: ThemeRef): Promise<voi
   if (scan.offline || scan.art === '') return;
   const url = `${scan.art}/_themes/${key}/tokens.css`;
   let status: number;
+  await readyNetwork();
   try {
     const reply = await scan.fetchImpl(url, { method: 'HEAD' });
     status = reply.status;
   } catch (err) {
-    add(scan, where.file, where.line, 'warning', `cannot check theme ${key}: ${messageOf(err)}`);
+    add(scan, where.file, where.line, 'warning', `cannot check theme ${key}: ${networkDetail(err, url)}`);
     return;
   }
   if (status === 404) {

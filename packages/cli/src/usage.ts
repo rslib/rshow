@@ -36,6 +36,9 @@ environment:
   RSHOW_TOKEN             the API token, else the token saved by rshow login
                           in the macOS Keychain; never read from a file
   XDG_CONFIG_HOME         where to find rshow/config.json (default ~/.config)
+  RSHOW_SYSTEM_CA         set to 0 to trust only the roots node bundles
+  RSHOW_EXTRA_CA_FILE     a PEM file of extra roots, such as a cluster's CA
+  NODE_USE_ENV_PROXY      set to 1 so fetch uses https_proxy (Node 24+)
 
 Start here: rshow init --url <admin-url> --art <viewer-url>, then rshow login.
 

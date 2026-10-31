@@ -2,6 +2,7 @@ import { THEME_NAME_PATTERN } from 'rshow-shared';
 import { boolValue, parseCommandArgs } from '../args.ts';
 import type { AppConfig } from '../config.ts';
 import type { Ctx } from '../context.ts';
+import { networkDetail, readyNetwork } from '../network.ts';
 import { CONFIG_USAGE } from '../usage.ts';
 import { warn } from '../warn.ts';
 
@@ -20,7 +21,14 @@ function themeRefOf(theme: string): ThemeRef {
 }
 
 async function fetchVersion(art: string, name: string): Promise<string> {
-  const reply = await fetch(`${art}/_themes/${name}.json`, { signal: AbortSignal.timeout(THEME_TIMEOUT_MS) });
+  const url = `${art}/_themes/${name}.json`;
+  await readyNetwork();
+  let reply: Response;
+  try {
+    reply = await fetch(url, { signal: AbortSignal.timeout(THEME_TIMEOUT_MS) });
+  } catch (err) {
+    throw new Error(networkDetail(err, url));
+  }
   if (reply.status !== 200) throw new Error(`HTTP ${reply.status}`);
   const body: unknown = await reply.json();
   const version = (body as { version?: unknown } | null)?.version;

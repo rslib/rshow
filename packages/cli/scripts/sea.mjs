@@ -152,6 +152,10 @@ async function main() {
       disableExperimentalSEAWarning: true,
       useCodeCache: false,
       useSnapshot: false,
+      // Node reads the proxy environment only at startup, and the binary runs
+      // where nobody can add the variable in front of it. --use-system-ca is
+      // left out: the runtime merge honours RSHOW_SYSTEM_CA=0, the flag would not.
+      execArgv: ['--use-env-proxy'],
     };
     await writeFile(config, `${JSON.stringify(seaConfig, null, 2)}\n`);
 

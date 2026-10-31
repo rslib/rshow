@@ -249,6 +249,8 @@ Later files win, and the environment beats both.
 `rshow init --url <admin-url> --art <viewer-url>` writes the global file with both, keeps its other fields, and prints the next step, `rshow login`.
 `rshow doctor [dir]` checks node, both config files, the token, the API, the art host, the theme and the skills, one line each, and exits 6 when a check failed. Run it on a config error and show its output to the person.
 The token comes from `RSHOW_TOKEN`, else from the macOS Keychain, where `rshow login` saves it. It is never read from a file or from a flag.
+On a cluster, rshow trusts the system certificate store and any PEM file in `RSHOW_EXTRA_CA_FILE`, and `RSHOW_SYSTEM_CA=0` keeps the store out; `https_proxy` is used by the binary, and by an npm install with `NODE_USE_ENV_PROXY=1`.
+`rshow login` needs the macOS Keychain, so on Linux set `RSHOW_TOKEN` instead.
 `XDG_CONFIG_HOME` moves the global config file away from `~/.config`.
 
 ## Exit codes

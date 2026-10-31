@@ -1,5 +1,6 @@
 import type { VersionDetail } from 'rshow-shared';
 import { ApiError, AuthError } from './exit.ts';
+import { sendRequest } from './network.ts';
 import { VERSION } from './version.ts';
 
 export type SendOptions = {
@@ -18,10 +19,6 @@ export type ArtifactFilter = { project?: string; tag?: string; q?: string };
 export type ArtifactInput = { slug: string; title?: string; project?: string; tags?: string[] };
 
 export type ProjectInput = { slug: string; title?: string; description?: string };
-
-function messageOf(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
-}
 
 function errorText(body: unknown, status: number): string {
   if (body !== null && typeof body === 'object' && typeof (body as { error?: unknown }).error === 'string') {
@@ -65,13 +62,7 @@ export class Client {
       body = opts.bytes;
     }
 
-    let res: Response;
-    try {
-      res = await this.fetchImpl(this.baseUrl + pathname, { method, headers, body });
-    } catch (err) {
-      throw new ApiError(`network error: ${messageOf(err)}`);
-    }
-
+    const res = await sendRequest(this.fetchImpl, this.baseUrl + pathname, { method, headers, body });
     const text = await res.text();
     const parsed = parseBody(text);
 

@@ -76,6 +76,29 @@ rshow doctor
 `rshow doctor` prints one line per check, `ok|warn|fail  <check>  <detail>`, for node, the config files, the token, the API, the art host, the theme and the skills.
 It exits 6 when a check fails, and it never prints the token.
 
+## On a cluster or behind a proxy
+
+A cluster often holds its own certificate authority, and a proxy that inspects HTTPS holds one too.
+rshow trusts the system store as well as the roots Node bundles, so a host that `curl` accepts is a host rshow accepts.
+A root that lives in a file rather than in the store goes in `RSHOW_EXTRA_CA_FILE`:
+
+```sh
+export RSHOW_EXTRA_CA_FILE=/etc/pki/cluster-root.pem
+```
+
+`RSHOW_SYSTEM_CA=0` leaves the system store out, and `rshow doctor` names a certificate it cannot verify.
+
+A proxy comes from the environment: the binary carries the Node flag, so `https_proxy`, `http_proxy` and `no_proxy` work as they do for `curl`.
+An `npm i -g rshow` install needs the variable that flag stands for, which Node 24 and later read:
+
+```sh
+export NODE_USE_ENV_PROXY=1
+```
+
+A request that fails says which host and why, such as `network error: artd.example.com: certificate not trusted`, followed by one line on what to try next.
+
+`rshow login` saves the token in the macOS Keychain, so on a Linux cluster set `RSHOW_TOKEN` instead and every command reads that.
+
 ## Publish a folder
 
 An artifact is a folder with an `index.html` at its root.

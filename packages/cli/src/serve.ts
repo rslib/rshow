@@ -17,6 +17,7 @@ import {
 } from 'rshow-shared';
 import { ApiError } from './exit.ts';
 import { contentTypeFor } from './files.ts';
+import { networkText, readyNetwork } from './network.ts';
 import { buildPreset, builtinThemeDir, readThemeJson } from './themes.ts';
 import { warn } from './warn.ts';
 
@@ -155,11 +156,12 @@ async function proxy(
   res: ServerResponse,
 ): Promise<void> {
   let reply: Response;
+  await readyNetwork();
   try {
     reply = await fetch(art + pathname, { method: method === 'HEAD' ? 'HEAD' : 'GET' });
   } catch (err) {
     res.writeHead(502, { 'content-type': TEXT_TYPE, 'x-rshow-source': 'proxy' });
-    res.end(`proxy error: ${messageOf(err)}\n`);
+    res.end(`proxy error: ${networkText(err, art + pathname)}\n`);
     return;
   }
   const body = Buffer.from(await reply.arrayBuffer());

@@ -85,6 +85,9 @@ function childEnvOf(env: Record<string, string>): Record<string, string> {
   return {
     PATH: process.env.PATH ?? '',
     HOME: TEST_HOME,
+    // The system trust store belongs to the machine that runs the tests, and
+    // reading it costs half a second on macOS.
+    RSHOW_SYSTEM_CA: '0',
     ...env,
   };
 }

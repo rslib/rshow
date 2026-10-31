@@ -5,6 +5,7 @@ import { Chrome, Page } from './cdp.ts';
 import { UsageError } from './exit.ts';
 import { MAP_FILE, mapPath, readMapFile, starterMap, writeMapFile } from './map.ts';
 import type { RshowMap } from './map.ts';
+import { networkDetail, readyNetwork } from './network.ts';
 import { collectComponents, collectInfo, focusScreen, openHelpers, screenClip, setMode } from './page.ts';
 import type { PageScreen, TokenArg } from './page.ts';
 import { startPreview } from './serve.ts';
@@ -121,10 +122,11 @@ export async function collectStyleTexts(url: string, fetchImpl: typeof fetch = f
 
 export async function assertPublic(url: string, art: string, fetchImpl: typeof fetch = fetch): Promise<void> {
   let reply: Response;
+  await readyNetwork();
   try {
     reply = await fetchImpl(url, { headers: { accept: 'text/html' }, redirect: 'follow' });
   } catch (err) {
-    throw new UsageError(`cannot reach ${url}: ${err instanceof Error ? err.message : String(err)}`);
+    throw new UsageError(`cannot reach ${url}: ${networkDetail(err, url)}`);
   }
   const host = new URL(art).host;
   const wandered = new URL(reply.url === '' ? url : reply.url).host !== host;
