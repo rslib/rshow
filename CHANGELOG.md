@@ -5,6 +5,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-10-31
+
 ### Fixed
 
 - Fix `rshow login` on a Linux keyring that cannot store a secret.
@@ -63,7 +65,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - A publish of a folder that did not change adds no version: `publish` and `theme publish` name the version that is already live, and `--force` publishes anyway.
 - `rshow --version` prints the version, and `doctor` opens with it.
 
-[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/rslib/rshow/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/rslib/rshow/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/rslib/rshow/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/rslib/rshow/releases/tag/v0.0.1
