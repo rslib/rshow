@@ -1213,6 +1213,16 @@
     if (event.button !== 0) {
       return;
     }
+    // A control above the screen keeps its own click: capturing the pointer
+    // here would retarget that click to the stage.
+    var control = event.target.closest
+      ? event.target.closest(
+          'button, a[href], input, select, textarea, label, summary, [role="button"], [tabindex]:not([tabindex="-1"])'
+        )
+      : null;
+    if (!spaceDown && control !== null && control !== stage) {
+      return;
+    }
     var inScreen = event.target.closest ? event.target.closest('.mk-screen') : null;
     if (!spaceDown && inScreen) {
       return;

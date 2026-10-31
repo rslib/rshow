@@ -6,6 +6,7 @@ import './publish.test.ts';
 import './check.test.ts';
 import './style.test.ts';
 import './mockup.test.ts';
+import './mockup.chrome.test.ts';
 import './build.test.ts';
 import './blobs.test.ts';
 import './preview.test.ts';
