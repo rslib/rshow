@@ -5,6 +5,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+## [0.0.6] - 2026-10-31
+
 ### Changed
 
 - Ship each release binary as `rshow-<target>.tar.gz` with its completions, and make the curl installer set up completions for bash, zsh and fish.
@@ -18,8 +20,10 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 - Fix the curl installer telling Linux users to set RSHOW_TOKEN, since `rshow login` works there.
 - Fix the state buttons above a mockup screen, which did not take a click on the canvas.
-- Fix the admin web app on a phone: the search box no longer covers the page, each artifact shows as a card and the menu fits on one row.
-- Fix decks, mockups and terminals on a phone: an upright phone reads a deck as a page of slides at readable sizes, a mockup opens one screen at a time and a terminal scrolls inside its frame.
+- Fix the admin web app on a phone.
+  The search box no longer covers the page, each artifact shows as a card and the menu fits on one row.
+- Fix decks, mockups and terminals on a phone.
+  An upright phone reads a deck as a page of slides at readable sizes, a mockup opens one screen at a time and a terminal scrolls inside its frame.
 
 ## [0.0.5] - 2026-10-31
 
@@ -88,7 +92,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - A publish of a folder that did not change adds no version: `publish` and `theme publish` name the version that is already live, and `--force` publishes anyway.
 - `rshow --version` prints the version, and `doctor` opens with it.
 
-[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.6...HEAD
+[0.0.6]: https://github.com/rslib/rshow/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/rslib/rshow/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/rslib/rshow/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/rslib/rshow/compare/v0.0.2...v0.0.3
