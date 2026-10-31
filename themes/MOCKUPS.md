@@ -166,6 +166,13 @@ A screen taller than the stage pans with `w` and `s` once it is open.
 No key fires with Ctrl, meta or alt held, and a field keeps its own keys, so a comment can be typed without the canvas moving.
 There is also a quiet `? keys` button in the bottom left corner of the stage, for a reader who never guesses the key.
 
+## On a phone
+
+The canvas is every screen at once, which at 390px wide is a thumbnail nobody can read.
+So a stage narrower than 700px, with no `?view=` and no `#screen` in the URL, opens the first screen in the focus view instead, fitted to the width by the same fit the fit button runs, with the Previous and Next buttons to walk the boards and `Esc` to go back to the canvas.
+The toolbar wraps onto a second row there, and a group that still does not fit scrolls inside itself, so no control is ever past the right edge and every one of them is at least 32px tall.
+`?view=canvas`, `?view=play` and `#screen` still say what they said, on any width.
+
 ## Look at it
 
 `rshow check <dir>` exits 0 before anything is published.

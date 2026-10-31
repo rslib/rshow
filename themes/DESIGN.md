@@ -109,6 +109,12 @@ A deck may add a layout of its own as `.slide.<name>` in one inline `<style>` bl
 An annotated figure, a figure with a callout, a diagram built in HTML or SVG, a timeline, a before and after and a comparison grid are the usual ones.
 The colours come from the tokens, and the slide still fits the canvas and still reads at 360px wide.
 
+On a phone held upright a slide is a 390x219 strip, so below 700px of width in portrait `deck.js` turns the deck into a reading page: every slide is stacked down the page at the width of the screen and reflowed for it, at 32px for an `h1`, 24px for an `h2` and 17px for running text, with the notes hidden and every step revealed.
+Nothing is scaled, because a 1280x720 canvas shrunk to 390px sets the body text near 9px: the figures take the width they are given, a wide table or a block of code scrolls inside itself, every two-column and grid layout stacks, and a rule and an `n / total` label mark where one slide ends.
+A layout of a deck's own takes the same stacking and the same width and is otherwise left alone.
+The page then scrolls like a document, `#n` opens at slide n, and a small fixed button presents one slide at a time, which `Esc` comes back from.
+A landscape phone and a desktop keep one slide at a time.
+
 A page keeps the same rules: prose at about 72 characters, the same table rules and the same figure rules.
 A page may add a class of its own in one inline `<style>` block in the same way, scoped to that class.
 
@@ -177,6 +183,7 @@ The frames are browser, phone, tablet, desktop, custom, bare and terminal.
 The terminal frame is a title bar in mono over a screen that `tui.css` fills with cells.
 `mockup.js` owns the toolbar, the canvas, the focus view, the states, the notes and the skin switch.
 The skins in `skins/` are wire, sketch, custom, fluent, mac, adwaita, egui and material.
+Four screens at 12% are a thumbnail on a phone, so a stage narrower than 700px and a URL that asks for no view opens the first screen in the focus view, fitted to the width, with the Previous and Next buttons and `Esc`; `?view=` and `#screen` still say what they say.
 
 ### Sketch
 
@@ -188,6 +195,7 @@ A freeform diagram that only has to be looked at is an Excalidraw file in this v
 
 A terminal is `<div class="terminal" data-mode="ansi" data-src="capture.ans" data-cols="100" data-rows="24" data-title="procview">` for a capture of a screen, or `data-mode="cast"` with an asciicast for a recording.
 `terminal.js` loads xterm or asciinema-player from a pinned CDN only when a figure of that kind exists and falls back to a stripped `<pre>` when it cannot.
+A hundred columns do not fit a phone, and fitted to it the text would be five pixels tall, so the frame keeps the width of the page and the grid or the recording scrolls sideways inside it; a recording is fitted to the width only while the fit keeps its text at 9px or more.
 
 ### Tui
 

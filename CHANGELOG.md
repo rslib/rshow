@@ -18,6 +18,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 - Fix the curl installer telling Linux users to set RSHOW_TOKEN, since `rshow login` works there.
 - Fix the state buttons above a mockup screen, which did not take a click on the canvas.
+- Fix the admin web app on a phone: the search box no longer covers the page, each artifact shows as a card and the menu fits on one row.
+- Fix decks, mockups and terminals on a phone: an upright phone reads a deck as a page of slides at readable sizes, a mockup opens one screen at a time and a terminal scrolls inside its frame.
 
 ## [0.0.5] - 2026-10-31
 

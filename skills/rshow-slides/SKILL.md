@@ -112,6 +112,8 @@ Vary the rhythm: do not run more than three text slides (`two-col` or `bullets`)
   Press `Ctrl` and `P` for a print sheet when someone wants a pdf.
 - Press `t` to cycle the mode: system, light, dark, with the mode shown in the counter for a moment.
   The choice is remembered for every rshow document and print is always light.
+- On a phone held upright the deck reads as a stack of slides, each one reflowed to the width of the screen at phone sizes with a rule and an `n / total` label between slides, and a `Present` button goes back to one slide at a time.
+  `Esc` comes back to reading, and the arrows, space and a `#n` link work in both.
 
 ## 5. Check, preview, publish
 

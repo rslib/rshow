@@ -241,6 +241,14 @@
   tab-size: 8;
 }
 
+/* A recording the width cannot hold keeps the grid it was taken on and scrolls
+   here, rather than being fitted down to a font nobody can read. The player
+   clips its own box, so the scroll has to be said again one class deeper. */
+.terminal .terminal-body .ap-player {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
 /* asciinema-player declares a dark palette of its own on .ap-player, which
    would win over anything inherited from the figure. Hand it the figure's
    palette instead, so a recording and a capture of the same program agree. */

@@ -228,6 +228,23 @@
     return anchor;
   }
 
+  // One cell of the theme's monospace font at the size the theme sets, measured
+  // on the page. A recording is fitted to the width only while its text stays at
+  // MIN_FONT; below that the frame keeps the page width and scrolls instead.
+  var MIN_FONT = 9;
+
+  function cellWidth(host) {
+    var probe = element('span', 'terminal-probe');
+    probe.style.cssText = 'position: absolute; top: 0; left: 0; visibility: hidden;' +
+      'white-space: pre; font-family: ' + property(host, '--font-mono', 'monospace') +
+      '; font-size: ' + fontSize(host) + 'px';
+    probe.textContent = '0000000000';
+    (document.body || document.documentElement).appendChild(probe);
+    var width = probe.getBoundingClientRect().width / 10;
+    (document.body || document.documentElement).removeChild(probe);
+    return width > 0 ? width : 7.8;
+  }
+
   function build(host) {
     var src = text(host.getAttribute('data-src'));
     var title = text(host.getAttribute('data-title')) || (src === '' ? 'terminal' : fileName(src));
@@ -264,8 +281,9 @@
 
   // ----------------------------------------------------------------- ansi ---
 
-  // A terminal window is as wide as its grid: the capture was taken at cols by
-  // rows, so the frame is stretched to that width and no further.
+  // A terminal window is as wide as its grid, and never wider than the page: on a
+  // phone the frame keeps the width it is given and the grid scrolls inside the
+  // body, which is what terminal.css leaves overflow-x for.
   function hug(shell, body, term) {
     if (!term.element) {
       return;
@@ -276,7 +294,9 @@
     }
     var box = window.getComputedStyle(body);
     var side = (parseFloat(box.paddingLeft) || 0) + (parseFloat(box.paddingRight) || 0);
-    shell.style.width = Math.ceil(width + side + 2) + 'px';
+    var wanted = Math.ceil(width + side + 2);
+    var room = shell.parentNode ? shell.parentNode.clientWidth : 0;
+    shell.style.width = (room > 0 && wanted > room ? room : wanted) + 'px';
   }
 
   function ansi(host, body, shell, src) {
@@ -339,7 +359,32 @@
 
   // ----------------------------------------------------------------- cast ---
 
+  // The grid a recording ran on: the figure says so, or the first line of the
+  // asciicast does, one JSON object with its width and height.
+  function castGrid(host, src, done) {
+    var cols = count(host.getAttribute('data-cols'), 0);
+    var rows = count(host.getAttribute('data-rows'), 0);
+    if (cols > 0 && rows > 0) {
+      done(cols, rows);
+      return;
+    }
+    window.fetch(src, { credentials: 'same-origin' }).then(function (reply) {
+      return reply.ok ? reply.text() : '';
+    }).then(function (cast) {
+      var head = {};
+      try {
+        head = JSON.parse(cast.split('\n')[0]) || {};
+      } catch (err) {
+        head = {};
+      }
+      done(count(head.width, 0), count(head.height, 0));
+    }, function () {
+      done(0, 0);
+    });
+  }
+
   function cast(host, body, src) {
+    var size = fontSize(host);
     var settings = {
       fit: 'width',
       controls: true,
@@ -348,19 +393,12 @@
       // rectangle: the prompt and the command being typed.
       poster: 'npt:0:02',
       terminalFontFamily: property(host, '--font-mono', 'monospace'),
-      terminalFontSize: fontSize(host) + 'px',
+      terminalFontSize: size + 'px',
       terminalLineHeight: 1.4
     };
-    var cols = count(host.getAttribute('data-cols'), 0);
-    var rows = count(host.getAttribute('data-rows'), 0);
-    if (cols > 0) {
-      settings.cols = cols;
-    }
-    if (rows > 0) {
-      settings.rows = rows;
-    }
 
     var player = null;
+    var ready = false;
 
     function start(at) {
       var options = {};
@@ -378,11 +416,30 @@
     }
 
     loadPlayer().then(function () {
-      start(0);
+      castGrid(host, src, function (cols, rows) {
+        if (cols > 0) {
+          settings.cols = cols;
+        }
+        if (rows > 0) {
+          settings.rows = rows;
+        }
+        // Fitting 100 columns into a phone asks for a 5px font. So the recording
+        // is fitted only while the fit keeps its text at MIN_FONT; below that
+        // fit is off at the theme's size and the body scrolls sideways.
+        if (cols > 0 && body.clientWidth > 0 &&
+            body.clientWidth / (cols * cellWidth(host)) * size < MIN_FONT) {
+          settings.fit = false;
+        }
+        ready = true;
+        start(0);
+      });
       // The player reads the palette once, when it mounts, so a mode change
       // means a new player, put back where the old one was.
       document.addEventListener('rshowmodechange', function () {
         var at = 0;
+        if (!ready) {
+          return;
+        }
         try {
           at = player && player.getCurrentTime ? player.getCurrentTime() : 0;
         } catch (err) {

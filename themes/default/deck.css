@@ -517,6 +517,323 @@ aside.notes {
   pointer-events: none;
 }
 
+/* --------------------------------------------------------------- reading */
+
+/* A phone held upright cannot show a 16:9 slide: 390px of width leaves a 219px
+   strip. So the deck stops presenting and reads. Every slide becomes a block
+   down the page, the width of the screen, one after another, with no scale in
+   it: a 1280px canvas shrunk to 390px sets the body text near 9px, which is a
+   picture of a slide and not a slide. The type takes sizes a phone reads, each
+   figure takes the width it is given, a wide table or a block of code scrolls
+   sideways inside itself, and every grid stacks to one column. The notes stay
+   hidden, every step is out, and a hairline rule with an "n / total" label in
+   the margin marks where one slide ends and the next begins.
+   deck.js turns this on for a viewport that is portrait and narrower than 700px,
+   and off everywhere else: a landscape phone and a desktop keep one slide at a
+   time. The button that goes back to presenting is deck.js's, and Esc comes back
+   here. It is a screen mode, so it sits in @media screen: a sheet of paper keeps
+   one slide per page, laid out on the canvas it was drawn for. */
+
+@media screen {
+  html.is-reading,
+  body.is-reading {
+    height: auto;
+    overflow: visible;
+    background: var(--bg);
+    /* Reading sizes. The type scale has no 17px step and the canvas headings are
+       drawn for 1280px, so a phone slide names the size of its own body text and
+       of the one line a quote or a statement sets. Every other size below is a
+       token: 32px, 24px, 20px, 18px, 14px. */
+    --deck-read-body: 17px;
+    --deck-read-line: 22px;
+  }
+
+  /* The deck is the page now: no canvas, no transform, no clip. The bottom pad
+     clears the Present button, so the last line of the last slide stays under
+     the reader's thumb and not inside it. */
+  main.deck.is-reading {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0 0 80px;
+    overflow: visible;
+    transform: none !important;
+    background: var(--bg);
+    counter-reset: deck-slide;
+  }
+
+  /* One slide, one block: the width of the screen, a 16px gutter either side,
+     air above and below, and a rule where the previous slide ended. */
+  main.deck.is-reading > .slide,
+  main.deck.is-reading.is-ready > .slide {
+    position: relative;
+    inset: auto;
+    display: block;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: var(--space-06) var(--space-05);
+    overflow: visible;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    border-top: 1px solid var(--border-subtle);
+    counter-increment: deck-slide;
+  }
+
+  main.deck.is-reading > .slide:first-child {
+    border-top: 0;
+  }
+
+  /* Where this slide sits in the stack. It is a label, so sans, sentence case
+     and the muted colour of every other label: mono and caps are for code. */
+  main.deck.is-reading > .slide::before {
+    content: counter(deck-slide) " / " var(--deck-total, "");
+    display: block;
+    margin: 0 0 var(--space-05);
+    font-family: var(--font-sans);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ----------------------------------------------------- reading type --- */
+
+  /* The display steps belong to a 1280px slide: 76px of heading in 358px of
+     width is three words a line. In reading mode a heading is a heading. */
+  main.deck.is-reading .slide h1,
+  main.deck.is-reading .slide h2,
+  main.deck.is-reading .slide h3 {
+    margin: 0 0 var(--space-04);
+    max-width: none;
+    font-weight: 400;
+    line-height: var(--lh-heading);
+    letter-spacing: 0;
+  }
+
+  main.deck.is-reading .slide h1 {
+    font-size: var(--text-xl);
+  }
+
+  main.deck.is-reading .slide h2 {
+    font-size: var(--text-md);
+  }
+
+  main.deck.is-reading .slide h3 {
+    font-size: var(--text-base);
+    font-weight: 600;
+  }
+
+  /* Running text: 17px on a 1.45 leading reads on a phone without a pinch, and
+     the measure is the screen, so nothing caps it short of the gutter. */
+  main.deck.is-reading .slide p,
+  main.deck.is-reading .slide li,
+  main.deck.is-reading .slide li > p,
+  main.deck.is-reading .slide .col p,
+  main.deck.is-reading .slide .col li {
+    max-width: none;
+    font-size: var(--deck-read-body);
+    line-height: var(--lh-body);
+  }
+
+  main.deck.is-reading .slide ul,
+  main.deck.is-reading .slide ol {
+    padding-left: var(--space-06);
+  }
+
+  main.deck.is-reading .slide li {
+    margin-bottom: var(--space-03);
+  }
+
+  main.deck.is-reading .slide li:last-child {
+    margin-bottom: 0;
+  }
+
+  main.deck.is-reading .slide.title .subtitle {
+    margin-top: var(--space-04);
+    max-width: none;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+
+  /* The line under a title, a figure or a table: a caption, so small and muted,
+     and never wider than the slide. */
+  main.deck.is-reading .slide .muted,
+  main.deck.is-reading .slide figcaption,
+  main.deck.is-reading .slide cite,
+  main.deck.is-reading .slide caption,
+  main.deck.is-reading .slide .byline,
+  main.deck.is-reading .slide .source,
+  main.deck.is-reading .slide li > p {
+    max-width: none;
+    font-size: var(--text-2xs);
+    line-height: 1.45;
+  }
+
+  main.deck.is-reading .slide.section h2 {
+    margin-bottom: 0;
+    font-size: var(--text-md);
+    font-weight: 400;
+  }
+
+  main.deck.is-reading .slide.statement p,
+  main.deck.is-reading .slide.quote blockquote {
+    max-width: none;
+    font-size: var(--deck-read-line);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  main.deck.is-reading .slide.big-number .value {
+    font-size: var(--text-2xl);
+    line-height: var(--lh-flat);
+  }
+
+  main.deck.is-reading .slide.big-number .caption {
+    max-width: none;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+
+  /* A statement or a divider carries one short line, so it keeps a little
+     height and sits its text in the middle of it instead of at the top. */
+  main.deck.is-reading > .slide.statement,
+  main.deck.is-reading > .slide.section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 40vh;
+  }
+
+  /* ------------------------------------------------ reading containers -- */
+
+  /* Anything that holds a picture takes the width it is given, keeps its own
+     shape, and never reaches past the gutter. */
+  main.deck.is-reading .slide figure {
+    display: block;
+    margin: 0;
+    min-height: 0;
+  }
+
+  main.deck.is-reading .slide img,
+  main.deck.is-reading .slide svg,
+  main.deck.is-reading .slide video,
+  main.deck.is-reading .slide canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* A table keeps its columns and a code block keeps its lines: each one
+     scrolls sideways inside itself rather than widening the page. */
+  main.deck.is-reading .slide table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  main.deck.is-reading .slide th,
+  main.deck.is-reading .slide td {
+    padding: var(--space-03) var(--space-04);
+  }
+
+  main.deck.is-reading .slide pre {
+    max-width: 100%;
+    max-height: none;
+    padding: var(--space-05);
+    overflow-x: auto;
+    overflow-y: hidden;
+    font-size: 14px;
+    line-height: var(--lh-code);
+    white-space: pre;
+    word-break: normal;
+    tab-size: 2;
+  }
+
+  /* Two columns and two figures side by side are a landscape idea. On a phone
+     every grid is one column, in the order the deck wrote it. */
+  main.deck.is-reading > .slide.two-col,
+  main.deck.is-reading > .slide.three-col,
+  main.deck.is-reading > .slide .pair,
+  main.deck.is-reading > .slide .col,
+  main.deck.is-reading > .slide .cols,
+  main.deck.is-reading > .slide .grid,
+  main.deck.is-reading > .slide .gallery {
+    display: block;
+    grid-template-columns: none;
+    gap: 0;
+    min-height: 0;
+  }
+
+  main.deck.is-reading .slide.two-col > h2 {
+    grid-column: auto;
+    margin-bottom: var(--space-05);
+  }
+
+  main.deck.is-reading .slide .pair > figure + figure,
+  main.deck.is-reading .slide .col + .col {
+    margin-top: var(--space-06);
+  }
+
+  /* --------------------------------------------------- reading chrome --- */
+
+  /* A reader scrolls. A keypress it cannot give, so nothing waits for one, and
+     the notes and the counter are a presenter's furniture, not a reader's. */
+  main.deck.is-reading .step {
+    opacity: 1;
+  }
+
+  main.deck.is-reading aside.notes,
+  main.deck.is-reading .deck-hud {
+    display: none;
+  }
+}
+
+/* One slide at a time, for a room or for a phone turned back to presenting. */
+.deck-present {
+  position: fixed;
+  z-index: 20;
+  right: max(16px, env(safe-area-inset-right, 16px));
+  bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.deck-present[hidden] {
+  display: none;
+}
+
+/* A phone in present mode keeps the canvas on the window rather than in the
+   document: a 1280px box in the page widens a phone's layout viewport and
+   pushes the slide off the screen. */
+@media (max-width: 699px) {
+  main.deck {
+    position: fixed;
+    inset: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .step {
     transition: none;
@@ -574,8 +891,15 @@ aside.notes {
   }
 
   .deck-hud,
-  aside.notes {
+  aside.notes,
+  .deck-present {
     display: none !important;
+  }
+
+  /* Reading mode is a screen mode, so a page printed from a phone is the deck
+     on its canvas again: one slide, one sheet. Nothing here has to undo it. */
+  main.deck.is-reading {
+    overflow: visible;
   }
 }
 

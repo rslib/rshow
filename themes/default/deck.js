@@ -309,6 +309,9 @@
     writeHash();
     syncNotes();
     syncPresenter();
+    if (reading) {
+      scrollToCurrent();
+    }
   }
 
   function go(n) {
@@ -619,6 +622,14 @@
         cycleMode();
         event.preventDefault();
         break;
+      case 'Escape':
+        // Out of one slide at a time, back to the stack the phone reads.
+        if (reading || forced !== null) {
+          forced = null;
+          setReading(wantsReading());
+          event.preventDefault();
+        }
+        break;
       default:
         break;
     }
@@ -673,6 +684,147 @@
     }
   }, { passive: true });
 
+  // ------------------------------------------------------------- reading --
+
+  // A phone held upright has no room for a 1280 x 720 canvas: the slide arrives
+  // as a 390 x 219 strip. deck.css stacks every slide down the page as a block
+  // at the width of the screen and reflows its type, so there is no scale to
+  // work out here; this is the part that decides when, and the small fixed
+  // button and Esc are how a reader switches.
+  var READING = window.matchMedia
+    ? window.matchMedia('(max-width: 699px) and (orientation: portrait)')
+    : null;
+  var reading = false;
+  var forced = null; // 'read', 'present', or null for whatever the device is
+  var toggleButton = null;
+
+  function wantsReading() {
+    if (forced === 'read') {
+      return true;
+    }
+    if (forced === 'present') {
+      return false;
+    }
+    return READING !== null && READING.matches;
+  }
+
+  function scrollToCurrent() {
+    if (!slides[current]) {
+      return;
+    }
+    var box = slides[current].getBoundingClientRect();
+    var top = (window.pageYOffset || document.documentElement.scrollTop || 0) + box.top;
+    window.scrollTo(0, top);
+  }
+
+  // Scrolling the stack is navigating it: the slide at the top of the window is
+  // the current one, so the counter and the URL follow the reader.
+  function followScroll() {
+    if (!reading) {
+      return;
+    }
+    var top = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var at = 0;
+    var k;
+    var box;
+    for (k = 0; k < slides.length; k += 1) {
+      box = slides[k].getBoundingClientRect();
+      if (box.top <= 4) {
+        at = k;
+      }
+    }
+    if (top + window.innerHeight >= document.documentElement.scrollHeight - 4) {
+      at = slides.length - 1;
+    }
+    if (at === current) {
+      return;
+    }
+    current = at;
+    syncHud();
+    writeHash();
+    syncNotes();
+    syncPresenter();
+  }
+
+  function syncToggle() {
+    if (!toggleButton) {
+      return;
+    }
+    toggleButton.hidden = !reading && forced !== 'present';
+    toggleButton.textContent = reading ? 'Present' : 'Read';
+    toggleButton.setAttribute('aria-label', reading
+      ? 'Present: one slide at a time, Esc comes back to reading'
+      : 'Read: every slide down the page, Esc comes back to presenting');
+  }
+
+  function setReading(on) {
+    reading = on;
+    deck.classList.toggle('is-reading', on);
+    document.documentElement.classList.toggle('is-reading', on);
+    document.body.classList.toggle('is-reading', on);
+    syncToggle();
+    if (on) {
+      var k;
+      // The reader sees the whole deck, so no step waits for a key.
+      for (k = 0; k < slides.length; k += 1) {
+        revealed[k] = stepsOf(k).length;
+      }
+      render();
+      return;
+    }
+    fit();
+    render();
+  }
+
+  function flip(which) {
+    forced = which;
+    setReading(wantsReading());
+  }
+
+  function mountToggle() {
+    toggleButton = document.createElement('button');
+    toggleButton.type = 'button';
+    toggleButton.className = 'deck-present';
+    toggleButton.addEventListener('click', function () {
+      flip(reading ? 'present' : 'read');
+    });
+    document.body.appendChild(toggleButton);
+    syncToggle();
+  }
+
+  if (READING !== null) {
+    if (READING.addEventListener) {
+      READING.addEventListener('change', function () {
+        if (forced === null) {
+          setReading(wantsReading());
+        }
+      });
+    } else if (READING.addListener) {
+      READING.addListener(function () {
+        if (forced === null) {
+          setReading(wantsReading());
+        }
+      });
+    }
+  }
+
+  var followQueued = false;
+  window.addEventListener('scroll', function () {
+    if (!reading || followQueued) {
+      return;
+    }
+    followQueued = true;
+    var run = function () {
+      followQueued = false;
+      followScroll();
+    };
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(run);
+    } else {
+      run();
+    }
+  }, { passive: true });
+
   var resizeQueued = false;
   function onResize() {
     if (resizeQueued) {
@@ -681,7 +833,15 @@
     resizeQueued = true;
     var run = function () {
       resizeQueued = false;
-      fit();
+      // A turn of the phone crosses the reading query: follow it, then lay the
+      // deck out for the mode it landed in.
+      if (forced === null && wantsReading() !== reading) {
+        setReading(wantsReading());
+        return;
+      }
+      if (!reading) {
+        fit();
+      }
     };
     if (window.requestAnimationFrame) {
       window.requestAnimationFrame(run);
@@ -715,6 +875,11 @@
       deck.appendChild(hud);
     }
     hud.setAttribute('aria-hidden', 'true');
+    // Reading mode numbers each slide "n / total", and CSS cannot count the
+    // deck, so the count is a property the stack reads. content takes a string,
+    // so the value carries its quotes and the label prints 3 and not a bare
+    // number the counter cannot join.
+    deck.style.setProperty('--deck-total', '"' + slides.length + '"');
 
     var match = /^#(\d+)$/.exec(window.location.hash);
     current = match ? clamp(parseInt(match[1], 10) - 1) : 0;
@@ -723,6 +888,9 @@
 
     fit();
     render();
+
+    mountToggle();
+    setReading(wantsReading());
   }
 
   window.rshowDeck = {

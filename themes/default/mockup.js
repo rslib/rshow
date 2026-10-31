@@ -1728,6 +1728,12 @@
 
   var requested = query.get('screen') || window.location.hash.replace(/^#/, '');
   var startView = query.get('view');
+  // A phone shows the whole canvas at 12%, which nobody can read. When the stage
+  // is narrower than 700px and the URL asks for no view and no screen, the first
+  // screen opens in focus view, fitted to the width by layoutCurrent. ?view=play,
+  // ?view=canvas and #screen still say what they said.
+  var narrow = stage.getBoundingClientRect().width < 700;
+  var asked = startView !== null && startView !== '';
   main.setAttribute('data-view', 'canvas');
   fitAll();
   if (boards.length > 0) {
@@ -1740,6 +1746,8 @@
     } else if (startView === 'play') {
       play(boards[0].id);
     } else if (startView === 'focus') {
+      focus(boards[0].id);
+    } else if (narrow && !asked) {
       focus(boards[0].id);
     }
   }

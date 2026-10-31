@@ -1048,10 +1048,21 @@ body {
 }
 
 @media (max-width: 520px) {
+  /* A phone cannot hold the whole toolbar on one line: the groups wrap onto a
+     second row, and a group that still does not fit shrinks to the row and
+     scrolls inside itself, so no control ever sits past the right edge. */
   .mk-toolbar {
-    flex-wrap: nowrap;
     gap: 2px 6px;
     padding: 6px 10px;
+    overflow-x: auto;
+  }
+
+  .mk-toolbar > * {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .mk-group {
     overflow-x: auto;
   }
 
@@ -1061,6 +1072,10 @@ body {
 
   .mk-name {
     font-size: 13px;
+  }
+
+  .mk-keys-toggle {
+    min-height: 32px;
   }
 }
 
