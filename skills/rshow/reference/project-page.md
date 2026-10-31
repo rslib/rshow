@@ -11,7 +11,7 @@
 - Checks
 
 A project page is the landing page of a paper, and it uses the same theme as a page, a report and a poster.
-It is a fixed template, so the sections are set and the content is the work.
+It is a documented template, so the sections are the starting point and the content is the work, and a page may add its own parts with its own classes.
 `project.css` sets the look and `project.js` does one thing, the copy button on the BibTeX entry.
 
 A project page is not a project.

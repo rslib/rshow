@@ -11,7 +11,7 @@
 - Checks
 
 A sketch is a hand drawn figure from Excalidraw, read in the page and edited in place.
-It is a guided kit rather than a fixed template: `sketch.css` is the bar around the canvas and `sketch.js` is the canvas.
+It is a guided kit rather than a documented template: `sketch.css` is the bar around the canvas and `sketch.js` is the canvas.
 Use it for an architecture drawing, a flow of systems or an idea that should look unfinished.
 
 ## When a sketch

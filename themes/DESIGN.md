@@ -62,6 +62,7 @@ The measured ratios sit in a comment at the top of each `tokens.css`, next to th
 
 A preset is a small folder that extends a built-in theme, and it may change only token values and fonts.
 It never renames a class, adds a layout or changes the markup a page writes against, because those are the interface the theme promises and every artifact points at it.
+A page may still add a class of its own in its own `<style>` block, which a preset never sees.
 So a preset gets a new accent, a new ground and a new type family, and the deck, the page and the report keep their shape.
 `rshow theme new`, `rshow theme check` and `rshow theme preview` are the edit loop, and `rshow theme publish` ships the built folder.
 
@@ -103,7 +104,13 @@ A bullets slide sets its title first and then at most five points at 28px, one l
 - `quote` for one sentence and its attribution, with no giant quote mark.
 - `big-number` for one number and the sentence that says what it means.
 
+The twelve are a starting set and not a ceiling.
+A deck may add a layout of its own as `.slide.<name>` in one inline `<style>` block, when none of the twelve carries the claim.
+An annotated figure, a figure with a callout, a diagram built in HTML or SVG, a timeline, a before and after and a comparison grid are the usual ones.
+The colours come from the tokens, and the slide still fits the canvas and still reads at 360px wide.
+
 A page keeps the same rules: prose at about 72 characters, the same table rules and the same figure rules.
+A page may add a class of its own in one inline `<style>` block in the same way, scoped to that class.
 
 ## Report
 
@@ -122,15 +129,26 @@ A report is a page for reading rather than a slide for a room: `<div class="repo
   `@page` is size auto with 18mm margins, a URL follows an external link, a figure does not split and a page break happens only where a heading carries `data-break`.
   The page number runs in the bottom margin.
 
-## Fixed templates and guided kits
+## Documented templates and guided kits
 
 There are two kinds of layout in the theme and they ask for different work.
-A fixed template is the deck, the report, the poster, the project page and the dashboard: the markup is documented, the classes are the theme's and the work is the content.
+A documented template is the deck, the report, the poster, the project page and the dashboard: the markup is documented, the classes are the theme's and the work is the content.
+The theme is the base, not a cage, so the markup is the starting point and a page may add its own parts with its own classes and its own CSS when the content needs them.
 A guided kit is a mockup, a sketch, a terminal and a tui.
 The kit gives a frame and a floor.
 The drawing inside is the work.
 `MOCKUPS.md` holds the rules for the kits, and inside them an agent may invent layout, spacing, hierarchy and the order of steps.
 A terminal capture is a viewer and never an invention: it shows a file that was recorded somewhere else.
+
+### Own CSS
+
+- One inline `<style>` block per page, with its own classes and its own layouts.
+- Colour, type and space come from the tokens with `var(--...)`, so light, dark, print and a theme swap keep working.
+  A hard-coded colour sits inside a figure only.
+- A new deck layout is scoped as `.slide.<name>` and a page part under an own class name.
+  No theme class is restyled globally and no rule carries `!important`.
+- A token override stays in one `:root` block, with no limit on the declarations.
+- A deck still fits the 1280x720 canvas and a page still reads at 360px wide, in both modes.
 
 ### Project
 
@@ -196,5 +214,6 @@ Decoration that carries no information is deleted rather than made quieter.
 - Never use a hairline rule as decoration.
 - Never use Inter, Space Grotesk, Geist, Fraunces or Instrument Serif as the gesture.
 - Never use gradient text, glass, a large shadow or an emoji.
-- Never animate a slide in, because a reveal is the only motion a deck needs.
+- Never animate a slide in for decoration.
+  Motion is allowed when it explains something, such as a step that builds a diagram or a short transition that shows a change.
 - Never invent a number and never present example data without saying so.

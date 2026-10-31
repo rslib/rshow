@@ -71,9 +71,11 @@ Every link carries the same version on purpose, because a mixed version renders 
 ```
 
 `page.css` gives you `lede`, `table`, `num-cell`, `muted`, `small` and `mono`, plus the heading, list, figure, table and code rules.
-Use them and keep your own CSS to the one `:root` block.
+The theme is the base, not a cage.
+Use these classes first, and add a class of your own in one inline `<style>` block when the page needs a part the theme does not carry.
+Own CSS takes colour, type and space from the tokens with `var(--...)`, and it never restyles a theme class globally.
 There is no card class, no label class and no number tile.
-A page that needs one is usually a page with a table it has not written yet.
+A page that needs one writes it, and a page that needs only a table writes the table.
 
 The theme carries both modes, so the same page reads on white and on g100 with nothing in the page itself.
 
@@ -96,8 +98,8 @@ Print is always light, whatever the screen was.
 
 ## Token overrides
 
-Override a token instead of writing rules.
-Five declarations cover most restyling.
+Override a token instead of restyling a theme class.
+A few declarations cover most restyling, and there is no limit on how many.
 
 ```html
 <style>:root{

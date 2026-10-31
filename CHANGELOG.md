@@ -5,6 +5,11 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Changed
+
+- Let agents add their own layouts and inline CSS on top of the theme, such as a new deck layout or a mockup part the kit lacks.
+  The skills still require theme tokens so dark mode and theme swaps keep working.
+
 ## [0.0.4] - 2026-10-31
 
 ### Fixed

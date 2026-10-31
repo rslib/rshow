@@ -6,8 +6,8 @@ description: Load before you build or revise a talk, deck or presentation. Load 
 # rshow slides
 
 A deck is a folder with one `index.html` in it, published to `https://art.example.com/<slug>/`.
-It links the deck half of a published theme, so the folder holds no CSS, no font and no script of its own.
-The theme does the layout, and the deck only picks a layout per slide.
+It links the deck half of a published theme, so the folder holds no copy of the theme, no font and no script of its own.
+The theme does the layout, and the deck picks a layout per slide or adds one of its own in an inline `<style>` block.
 The look is IBM Carbon on IBM Plex, and `themes/DESIGN.md` in the rshow repo holds the whole system.
 
 ## 1. Outline first
@@ -23,6 +23,7 @@ A topic on its own is not a slide.
 - Open with a `title` slide and close with a `title` slide or a `big-number` that says what to do next.
 - Put one `section` slide before each move in the argument.
 - Give the evidence slides the layout that carries the claim: `figure`, `chart`, `table` or `figure-two` for a research or systems talk.
+- Name the layout of each line in the outline, including any layout the deck adds for itself.
 - In a research talk the figure, the plot and the table are the hero.
   The title says what the evidence shows and the type stays out of the way.
 - Say which slide carries the headline number, and put the number in it once.
@@ -71,11 +72,12 @@ Replace `<name>@<n>` with the `theme` value that `rshow config <dir>` prints, wh
 
 The three stylesheet links and the script carry the same `<n>` on purpose, because a mixed version renders somewhere between two designs.
 The deck needs no `mode.js`, because `deck.js` reads the same key and `t` does the same work.
-Override a token in one `:root` block after the theme links when the deck needs its own accent, and keep it to a few declarations.
+Override a token in one `:root` block after the theme links when the deck needs its own accent, with no limit on the declarations.
+An inline `<style>` block after the theme links may also carry a layout of the deck's own, as section 3 says.
 
 ## 3. Layouts
 
-Every slide is a `<section class="slide ...">`, and the second class is one of twelve.
+Every slide is a `<section class="slide ...">`, and the second class is one of twelve or one the deck adds.
 
 - `title` for the opener, `section` for a divider and `statement` for one claim set large.
 - `bullets` for a takeaway title and at most five short points.
@@ -89,8 +91,11 @@ A bullets slide puts its points under the title at 28px with a 1.4 line, five at
 A figure slide starts at the top and lets the figure take the rest.
 A figure is `<figure>` with a `figcaption`, and two figures are `<div class="pair">` with two `<figure>` inside.
 A big number is `<p class="value">` plus `<p class="caption">`, and the value is a short statement with the figure inside it, never a bare digit.
-Do not invent a thirteenth layout and do not write the layout CSS yourself, because the theme owns it and a copy drifts.
-[layouts](reference/layouts.md) holds one markup example per layout. Read it before you write a slide that is not `title`, `bullets` or `section`.
+The twelve layouts are a starting set and not a ceiling.
+Invent a layout when none of them carries the claim, such as an annotated figure, a figure with a callout, a diagram built in HTML or SVG, a timeline, a before and after or a comparison grid.
+Give it a short class name and put its CSS in the deck's own `<style>` block, scoped to `.slide.<name>` and taken from the tokens.
+Vary the rhythm: do not run more than three text slides (`two-col` or `bullets`) in a row, and turn a text slide that explains a figure into an annotated figure.
+[layouts](reference/layouts.md) holds one markup example per layout and one worked example of your own layout. Read it before you write a slide that is not `title`, `bullets` or `section`.
 
 ## 4. Notes and steps
 
@@ -99,7 +104,8 @@ Do not invent a thirteenth layout and do not write the layout CSS yourself, beca
   It is what you say, not what the room reads.
 - Press `n` for the notes window, which also names the next slide.
 - Press `p` for the presenter view: the current slide, the next slide, the notes and an elapsed timer, kept in step with the deck.
-- Put `class="step"` on an `<li>` to reveal it one press later.
+- Put `class="step"` on any element inside a slide to reveal it one press later, because `deck.js` selects every `.step` in the slide.
+  That is how a diagram builds up in steps.
 - Every step is a reveal, so a slide with four steps needs four presses.
   Five is the ceiling before the slide drags.
 - Press `f` for fullscreen and arrows or space to advance.
@@ -132,5 +138,6 @@ Publish again after a fix instead of making a second slug, because the link in t
 - Never use a hairline rule as decoration.
 - Never use Inter, Space Grotesk, Geist, Fraunces or Instrument Serif as the gesture.
 - Never use gradient text, glass, a large shadow or an emoji.
-- Never animate a slide in, because a reveal is the only motion a deck needs.
+- Never animate a slide in for decoration.
+  Motion is allowed when it explains something, such as a step that builds a diagram or a short transition that shows a change.
 - Never invent a number and never present example data without saying so in the caption.

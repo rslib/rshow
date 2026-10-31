@@ -11,7 +11,7 @@
 - Checks
 
 A results dashboard is the page a reader works in rather than reads: a filter bar, a summary, small multiples and the table of rows behind them.
-It is a fixed template, so the four blocks are set and the data is the work.
+It is a documented template, so the four blocks are the starting point and the data is the work, and a page may add its own parts with its own classes.
 `dashboard.css` sets the look and `dashboard.js` reads the data, draws the chart and keeps the view in the link.
 
 ## What it is for

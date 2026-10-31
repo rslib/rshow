@@ -13,15 +13,17 @@
 - Look at it
 
 A mockup is a drawing of a product that does not exist yet, so it follows that product and not rshow.
-Decks, reports, posters, project pages and dashboards are fixed templates, while a mockup is a guided kit: the kit gives you a frame, a floor and a checklist, and the drawing is the work.
+Decks, reports, posters, project pages and dashboards are documented templates, while a mockup is a guided kit: the kit gives you a frame, a floor and a checklist, and the drawing is the work.
 `themes/MOCKUPS.md` in the rshow repo holds the kit itself, and this file is what to do with it.
 
 ## A guided kit
 
-- Start in `wire` every time, because a tidy drawing invites a room to argue about the colour of a button instead of the order of the steps.
-- Move to `sketch` when the room is too polite about a finished looking picture.
-- Move to a platform skin only when the look of the product is the decision.
+- Pick the skin from the question.
+- Use `wire` when the flow or the order of the layout is the question, because a tidy drawing invites a room to argue about the colour of a button instead of the order of the steps.
+- Use `sketch` for an early rough idea, or when the room is too polite about a finished looking picture.
+- Use a platform skin, or `tui` and `terminal` for a terminal, when the look is the decision or the person asks for the look.
 - Keep the inventing to layout, spacing, hierarchy and the order of steps.
+  Own CSS inside a screen is allowed for the part the kit lacks, and it takes colour from the `--mk-*` and theme tokens so a skin swap and dark mode still read.
   Data, copy, names and prices are placeholders and say so.
 
 ## Markup

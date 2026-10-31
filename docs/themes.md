@@ -20,7 +20,8 @@ A page links the theme with root-relative URLs at one version:
 
 A deck links `deck.css` where a page links `page.css`, and a report links `report.css`.
 Every URL carries the same `<name>@<n>`, and `/_themes/<name>@<n>/` serves that version for one year as `immutable`, so every page on the host shares one browser cache entry.
-An override goes in one `:root` block in the page, five declarations at most.
+An override goes in one `:root` block in the page, and a page may also carry one inline `<style>` block with its own classes and its own layouts.
+Own CSS takes colour, type and space from the tokens with `var(--...)`, so both modes, print and a theme swap keep working, and it never restyles a theme class globally.
 
 `rshow theme list` prints the themes you can see and the version each one serves.
 

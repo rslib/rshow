@@ -11,7 +11,7 @@
 - Checks
 
 A poster is one sheet that prints from the browser, in the same theme as a page, a report and a project page.
-It is a fixed template, so the sheet, the columns and the print are set and the blocks are the work.
+It is a documented template, so the sheet, the columns and the print are set and the blocks are the starting point, and a page may add its own parts with its own classes.
 `poster.css` sets the look and `poster.js` sets the scale, the QR code and the one page print.
 
 ## The sheet

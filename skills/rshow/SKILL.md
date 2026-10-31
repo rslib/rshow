@@ -47,8 +47,13 @@ Copy this checklist into the reply and tick it as you go.
   The only exceptions are `/_themes/...` and `/_data/...`.
 - Link the theme, never copy it.
   The stylesheet links and `mode.js` in the head all carry the same `<name>@<n>` version.
-- Override tokens in one `:root` block, five declarations at most.
-  No selectors, no rules, no `!important`.
+- The theme is the base, not a cage.
+  A page may carry one inline `<style>` block with its own classes and its own layouts when the content needs them.
+  Own CSS takes colour, type and space from the theme tokens with `var(--...)`, so light, dark, print and a theme swap keep working.
+  A hard-coded colour sits inside a figure only.
+- Own CSS adds a class and never restyles a theme class globally.
+  Scope a new deck layout as `.slide.<name>` and scope a page part under its own class name, and use no `!important`.
+- A token override still goes in one `:root` block, with no limit on the declarations.
 - Keep the script and the styles inline.
   Add a framework only when the page needs one.
 - `connect-src` is `'self'`.
@@ -64,9 +69,10 @@ Copy this checklist into the reply and tick it as you go.
   Print `[PLACEHOLDER]` and say so in the footer.
 - The look is IBM Carbon on IBM Plex, and every colour has one job.
   `themes/DESIGN.md` in the rshow repo holds the system, the type scale and the layout set.
-- Fixed templates carry decks, reports, posters, project pages and dashboards, so the sections are set and the content is the work.
+- Documented templates carry decks, reports, posters, project pages and dashboards, so the markup is documented and the content is the work.
+  The markup is the starting point, and a page adds its own parts with its own classes when it needs them.
 - Guided kits carry mockups, sketches and TUIs, so the kit gives you a frame, a floor and a checklist and the drawing is the work.
-  Starting a kit at its highest fidelity is the same mistake as decorating a fixed template.
+  Starting a kit at its highest fidelity is the same mistake as decorating a documented template.
 
 ## Audience
 

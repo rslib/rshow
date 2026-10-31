@@ -14,9 +14,11 @@
 - two-col
 - quote
 - big-number
+- your own layout
 
 One markup example per layout, all inside `<main class="deck">`.
 Every slide carries `slide` plus one layout class, and the layout class goes second.
+The twelve are a starting set: a deck may add a layout of its own when none of them carries the claim.
 Nothing sits above a title: no kicker, no label, no number.
 
 A sparse slide (`title`, `section`, `statement`, `quote`, `big-number`, `bullets`) is centred a little above the middle of the 1280x720 canvas, so the air sits under the block instead of closing it in.
@@ -249,3 +251,51 @@ The unit belongs in the statement and the source goes under it.
 ```
 
 A number you cannot measure is `[PLACEHOLDER]` until it is real, and a number that stands for an example says so in the source line.
+
+## your own layout
+
+A layout of your own takes a short class name and sits second on the slide, in the same slot as the twelve.
+Pick the shape the claim needs, such as an annotated figure, a figure with a callout, a diagram built in HTML or SVG, a timeline, a before and after or a comparison grid.
+Its CSS goes in one inline `<style>` block after the theme links, scoped to `.slide.<name>`, with colour, type and space from the tokens.
+Here one figure carries three callouts, and they stack under it below 640px.
+
+```html
+<style>
+.slide.annotated .annotated-fig { position: relative; margin: 0; }
+.slide.annotated .annotated-fig img { display: block; width: 100%; }
+.slide.annotated .callout {
+  position: absolute;
+  max-width: 30%;
+  padding: var(--space-03) var(--space-04);
+  background: var(--layer-01);
+  border: 1px solid var(--border-strong);
+  color: var(--fg);
+  font-size: 18px;
+  line-height: 1.4;
+}
+.slide.annotated .callout.one { top: 6%; left: 3%; }
+.slide.annotated .callout.two { top: 40%; right: 3%; }
+.slide.annotated .callout.three { bottom: 6%; left: 30%; }
+@media (max-width: 640px) {
+  .slide.annotated .callout {
+    position: static;
+    max-width: none;
+    margin: var(--space-03) 0 0;
+    padding: 0;
+    border: 0;
+  }
+}
+</style>
+
+<section class="slide annotated">
+  <h2>The tail of the log is what a restart replays</h2>
+  <figure class="annotated-fig">
+    <img src="write-path.svg" alt="A log appended before the map is updated, with three stages marked.">
+    <p class="callout one">The append lands first.</p>
+    <p class="callout two">The map follows it.</p>
+    <p class="callout three">A crash replays the tail.</p>
+    <figcaption>A restart loses nothing after step 2.</figcaption>
+  </figure>
+  <aside class="notes"><p>Trace the three callouts in order.</p></aside>
+</section>
+```
