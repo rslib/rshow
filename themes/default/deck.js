@@ -4,7 +4,8 @@
  * Markup: <main class="deck"><section class="slide">...</section>...</main>
  * Keys: arrows, space, PageUp/PageDown, Home/End, f = fullscreen, n = notes,
  * p = presenter view, t = mode (system, light, dark).
- * Mouse: click advances, shift-click goes back, swipe left/right navigates.
+ * Mouse: a click on empty space advances, shift-click goes back, a click or a
+ * drag on text selects it, swipe left/right navigates.
  * URL hash #N keeps the slide. Steps reveal one per advance.
  *
  * Mode. The deck and a page share one storage key, "rshow-mode", holding
@@ -177,7 +178,7 @@
     deck.style.transform = 'translate(' + x + 'px, ' + y + 'px) scale(' + scale + ')';
   }
 
-  function writeHash() {
+  function writeHashNow() {
     var want = '#' + (current + 1);
     if (window.location.hash === want) {
       return;
@@ -185,8 +186,25 @@
     try {
       window.history.replaceState(null, '', want);
     } catch (err) {
-      window.location.hash = want;
+      // Assigning the hash here fires hashchange, and that listener would send
+      // the deck back to an old slide, so the address is left as it is.
     }
+  }
+
+  // A browser counts the replaceState calls it honours and drops the rest: in
+  // Chrome a burst of keys leaves the address on an old slide, and in Safari the
+  // call throws. One write, 300 ms after the deck comes to rest, keeps the
+  // address current without touching that limit.
+  var hashTimer = null;
+
+  function writeHash() {
+    if (hashTimer) {
+      window.clearTimeout(hashTimer);
+    }
+    hashTimer = window.setTimeout(function () {
+      hashTimer = null;
+      writeHashNow();
+    }, 300);
   }
 
   function slideTitle(n) {
@@ -635,13 +653,77 @@
     }
   });
 
+  // Text under a point, so a click on it can select instead of navigating. The
+  // deck canvas is scaled by a transform, but client rects are already in screen
+  // space, so the point needs no maths.
+  function onText(x, y) {
+    try {
+      var node = null;
+      if (document.caretRangeFromPoint) {
+        var caret = document.caretRangeFromPoint(x, y);
+        node = caret ? caret.startContainer : null;
+      } else if (document.caretPositionFromPoint) {
+        var position = document.caretPositionFromPoint(x, y);
+        node = position ? position.offsetNode : null;
+      }
+      if (!node || node.nodeType !== 3) {
+        return false;
+      }
+      var range = document.createRange();
+      range.selectNodeContents(node);
+      var rects = range.getClientRects();
+      for (var k = 0; k < rects.length; k += 1) {
+        if (x >= rects[k].left && x <= rects[k].right &&
+            y >= rects[k].top && y <= rects[k].bottom) {
+          return true;
+        }
+      }
+      return false;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  var pressX = 0;
+  var pressY = 0;
+  var pressTracked = false;
+
+  deck.addEventListener('mousedown', function (event) {
+    if (event.button !== 0) {
+      return;
+    }
+    pressTracked = true;
+    pressX = event.clientX;
+    pressY = event.clientY;
+  });
+
+  // A drag that selects text ends in a click too, so a click counts as a key
+  // press only when the pointer stayed put, it was a single click, the selection
+  // is empty and there is no text under it.
   deck.addEventListener('click', function (event) {
+    var moved = pressTracked &&
+      (Math.abs(event.clientX - pressX) > 4 || Math.abs(event.clientY - pressY) > 4);
+    pressTracked = false;
     var node = event.target;
+    var tag;
     while (node && node !== deck) {
-      if (node.tagName === 'A' || node.tagName === 'BUTTON' || node.tagName === 'INPUT') {
+      tag = node.tagName;
+      if (tag === 'A' || tag === 'BUTTON' || tag === 'INPUT' || tag === 'SELECT' ||
+          tag === 'TEXTAREA' || tag === 'LABEL' || tag === 'SUMMARY' ||
+          node.isContentEditable) {
         return;
       }
       node = node.parentNode;
+    }
+    if (event.detail > 1 || moved) {
+      return;
+    }
+    var sel = window.getSelection ? window.getSelection() : null;
+    if (sel && !sel.isCollapsed && String(sel) !== '') {
+      return;
+    }
+    if (onText(event.clientX, event.clientY)) {
+      return;
     }
     if (event.shiftKey) {
       prev();

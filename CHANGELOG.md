@@ -5,6 +5,11 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix text in a deck that could not be selected or copied, because a click or a drag on it moved to the next slide.
+- Fix the deck address that kept an old slide number after quick key presses, which in Safari could send the deck back to an old slide.
+
 ## [0.0.6] - 2026-10-31
 
 ### Changed
