@@ -5,6 +5,10 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Added
+
+- Add LaTeX math to pages and decks with KaTeX, written as `<span class="math">` or `<div class="math">`, and make `rshow check` report bad LaTeX.
+
 ### Fixed
 
 - Fix text in a deck that could not be selected or copied, because a click or a drag on it moved to the next slide.

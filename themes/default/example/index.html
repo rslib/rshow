@@ -11,14 +11,20 @@
     <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
     <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
     <link rel="stylesheet" href="/_themes/<name>@<n>/deck.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/math.css">
+    <script defer src="/_themes/<name>@<n>/math.js"></script>
     <script src="/_themes/<name>@<n>/deck.js"></script>
 
   This copy links the theme folder itself, so it previews from a local checkout
-  with `rshow preview .` from this folder, and no network.
+  with `rshow preview .` from this folder, and no network. math.css and math.js
+  are the math addon of the theme and are optional: a deck with an equation
+  links them, and math.js goes before deck.js. A $ in the prose of a slide is a
+  price, not a formula.
 
   Twelve slides, one per layout in deck.css, so every class the theme ships is
   shown here: title, statement, bullets, section, figure, chart, table,
-  two-col, code, figure-two, quote, big-number.
+  two-col, code, figure-two, quote, big-number. A thirteenth slide carries one
+  equation and shows the math addon.
 
   The numbers on the chart and the table are example data. They are round on
   purpose and the caption says so, because an example must never read as a
@@ -31,6 +37,8 @@
 <link rel="stylesheet" href="../fonts.css">
 <link rel="stylesheet" href="../tokens.css">
 <link rel="stylesheet" href="../deck.css">
+<link rel="stylesheet" href="../math.css">
+<script defer src="../math.js"></script>
 </head>
 <body>
 
@@ -291,6 +299,15 @@
     <cite>Project notes, on why every publish keeps its own version</cite>
     <aside class="notes">
       <p>This is the whole pitch. Stop talking for a moment after it.</p>
+    </aside>
+  </section>
+
+  <section class="slide bullets">
+    <h2>A republish sends only the bytes that changed</h2>
+    <div class="math">\mathrm{sent}(n) = \sum_{f \in \mathrm{new}(n)} |f|</div>
+    <aside class="notes">
+      <p>Same folder, second publish: the sum drops every file the host already
+      holds, so what leaves the laptop is the edit and nothing else.</p>
     </aside>
   </section>
 

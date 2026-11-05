@@ -1,0 +1,36 @@
+/* KaTeX sets 1.21em, which reads too large beside IBM Plex at body size. */
+.katex {
+  font-size: 1.1em;
+}
+
+/* A wide equation scrolls inside its own box on a phone, so it never widens the
+   page. The colour is inherited, which is what lets dark mode work.
+   The padding gives a tall equation, such as a root over a fraction, the room
+   its glyphs need, and the margin gives back what the padding takes, so the
+   space around the equation stays the space of one step. */
+div.math {
+  margin: calc(var(--space-05) - 0.2em) 0;
+  padding: 0.4em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+div.math .katex-display {
+  margin: 0;
+}
+
+/* A deck sets an equation at the size of a heading, and flush left under the
+   title it belongs to, rather than in the middle of the slide. */
+.slide div.math {
+  font-size: var(--text-xl);
+}
+
+.slide .katex-display > .katex {
+  text-align: left;
+}
+
+/* Reading mode on a phone is a column of text, so the equation keeps the size
+   of the text it sits in and never widens the page. */
+main.deck.is-reading div.math {
+  font-size: var(--text-base);
+}

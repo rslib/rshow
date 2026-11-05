@@ -388,22 +388,28 @@ tbody tr:last-child td {
   font-variant-numeric: tabular-nums;
 }
 
-/* An equation is one line of mono with its number at the right end of the text
-   column, so the number lines up with the right edge of the prose. The box
-   itself stays in the body face, which is what makes --measure resolve to the
-   same width here as in a paragraph. */
+/* An equation is a .math box in KaTeX's own face with its number at the right
+   end of the text column, so the number lines up with the right edge of the
+   prose. A tall equation centres its number instead of sticking to the first
+   line. The box itself stays in the body face, which is what makes --measure
+   resolve to the same width here as in a paragraph. */
 .equation {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-05);
   margin: var(--space-06) 0;
   line-height: 1.5;
 }
 
-.equation > span:not(.eq-num) {
+.equation > span:not(.eq-num):not(.math) {
   font-family: var(--font-mono);
   font-size: 0.95em;
+}
+
+.equation > .math {
+  margin: 0;
+  min-width: 0;
 }
 
 .eq-num {
@@ -539,6 +545,9 @@ tbody tr:last-child td {
 
 .refs li {
   margin: 0 0 var(--space-04);
+  /* A cited address is longer than a phone is wide and has no space to break
+     at, so it wraps mid path rather than widening the page. */
+  overflow-wrap: anywhere;
 }
 
 .refs li::marker {

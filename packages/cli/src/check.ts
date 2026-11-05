@@ -1,5 +1,6 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
+import katex from 'katex';
 import { MAX_BLOB_BYTES, MAX_VERSION_BYTES, MAX_VERSION_FILES } from 'rshow-shared';
 import { CheckError, UsageError } from './exit.ts';
 import type { Output } from './output.ts';
@@ -38,6 +39,9 @@ const TAG_PATTERN = /<([a-zA-Z][a-zA-Z0-9:-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
 const ATTR_PATTERN = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
 const CSS_URL = /url\(\s*(?:"([^"]*)"|'([^']*)'|([^)'"\s]*))\s*\)/gi;
 const CSS_IMPORT = /@import\s+(?:"([^"]*)"|'([^']*)')/gi;
+// The name has to start the value or follow a /, so that xmath.js is no math.js.
+const MATH_JS = /(?:^|\/)math\.js(?:[?#]|$)/i;
+const MATH_CSS = /(?:^|\/)math\.css(?:[?#]|$)/i;
 
 const CONNECT_PATTERNS: { name: string; pattern: RegExp }[] = [
   { name: 'fetch', pattern: /fetch\s*\(\s*["'`](https?:\/\/[^"'`\s)]+)/g },
@@ -251,11 +255,17 @@ function scanHtml(scan: Scan, file: string, text: string, facts?: HtmlFacts): vo
   const at = lineFinder(text);
   const masked = maskComments(text);
   const refs: { value: string; line: number }[] = [];
+  const mathTags: { open: number; line: number }[] = [];
+  const equations: { open: number; line: number }[] = [];
+  let mathScript = false;
+  let mathStyle = false;
 
   for (const match of masked.matchAll(TAG_PATTERN)) {
     const name = (match[1] ?? '').toLowerCase();
     const line = at(match.index ?? 0);
     const attrs = attributes(match[2] ?? '');
+    const classes = (attrs.get('class') ?? '').toLowerCase().split(/\s+/);
+    const open = (match.index ?? 0) + match[0].length;
 
     for (const key of ['href', 'src', 'poster']) {
       const value = attrs.get(key);
@@ -271,20 +281,61 @@ function scanHtml(scan: Scan, file: string, text: string, facts?: HtmlFacts): vo
       }
     }
 
-    if (name === 'script') checkScript(scan, file, line, attrs);
-    if (name === 'link') checkLink(scan, file, line, attrs);
+    if (name === 'script') {
+      checkScript(scan, file, line, attrs);
+      if (MATH_JS.test((attrs.get('src') ?? '').trim())) mathScript = true;
+    }
+    if (name === 'link') {
+      checkLink(scan, file, line, attrs);
+      if (MATH_CSS.test((attrs.get('href') ?? '').trim())) mathStyle = true;
+    }
     if (name === 'img' && !attrs.has('alt')) add(scan, file, line, 'warning', 'img without alt');
+    if (classes.includes('math')) {
+      mathTags.push({ open, line });
+      checkMath(scan, file, masked, name, open, line);
+    }
+    if (classes.includes('equation')) equations.push({ open, line });
     if (facts === undefined) continue;
     if (name === 'meta' && (attrs.get('name') ?? '').toLowerCase() === 'viewport') facts.viewport = true;
     if (name === 'title') facts.title = true;
-    if (name === 'section' && (attrs.get('class') ?? '').toLowerCase().split(/\s+/).includes('slide')) {
-      facts.slides = true;
-    }
+    if (name === 'section' && classes.includes('slide')) facts.slides = true;
+  }
+
+  if (mathTags.length > 0) {
+    const line = (mathTags[0] as { line: number }).line;
+    if (!mathScript) add(scan, file, line, 'warning', 'math without math.js: the LaTeX shows as plain text');
+    if (!mathStyle) add(scan, file, line, 'warning', 'math without math.css: the equation prints twice');
+  }
+  for (const equation of equations) {
+    const close = masked.indexOf('</div', equation.open);
+    const end = close < 0 ? masked.length : close;
+    if (mathTags.some((tag) => tag.open > equation.open && tag.open < end)) continue;
+    add(scan, file, equation.line, 'warning', 'equation without class math: write it in LaTeX');
   }
 
   for (const ref of refs) resolveRef(scan, file, ref.value, ref.line);
   scanCss(scan, file, masked, at);
   scanConnect(scan, file, masked, at);
+}
+
+// The LaTeX is the text of the element, so it runs from the end of the open tag
+// to the close tag. A child tag there means the content is markup rather than
+// LaTeX, and an unescaped < lands there too, because the browser reads <b as a
+// tag and eats it, so that line is a warning rather than a silent skip.
+function checkMath(scan: Scan, file: string, text: string, name: string, open: number, line: number): void {
+  const close = text.indexOf(`</${name}`, open);
+  if (close < 0) return;
+  const raw = text.slice(open, close);
+  if (/<[a-zA-Z/]/.test(raw)) {
+    add(scan, file, line, 'warning', 'math holds a tag: write < as &lt;');
+    return;
+  }
+  try {
+    katex.renderToString(decodeEntities(raw), { displayMode: name === 'div', throwOnError: true, strict: 'ignore' });
+  } catch (err) {
+    if (!(err instanceof katex.ParseError)) return;
+    add(scan, file, line, 'error', `bad LaTeX: ${err.message.replace(/\s+/g, ' ').trim()}`);
+  }
 }
 
 async function scanFile(scan: Scan, entry: Entry, facts: HtmlFacts | undefined): Promise<void> {

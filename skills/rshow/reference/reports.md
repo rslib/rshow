@@ -109,7 +109,11 @@ Numbering is generated, so never type a number into a heading.
 
 `report.js` puts `Figure 1.` or `Table 1.` in front of the caption and counts in document order, so give every one an `id`.
 Draw the figure as inline `<svg>` with the colours from tokens, and give it a `viewBox` so it scales.
-An equation is `<div class="equation" id="eq-bytes">` with the formula inside, and `report.js` adds `(1)` at the end of the line.
+An equation is `<div class="equation" id="eq-bytes">` with a `<div class="math">` of LaTeX inside it, and `report.js` adds `(1)` at the end of the line.
+The report links `math.css` in the head and `math.js` before `report.js`, and `rshow check` reports bad LaTeX as an error.
+Inline math is a `<span class="math">` inside the sentence, and a wide equation scrolls inside its own box on a phone.
+Write `<` as `&lt;` and `&` as `&amp;` inside the LaTeX, and `&amp;` where lines align in a LaTeX alignment.
+A `$...$` in the prose is not math: it is text, so a price such as `$5` stays a price.
 Mark example data as example data in the caption, and never present a number you did not measure.
 
 ## Cross-references

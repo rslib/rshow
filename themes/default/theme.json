@@ -55,6 +55,13 @@
       "example": "example/tui.html"
     }
   },
+  "addons": {
+    "math": {
+      "css": ["math.css"],
+      "js": ["math.js"],
+      "example": "example/report.html"
+    }
+  },
   "tokens": {
     "--font-sans": "\"IBM Plex Sans\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
     "--font-mono": "\"IBM Plex Mono\", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",

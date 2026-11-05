@@ -4,6 +4,8 @@ import './manifest.test.ts';
 import './config.test.ts';
 import './publish.test.ts';
 import './check.test.ts';
+import './math.test.ts';
+import './math.chrome.test.ts';
 import './style.test.ts';
 import './mockup.test.ts';
 import './mockup.chrome.test.ts';

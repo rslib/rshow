@@ -135,6 +135,16 @@ A report is a page for reading rather than a slide for a room: `<div class="repo
   `@page` is size auto with 18mm margins, a URL follows an external link, a figure does not split and a page break happens only where a heading carries `data-break`.
   The page number runs in the bottom margin.
 
+## Math
+
+Math is the one addon of the theme: `math.css` and `math.js`, over KaTeX 0.19.1, which is vendored into `themes/default` under its MIT licence.
+An addon is not a layout, so a page that writes no math links neither file and pays nothing for it.
+The LaTeX is the text of an element with the class `math`, and `div.math` is display math while any other element is inline.
+A `$` in the prose stays a price and is never scanned.
+KaTeX sets an equation in its own serif beside Plex on purpose: a formula is not a sentence, and the face with the real fraction bars is the one that reads as mathematics.
+The colour is inherited, so dark mode needs no second rule, and a wide equation scrolls inside its own box on a phone rather than widening the page.
+A copy of an equation gives the LaTeX behind it.
+
 ## Documented templates and guided kits
 
 There are two kinds of layout in the theme and they ask for different work.

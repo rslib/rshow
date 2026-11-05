@@ -62,6 +62,11 @@ Copy this checklist into the reply and tick it as you go.
   Never write `latest`.
 - A report links `report.css` and `report.js` in place of `page.css`, and `mode.js` still goes in the head.
   Read [reports](reference/reports.md) before you write one.
+- Math is LaTeX in the text of an element with the class `math`, and the page links `math.css` and `math.js` for it.
+  Math needs theme version 8 or newer, so a page on an older version moves up with `rshow config <dir>`.
+  A `div.math` is display math and any other element is inline.
+  A `$` in the prose is a price and is never read as math, so `$5` stays text.
+  Read [reports](reference/reports.md) for the markup an equation takes.
 - The page reads at 360px wide.
   Tables go inside `<div class="table">`.
 - Nothing secret in a page, because anyone who holds the link can read the HTML source.
@@ -145,6 +150,8 @@ The short list above is a hard rule.
 - Never publish a folder that holds `.env`, a key, a credential or customer data.
 - Never publish a source tree, `node_modules` or a `dist` folder that still holds a draft.
 - Never write the token into a page, a script, a log line, a commit or a chat message.
+- Never fake math with Unicode subscripts, Greek letters in mono or an HTML `<sub>`.
+  Write the LaTeX in an element with the class `math` and link `math.css` and `math.js`.
 - Never create a second artifact with a `-v2` slug.
   Publish the same slug again.
 - Never delete an artifact or drop a share without a yes from the person.

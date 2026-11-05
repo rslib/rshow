@@ -19,6 +19,8 @@ errors:
     cdnjs.cloudflare.com
   a fetch, WebSocket, EventSource or XMLHttpRequest.open to an absolute http
     or https url, because connect-src is 'self' only
+  bad LaTeX in an element with the class math, which is what the page shows and
+    what a deck or a report would print
   a path with a backslash or a .. segment, a file over 25 MiB, more than 2000
     files, or over 100 MiB in total
 
@@ -26,6 +28,11 @@ warnings:
   index.html without <meta name="viewport">, or without <title>
   an <img> without alt
   a deck that links deck.js and has no <section class="slide">
+  math on a page that links no math.js, so the LaTeX shows as plain text
+  math on a page that links no math.css, so the equation prints twice
+  a math element whose text holds a tag, which is an unescaped < that the
+    browser eats: write it as &lt;
+  an element with the class equation and no class math inside it
 
 Mockup warnings:
   Warnings for a page whose <main> carries the class mockup, and for any

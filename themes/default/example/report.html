@@ -12,25 +12,32 @@
     <link rel="stylesheet" href="/_themes/<name>@<n>/fonts.css">
     <link rel="stylesheet" href="/_themes/<name>@<n>/tokens.css">
     <link rel="stylesheet" href="/_themes/<name>@<n>/report.css">
+    <link rel="stylesheet" href="/_themes/<name>@<n>/math.css">
     <script src="/_themes/<name>@<n>/mode.js"></script>
+    <script defer src="/_themes/<name>@<n>/math.js"></script>
     <script defer src="/_themes/<name>@<n>/report.js"></script>
 
   This copy links the theme folder itself, so it previews from a local checkout
   and makes no remote request. mode.js runs in the head, before the body paints,
-  so a reader who chose dark never sees a white flash. report.js is deferred: it
-  numbers the sections, figures and tables, resolves the cross-references,
-  builds the contents and moves the notes into the margin. With JavaScript off
-  the document is still a readable paper, it just loses the generated labels.
+  so a reader who chose dark never sees a white flash. math.css and math.js are
+  the math addon of the theme and are optional: a report that writes LaTeX links
+  them, and the equation below is the one line that does. math.js is deferred and
+  goes before report.js. report.js is deferred: it numbers the sections, figures
+  and tables, resolves the cross-references, builds the contents and moves the
+  notes into the margin. With JavaScript off the document is still a readable
+  paper, it just loses the generated labels and the equation shows its LaTeX.
 
-  Six sections, two figures, one table, three notes, six references. The
-  authors, the affiliations, the date and the version line are placeholders:
-  fill them in when the report is real. Every number in figure 2 and in the
-  prose around it is example data and says so.
+  Six sections, two figures, one table, one equation, three notes and six
+  references. The authors, the affiliations, the date and the version line are
+  placeholders: fill them in when the report is real. Every number in figure 2
+  and in the prose around it is example data and says so.
 -->
 <link rel="stylesheet" href="../fonts.css">
 <link rel="stylesheet" href="../tokens.css">
 <link rel="stylesheet" href="../report.css">
+<link rel="stylesheet" href="../math.css">
 <script src="../mode.js"></script>
+<script defer src="../math.js"></script>
 <script defer src="../report.js"></script>
 </head>
 <body>
@@ -193,10 +200,10 @@
       <p>The cost of a publish follows the same rule. Let the files of a version
       be <code>files(n)</code> and let the host's store be the set of hashes it
       already holds. The bytes a publish must send are the size of every file
-      whose hash is missing from the store.</p>
+      <span class="math">f</span> whose hash is missing from the store.</p>
 
       <div class="equation" id="eq-bytes">
-        <span>bytes(n) = sum of |f| for f whose hash is new</span>
+        <div class="math">\mathrm{bytes}(n) = \sum_{f \in \mathrm{new}(n)} |f|</div>
       </div>
 
       <p>The equation is the whole reason a republish of a mostly unchanged deck

@@ -25,6 +25,22 @@ Own CSS takes colour, type and space from the tokens with `var(--...)`, so both 
 
 `rshow theme list` prints the themes you can see and the version each one serves.
 
+## Math
+
+Math is an addon of the theme rather than a layout: `math.css` and `math.js` in the theme folder, and `theme.json` names them under `addons`.
+
+```html
+<link rel="stylesheet" href="/_themes/default@8/math.css">
+<script defer src="/_themes/default@8/math.js"></script>
+```
+
+Math needs `default@8` or newer, and `rshow check` reports a missing file when the theme a page names has no `math.js` or no `math.css`.
+A page links the two only when it writes math, and `math.js` goes before `deck.js` in a deck.
+The LaTeX is the text of an element with the class `math`: a `div.math` is display math and any other element is inline.
+`$...$` in the prose is text and is never scanned, so a price such as `$5` stays a price.
+KaTeX is vendored into the theme under its MIT licence, and it is set in its own serif beside Plex on purpose.
+A copy of an equation gives the LaTeX behind it, and `rshow check` reports bad LaTeX as an error.
+
 ## Presets
 
 A preset is a small folder: a `theme.json` that extends a built-in theme, and a `fonts/` folder only when the brand brings its own type.

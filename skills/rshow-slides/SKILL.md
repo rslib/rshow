@@ -33,6 +33,7 @@ A topic on its own is not a slide.
 ## 2. Skeleton
 
 Replace `<name>@<n>` with the `theme` value that `rshow config <dir>` prints, which the server resolves to the current version. Use `default@3` only when `rshow config` warns that it cannot resolve the theme.
+Math needs theme version 8 or newer, so a page on an older version moves up with `rshow config <dir>`.
 
 ```html
 <!doctype html>
@@ -44,6 +45,9 @@ Replace `<name>@<n>` with the `theme` value that `rshow config <dir>` prints, wh
 <link rel="stylesheet" href="/_themes/default@3/fonts.css">
 <link rel="stylesheet" href="/_themes/default@3/tokens.css">
 <link rel="stylesheet" href="/_themes/default@3/deck.css">
+<!-- a deck that writes math links these two, and math.js goes before deck.js -->
+<link rel="stylesheet" href="/_themes/default@3/math.css">
+<script defer src="/_themes/default@3/math.js"></script>
 </head>
 <body>
 <main class="deck">
@@ -71,6 +75,7 @@ Replace `<name>@<n>` with the `theme` value that `rshow config <dir>` prints, wh
 ```
 
 The three stylesheet links and the script carry the same `<n>` on purpose, because a mixed version renders somewhere between two designs.
+A fallback to `default@3` keeps the page readable but has no math, so a deck on that version links neither `math.css` nor `math.js`, and the `math.js` warning of `rshow check` is the sign to move up.
 The deck needs no `mode.js`, because `deck.js` reads the same key and `t` does the same work.
 Override a token in one `:root` block after the theme links when the deck needs its own accent, with no limit on the declarations.
 An inline `<style>` block after the theme links may also carry a layout of the deck's own, as section 3 says.
@@ -85,6 +90,7 @@ Every slide is a `<section class="slide ...">`, and the second class is one of t
   One series is drawn in the accent blue and two or more take `--chart-1`, `--chart-2` and so on in order.
 - `table` for a clean data table and `code` for one command.
 - `two-col` for two blocks of text, `quote` for one sentence and `big-number` for one number.
+- A slide with an equation is a `bullets` slide with one `<div class="math">` of LaTeX under the title, and the deck links `math.css` and `math.js` for it.
 
 A sparse slide is centred a little above the middle of the canvas, so the air sits under the block.
 A bullets slide puts its points under the title at 28px with a 1.4 line, five at most.
@@ -102,6 +108,7 @@ Vary the rhythm: do not run more than three text slides (`two-col` or `bullets`)
 - Every slide gets one `<aside class="notes">`, including the title slide, because a slide without one shows nothing in the notes window.
 - Keep a note under 60 words.
   It is what you say, not what the room reads.
+- A note holds no math: an equation inside an `aside.notes` stays as its LaTeX, because the notes window loads no math stylesheet.
 - Press `n` for the notes window, which also names the next slide.
 - Press `p` for the presenter view: the current slide, the next slide, the notes and an elapsed timer, kept in step with the deck.
 - Put `class="step"` on any element inside a slide to reveal it one press later, because `deck.js` selects every `.step` in the slide.

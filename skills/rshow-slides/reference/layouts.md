@@ -14,6 +14,7 @@
 - two-col
 - quote
 - big-number
+- math (an equation on a bullets slide)
 - your own layout
 
 One markup example per layout, all inside `<main class="deck">`.
@@ -251,6 +252,20 @@ The unit belongs in the statement and the source goes under it.
 ```
 
 A number you cannot measure is `[PLACEHOLDER]` until it is real, and a number that stands for an example says so in the source line.
+
+## math
+
+An equation takes a `bullets` slide: a takeaway title and one `div.math`.
+The LaTeX is the text of the element, and the deck links `math.css` and `math.js` for it.
+A note holds words, not math.
+
+```html
+<section class="slide bullets">
+  <h2>A republish sends only the bytes that changed</h2>
+  <div class="math">\mathrm{sent}(n) = \sum_{f \in \mathrm{new}(n)} |f|</div>
+  <aside class="notes"><p>The sum drops every file the host already holds.</p></aside>
+</section>
+```
 
 ## your own layout
 
