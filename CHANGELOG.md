@@ -5,6 +5,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+## [0.0.7] - 2026-11-05
+
 ### Added
 
 - Add LaTeX math to pages and decks with KaTeX, written as `<span class="math">` or `<div class="math">`, and make `rshow check` report bad LaTeX.
@@ -101,7 +103,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - A publish of a folder that did not change adds no version: `publish` and `theme publish` name the version that is already live, and `--force` publishes anyway.
 - `rshow --version` prints the version, and `doctor` opens with it.
 
-[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.6...HEAD
+[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/rslib/rshow/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/rslib/rshow/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/rslib/rshow/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/rslib/rshow/compare/v0.0.3...v0.0.4
