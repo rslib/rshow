@@ -18,8 +18,6 @@ interface ProjectLookupRow {
 }
 
 const CACHE_ORIGIN = "https://rshow.internal";
-const ACCESS_TTL_MS = 15_000;
-const ACCESS_MAX_ENTRIES = 500;
 const MANIFEST_MAX_ENTRIES = 200;
 const VERSION_MAX_ENTRIES = 500;
 const ACCESS_CACHE_CONTROL = "max-age=15";
@@ -32,12 +30,6 @@ const ARTIFACT_COLUMNS =
   "slug, title, owner, mode, pinned, latest, last_n, version_gen, project, created_at, updated_at";
 const VERSION_COLUMNS = "slug, n, label, manifest_key, files, bytes, created_by, created_at";
 
-interface AccessEntry {
-  value: AccessRecord | null;
-  expires: number;
-}
-
-const accessMemory = new Map<string, AccessEntry>();
 const manifestMemory = new Map<string, Manifest>();
 const versionMemory = new Map<string, VersionRow>();
 const versionKeys = new Map<string, Set<string>>();
@@ -63,16 +55,6 @@ export function versionCacheKey(slug: string, n: number, gen: number): string {
 
 function versionMemoryKey(slug: string, n: number, gen: number): string {
   return `${slug}/${n}/${gen}`;
-}
-
-function rememberAccess(slug: string, value: AccessRecord | null, expires: number): void {
-  accessMemory.delete(slug);
-  accessMemory.set(slug, { value, expires });
-  while (accessMemory.size > ACCESS_MAX_ENTRIES) {
-    const oldest = accessMemory.keys().next().value;
-    if (oldest === undefined) break;
-    accessMemory.delete(oldest);
-  }
 }
 
 function rememberManifest(key: string, value: Manifest): void {
@@ -208,33 +190,22 @@ async function loadAccess(env: Env, slug: string): Promise<AccessRecord | null> 
   return { artifact, shares, project, version };
 }
 
+// An access record lives only in the Cache API. An invalidation can delete the
+// key of its own data center, but it cannot reach the memory of another isolate.
 export async function accessFor(env: Env, slug: string): Promise<AccessRecord | null> {
-  const now = Date.now();
-  const memory = accessMemory.get(slug);
-  if (memory && memory.expires > now) {
-    rememberAccess(slug, memory.value, memory.expires);
-    return memory.value;
-  }
-  accessMemory.delete(slug);
-
   const key = accessCacheKey(slug);
   const cached = await cacheGet(key);
   if (cached) {
     const decoded = decodeAccess(await cached.text());
-    if (decoded.ok) {
-      rememberAccess(slug, decoded.value, now + ACCESS_TTL_MS);
-      return decoded.value;
-    }
+    if (decoded.ok) return decoded.value;
   }
 
   const value = await loadAccess(env, slug);
-  rememberAccess(slug, value, now + ACCESS_TTL_MS);
   await cachePut(key, JSON.stringify(value), ACCESS_CACHE_CONTROL);
   return value;
 }
 
 export async function invalidateAccess(slug: string): Promise<void> {
-  accessMemory.delete(slug);
   const key = accessCacheKey(slug);
   trackedKeys.delete(key);
   try {
@@ -351,7 +322,6 @@ export async function putBlobCache(hash: string, body: BodyInit, contentType: st
 }
 
 export async function clearResponseCache(): Promise<void> {
-  accessMemory.clear();
   manifestMemory.clear();
   versionMemory.clear();
   versionKeys.clear();

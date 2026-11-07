@@ -313,3 +313,56 @@ describe("project access cache", () => {
     expect((await reloads("delete-b", EDITOR)).status).toBe(403);
   });
 });
+
+describe("access cache written by another isolate", () => {
+  const DIRECT_BODY = "<!doctype html><title>direct</title><p>direct file</p>";
+
+  function accessKey(slug: string): string {
+    return `https://rshow.internal/access/${slug}`;
+  }
+
+  // The write goes straight to D1 and R2, as a write made by another isolate in
+  // the same data center would. Replacing it with an API call would run this
+  // isolate's invalidation and hide the bug.
+  async function writeElsewhere(slug: string, mode: string): Promise<void> {
+    const now = new Date().toISOString();
+    const hash = await hashOf(DIRECT_BODY);
+    const size = new TextEncoder().encode(DIRECT_BODY).byteLength;
+    const manifestKey = `manifests/${slug}/1-direct.json`;
+    await env.BUCKET.put(`blobs/${hash}`, DIRECT_BODY, { httpMetadata: { contentType: "text/html" } });
+    await env.BUCKET.put(manifestKey, JSON.stringify({ "index.html": { hash, size, type: "text/html" } }));
+    await env.DB.batch([
+      env.DB.prepare(
+        "INSERT INTO artifacts (slug, title, owner, mode, pinned, latest, last_n, version_gen, project, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, NULL, 1, 1, 0, NULL, ?5, ?5)"
+      ).bind(slug, slug, OWNER, mode, now),
+      env.DB.prepare(
+        "INSERT INTO versions (slug, n, label, manifest_key, files, bytes, created_by, created_at) VALUES (?1, 1, '', ?2, 1, ?3, ?4, ?5)"
+      ).bind(slug, manifestKey, size, OWNER, now)
+    ]);
+  }
+
+  async function setModeElsewhere(slug: string, mode: string): Promise<void> {
+    await env.DB.prepare("UPDATE artifacts SET mode = ?2, updated_at = ?3 WHERE slug = ?1")
+      .bind(slug, mode, new Date().toISOString())
+      .run();
+  }
+
+  it("serves a page as soon as another isolate publishes it", async () => {
+    expect((await viewer("/elsewhere-publish/")).status).toBe(404);
+    await writeElsewhere("elsewhere-publish", "public");
+    await caches.default.delete(accessKey("elsewhere-publish"));
+
+    const res = await viewer("/elsewhere-publish/");
+    expect(res.status).toBe(200);
+    expect(await res.text()).toContain("direct file");
+  });
+
+  it("hides a page as soon as another isolate makes it private", async () => {
+    await writeElsewhere("elsewhere-private", "public");
+    expect((await viewer("/elsewhere-private/")).status).toBe(200);
+    await setModeElsewhere("elsewhere-private", "private");
+    await caches.default.delete(accessKey("elsewhere-private"));
+
+    expect((await viewer("/elsewhere-private/")).status).not.toBe(200);
+  });
+});

@@ -91,7 +91,8 @@ A version URL serves the same bytes forever, so its files, its manifest and its 
 `@latest` redirects to a numbered URL, so one copy in the browser cache still serves every page on the host.
 
 The live URL is not immutable, because a publish moves it.
-The access check behind a private or `people` artifact is cached for 15 seconds, so a change of mode or shares reaches every edge in about that time.
+The access check of an artifact is cached for 15 seconds in each Cloudflare data center, and a change of mode, shares or versions clears it in the data center that made the change, so it applies there at once.
+Another data center can keep the old access check for up to 15 seconds.
 `/_data/` is `no-store`.
 The Worker sits behind the Workers Cache, which serves a cached public reply without running the Worker and steps aside for a private reply or a request that carries `Authorization`.
 
