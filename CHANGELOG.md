@@ -14,6 +14,7 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 - Fix a page created again under a deleted slug that could show the old page, by continuing from the highest version number that slug used.
 - Fix a page that could answer 404 for up to 30 seconds after it was published, or stay public for up to 30 seconds after it was made private.
+  A change of mode, shares or versions now shows within 2 seconds.
 
 ## [0.0.8] - 2026-11-07
 

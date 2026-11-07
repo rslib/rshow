@@ -100,6 +100,17 @@ describe("viewer cache", () => {
     expect(blob).not.toBeNull();
   });
 
+  it("keeps the access record for 2 seconds", async () => {
+    await createArtifact("short-cache");
+    await publishFiles("short-cache", [WARM_FILE]);
+    await setMode("short-cache", "public");
+    expect((await viewer("/short-cache/")).status).toBe(200);
+
+    const access = await caches.default.match("https://rshow.internal/access/short-cache");
+    expect(access).not.toBeNull();
+    expect(access?.headers.get("cache-control")).toBe("max-age=2");
+  });
+
   it("drops the cached access record when the mode changes", async () => {
     await createArtifact("mode-cache");
     await publishFiles("mode-cache", [WARM_FILE]);

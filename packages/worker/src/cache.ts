@@ -20,7 +20,9 @@ interface ProjectLookupRow {
 const CACHE_ORIGIN = "https://rshow.internal";
 const MANIFEST_MAX_ENTRIES = 200;
 const VERSION_MAX_ENTRIES = 500;
-const ACCESS_CACHE_CONTROL = "max-age=15";
+// A delete made on the API host does not reach the entry that the viewer host stored, so this max-age is
+// how long a change of mode, shares or versions can take to show.
+const ACCESS_CACHE_CONTROL = "max-age=2";
 const MANIFEST_CACHE_CONTROL = "public, max-age=31536000, immutable";
 const VERSION_CACHE_CONTROL = "public, max-age=31536000, immutable";
 const JSON_CONTENT_TYPE = "application/json";
