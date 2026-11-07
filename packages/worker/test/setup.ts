@@ -5,6 +5,7 @@ import { resetCallCounts } from "../src/metrics";
 import blobsMigration from "../migrations/0002_blobs.sql?raw";
 import pageDataBlobMigration from "../migrations/0004_page_data_blob.sql?raw";
 import versionCountersMigration from "../migrations/0005_version_counters.sql?raw";
+import retiredSlugsMigration from "../migrations/0006_retired_slugs.sql?raw";
 import projectsMigration from "../migrations/0003_projects.sql?raw";
 import initMigration from "../migrations/0001_init.sql?raw";
 
@@ -27,7 +28,8 @@ const STATEMENTS = [
   ...statementsOf(blobsMigration),
   ...statementsOf(projectsMigration),
   ...statementsOf(pageDataBlobMigration),
-  ...statementsOf(versionCountersMigration)
+  ...statementsOf(versionCountersMigration),
+  ...statementsOf(retiredSlugsMigration)
 ];
 
 const DROPS = [
@@ -37,6 +39,7 @@ const DROPS = [
   "DROP TABLE IF EXISTS shares",
   "DROP TABLE IF EXISTS versions",
   "DROP TABLE IF EXISTS artifacts",
+  "DROP TABLE IF EXISTS retired_slugs",
   "DROP TABLE IF EXISTS project_members",
   "DROP TABLE IF EXISTS projects",
   "DROP TABLE IF EXISTS blobs"

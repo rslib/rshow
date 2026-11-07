@@ -32,6 +32,11 @@ Cloudflare's edge can keep answering a public version URL for up to 5 minutes af
 A theme file carries no `s-maxage`, so the edge can keep it much longer, and only a cache purge in the Cloudflare dashboard removes it sooner.
 A browser that already opened the version can keep showing it from its own cache, so deleting a version is not a way to take a page away.
 
+Deleting the whole artifact, `rshow delete <slug>`, also keeps the slug's highest version number, so a new page created under the same slug continues from there.
+That matters because a browser can keep an old `/<slug>/v<n>/` for a year and each Cloudflare data center keeps the version record for a year, so a number must not come back under a different page.
+Only the slug, that number and the cache generation are kept, and the versions, the shares and the page data go.
+A slug deleted before this release restarts at v1, because nothing recorded its numbers.
+
 ## Blobs
 
 A file's bytes are stored once, as a blob under the lowercase hex SHA-256 of the bytes.

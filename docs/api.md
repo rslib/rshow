@@ -104,6 +104,9 @@ At most 2000 files and 100 MiB per version.
 
 A `theme-` slug, either the whole artifact or one of its versions, needs `?force=1`, because pages link the theme and a delete would break them.
 
+`DELETE /api/artifacts/:slug` keeps the slug's highest version number, so a page created again under the same slug continues from there, because caches can hold an old version URL for a year.
+Only the slug, that number and the cache generation are kept.
+
 ## Publish flow (CLI)
 
 1. Walk the folder (or take the one file as `index.html`) and hash each file.

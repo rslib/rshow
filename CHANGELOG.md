@@ -5,6 +5,10 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix a page created again under a deleted slug that could show the old page, by continuing from the highest version number that slug used.
+
 ## [0.0.8] - 2026-11-07
 
 ### Changed

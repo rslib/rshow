@@ -122,12 +122,13 @@ export function registerArtifactCreate(app: Hono<AppEnv>): void {
     if (existing) return jsonError("slug is already taken", 409);
 
     const now = new Date().toISOString();
+    let counters: { last_n: number; version_gen: number } | null;
     try {
-      await c.env.DB.prepare(
-        "INSERT INTO artifacts (slug, title, owner, mode, pinned, latest, project, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, NULL, NULL, ?5, ?6, ?6)"
+      counters = await c.env.DB.prepare(
+        "INSERT INTO artifacts (slug, title, owner, mode, pinned, latest, last_n, version_gen, project, created_at, updated_at) SELECT ?1, ?2, ?3, ?4, NULL, NULL, COALESCE((SELECT last_n FROM retired_slugs WHERE slug = ?1), 0), COALESCE((SELECT version_gen FROM retired_slugs WHERE slug = ?1), 0), ?5, ?6, ?6 RETURNING last_n, version_gen"
       )
         .bind(slug, title, email, MODE.private, project, now)
-        .run();
+        .first<{ last_n: number; version_gen: number }>();
     } catch {
       return jsonError("slug is already taken", 409);
     }
@@ -145,8 +146,8 @@ export function registerArtifactCreate(app: Hono<AppEnv>): void {
       mode: MODE.private,
       pinned: null,
       latest: null,
-      last_n: 0,
-      version_gen: 0,
+      last_n: counters?.last_n ?? 0,
+      version_gen: counters?.version_gen ?? 0,
       project,
       created_at: now,
       updated_at: now
@@ -323,6 +324,9 @@ export function registerArtifactItem(app: Hono<AppEnv>): void {
     await deleteArtifactData(c.env, access.artifact.slug);
 
     await c.env.DB.batch([
+      c.env.DB.prepare(
+        "INSERT INTO retired_slugs (slug, last_n, version_gen) SELECT slug, MAX(last_n, COALESCE(latest, 0)), version_gen + 1 FROM artifacts WHERE slug = ?1 ON CONFLICT(slug) DO UPDATE SET last_n = excluded.last_n, version_gen = excluded.version_gen"
+      ).bind(access.artifact.slug),
       c.env.DB.prepare("DELETE FROM page_data WHERE slug = ?1").bind(access.artifact.slug),
       c.env.DB.prepare("DELETE FROM artifact_tags WHERE slug = ?1").bind(access.artifact.slug),
       c.env.DB.prepare("DELETE FROM versions WHERE slug = ?1").bind(access.artifact.slug),

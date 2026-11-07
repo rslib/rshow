@@ -1,6 +1,7 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { invalidateAccess } from "../src/cache";
+import { invalidateAccess, versionCacheKey } from "../src/cache";
+import type { VersionRow } from "../src/types";
 import {
   EDITOR,
   INDEX_HTML,
@@ -173,5 +174,123 @@ describe("delete one version", () => {
     expect(row?.last_n).toBe(3);
 
     expect((await publishFiles("drop-lastn", [INDEX_HTML], OWNER)).status).toBe(201);
+  });
+});
+
+describe("a recreated slug never reuses a version number", () => {
+  it("continues from the highest number after the whole artifact is deleted", async () => {
+    await createArtifact("recreate-one");
+    await publishFiles("recreate-one", [INDEX_HTML]);
+    await publishFiles("recreate-one", [SECOND_HTML]);
+
+    expect((await page("/recreate-one/v1/")).status).toBe(200);
+    expect(await (await page("/recreate-one/v1/")).text()).toContain("hello one");
+
+    expect((await api("DELETE", "/api/artifacts/recreate-one")).status).toBe(204);
+    expect((await page("/recreate-one/v1/")).status).toBe(404);
+
+    expect((await createArtifact("recreate-one")).status).toBe(201);
+    const next = await publishFiles("recreate-one", [THIRD_HTML]);
+    expect(next.status).toBe(201);
+    expect((await jsonOf(next))["n"]).toBe(3);
+
+    expect((await page("/recreate-one/v1/")).status).toBe(404);
+    expect(await (await page("/recreate-one/")).text()).toContain("hello three");
+  });
+
+  it("does not serve the old version from the cache of another data center after a recreate", async () => {
+    await createArtifact("recreate-cached");
+    await publishFiles("recreate-cached", [INDEX_HTML]);
+    await setMode("recreate-cached", "public");
+    expect((await page("/recreate-cached/v1/")).status).toBe(200);
+
+    const oldRow = await env.DB.prepare(
+      "SELECT slug, n, label, manifest_key, files, bytes, created_by, created_at FROM versions WHERE slug = ?1 AND n = ?2"
+    )
+      .bind("recreate-cached", 1)
+      .first<VersionRow>();
+    if (!oldRow) throw new Error("version 1 was not stored");
+    const oldGen = await bumpedVersionGen("recreate-cached");
+
+    expect((await api("DELETE", "/api/artifacts/recreate-cached")).status).toBe(204);
+    expect((await createArtifact("recreate-cached")).status).toBe(201);
+    const published = await publishFiles("recreate-cached", [SECOND_HTML]);
+    expect(published.status).toBe(201);
+
+    // v1 must not be the served version, else the access record answers and versionFor never runs.
+    const current = await env.DB.prepare("SELECT COALESCE(pinned, latest) AS served FROM artifacts WHERE slug = ?1")
+      .bind("recreate-cached")
+      .first<{ served: number | null }>();
+    expect(current?.served).not.toBe(1);
+
+    await caches.default.put(
+      versionCacheKey("recreate-cached", 1, oldGen),
+      new Response(JSON.stringify(oldRow), {
+        headers: { "content-type": "application/json", "cache-control": "public, max-age=31536000, immutable" }
+      })
+    );
+
+    await setMode("recreate-cached", "public");
+    await invalidateAccess("recreate-cached");
+
+    expect((await page("/recreate-cached/v1/")).status).toBe(404);
+    expect(await bumpedVersionGen("recreate-cached")).toBeGreaterThan(oldGen);
+  });
+
+  it("keeps counting up over a delete, create, delete, create and publish", async () => {
+    await createArtifact("recreate-twice");
+    await publishFiles("recreate-twice", [INDEX_HTML]);
+    await publishFiles("recreate-twice", [SECOND_HTML]);
+
+    expect((await api("DELETE", "/api/artifacts/recreate-twice")).status).toBe(204);
+    expect((await createArtifact("recreate-twice")).status).toBe(201);
+    expect((await jsonOf(await publishFiles("recreate-twice", [THIRD_HTML])))["n"]).toBe(3);
+
+    expect((await api("DELETE", "/api/artifacts/recreate-twice")).status).toBe(204);
+    expect((await createArtifact("recreate-twice")).status).toBe(201);
+    expect((await jsonOf(await publishFiles("recreate-twice", [INDEX_HTML])))["n"]).toBe(4);
+
+    expect((await page("/recreate-twice/v3/")).status).toBe(404);
+    expect((await page("/recreate-twice/v4/")).status).toBe(200);
+  });
+
+  it("starts a slug deleted with no version published at v1", async () => {
+    expect((await createArtifact("recreate-empty")).status).toBe(201);
+    expect((await api("DELETE", "/api/artifacts/recreate-empty")).status).toBe(204);
+    expect((await createArtifact("recreate-empty")).status).toBe(201);
+
+    expect((await jsonOf(await publishFiles("recreate-empty", [INDEX_HTML])))["n"]).toBe(1);
+  });
+
+  it("starts a fresh slug at v1", async () => {
+    expect((await createArtifact("recreate-fresh")).status).toBe(201);
+
+    expect((await jsonOf(await publishFiles("recreate-fresh", [INDEX_HTML])))["n"]).toBe(1);
+  });
+
+  it("returns the same artifact shape from the create", async () => {
+    await createArtifact("recreate-shape");
+    await publishFiles("recreate-shape", [INDEX_HTML]);
+    await api("DELETE", "/api/artifacts/recreate-shape");
+
+    const created = await createArtifact("recreate-shape");
+    expect(created.status).toBe(201);
+    const body = await jsonOf(created);
+    expect(Object.keys(body).sort()).toEqual([
+      "latest",
+      "mode",
+      "owner",
+      "pinned",
+      "project",
+      "role",
+      "served",
+      "slug",
+      "tags",
+      "title",
+      "updated_at",
+      "url"
+    ]);
+    expect(body["last_n"]).toBeUndefined();
+    expect(body["version_gen"]).toBeUndefined();
   });
 });
