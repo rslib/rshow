@@ -5,6 +5,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+## [0.0.8] - 2026-11-07
+
 ### Changed
 
 - Teach agents to link themes as `@latest`, so a theme fix reaches their pages with no republish.
@@ -117,7 +119,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - A publish of a folder that did not change adds no version: `publish` and `theme publish` name the version that is already live, and `--force` publishes anyway.
 - `rshow --version` prints the version, and `doctor` opens with it.
 
-[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/rslib/rshow/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/rslib/rshow/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/rslib/rshow/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/rslib/rshow/compare/v0.0.4...v0.0.5
