@@ -13,6 +13,7 @@ curl -fsSL https://rslib.github.io/rshow/install.sh | sh
 
 The installer checks the download against the release `SHA256SUMS` and puts `rshow` in `~/.local/bin`; `RSHOW_VERSION`, `RSHOW_INSTALL_DIR` and `RSHOW_DOWNLOAD_BASE` change what it fetches and where it writes.
 It also writes the bash, zsh and fish completions for `rshow completion bash|zsh|fish`; `RSHOW_NO_COMPLETIONS=1` leaves them out.
+`rshow upgrade` moves an installed rshow to the newest release, and `rshow upgrade --check` prints the current and the newest version and changes nothing.
 
 With npm, which needs Node 22 or later:
 

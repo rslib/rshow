@@ -86,6 +86,8 @@ jobs:
         run: bash tests/sea-smoke.sh ./rshow-linux-x64
       - name: The curl installer installs a release and checks its hash
         run: bash tests/curl-install.test.sh
+      - name: rshow upgrade replaces the binary in place and checks its hash
+        run: bash tests/upgrade-binary.test.sh ./rshow-linux-x64
 
   compat:
     name: Compat node ${{ matrix.node }}

@@ -34,6 +34,7 @@ Every rshow command and subcommand. Each page holds the text that `rshow <comman
 | [`rshow share`](share.md) | set mode or change shares |
 | [`rshow pin`](pin.md) | serve version n, or live for the newest |
 | [`rshow delete`](delete.md) | delete an artifact, or one version of it |
+| [`rshow upgrade`](upgrade.md) | update rshow to the newest release |
 | [`rshow login`](login.md) | save the API token for this account |
 | [`rshow logout`](logout.md) | remove the saved token for a server |
 | [`rshow completion`](completion.md) | print a completion script for bash, zsh or fish |

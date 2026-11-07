@@ -87,6 +87,12 @@ step "rshow doctor names the binary"
 rshow doctor
 contains "$OUT" "(binary)" || die "rshow doctor printed no (binary): $OUT"
 
+step "rshow upgrade --help"
+rshow upgrade --help
+ok 0 "upgrade --help"
+contains "$OUT" "usage: rshow upgrade" || die "rshow upgrade --help printed no usage: $OUT"
+contains "$OUT" "--force" || die "rshow upgrade --help printed no --force: $OUT"
+
 # ------------------------------------------------------- the embedded theme ---
 
 step "the assets are unpacked into \$XDG_CACHE_HOME/rshow/$VERSION_TEXT"

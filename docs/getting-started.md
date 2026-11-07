@@ -18,6 +18,7 @@ The installer reads `uname` to pick the tarball, checks it against the `SHA256SU
 It writes the bash, zsh and fish completions of that tarball too, and says where each one went; `RSHOW_NO_COMPLETIONS=1` leaves them out.
 It prints the installed version, and says how to put that folder on `PATH` when it is not there yet.
 `RSHOW_VERSION=0.0.5` installs a named release, `RSHOW_INSTALL_DIR` writes somewhere else, and `RSHOW_DOWNLOAD_BASE` downloads from a mirror.
+`rshow upgrade` replaces that file with the newest release, and `rshow upgrade --version 0.0.7` goes back to a named one.
 
 With npm, which needs Node 22 or later:
 

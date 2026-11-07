@@ -37,6 +37,7 @@ import {
   THEME_PREVIEW_USAGE,
   THEME_PUBLISH_USAGE,
   THEME_USAGE,
+  UPGRADE_USAGE,
   usageLine,
 } from '../usage.ts';
 
@@ -101,6 +102,7 @@ const SPECS: Record<string, Entry> = {
   delete: { usage: DELETE_USAGE },
   login: { usage: LOGIN_USAGE },
   logout: { usage: LOGOUT_USAGE },
+  upgrade: { usage: UPGRADE_USAGE },
   completion: { usage: COMPLETION_USAGE, choices: [...SHELLS] },
 };
 

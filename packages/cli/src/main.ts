@@ -26,6 +26,7 @@ import {
   DELETE_USAGE,
   LOGIN_USAGE,
   LOGOUT_USAGE,
+  UPGRADE_USAGE,
   CHECK_USAGE,
   TAG_USAGE,
   PROJECT_USAGE,
@@ -54,6 +55,7 @@ import { run as compare } from './commands/compare.ts';
 import { run as docs } from './commands/docs.ts';
 import { run as completion } from './commands/completion.ts';
 import { run as login } from './commands/login.ts';
+import { run as upgrade } from './commands/upgrade.ts';
 import { run as logout } from './commands/logout.ts';
 
 type Command = { usage: string; run: (argv: string[], ctx: Ctx) => Promise<ExitCode | void> };
@@ -78,6 +80,7 @@ const COMMANDS: Record<string, Command> = {
   delete: { usage: DELETE_USAGE, run: remove },
   login: { usage: LOGIN_USAGE, run: login },
   logout: { usage: LOGOUT_USAGE, run: logout },
+  upgrade: { usage: UPGRADE_USAGE, run: upgrade },
   completion: { usage: COMPLETION_USAGE, run: completion },
   // Kept out of the general help: the docs site runs it, a person rarely does.
   docs: { usage: DOCS_USAGE, run: docs },

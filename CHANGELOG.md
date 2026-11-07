@@ -5,6 +5,11 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Added
+
+- Add `rshow upgrade`, which moves rshow to the newest release or to the one `--version` names, and `--check`, which only compares the versions.
+  It checks the download against `SHA256SUMS` and runs the new binary before it replaces the old one, then refreshes the skills and the completions that are already installed.
+
 ### Fixed
 
 - Fix a page created again under a deleted slug that could show the old page, by continuing from the highest version number that slug used.

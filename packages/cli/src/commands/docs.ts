@@ -40,6 +40,7 @@ import {
   THEME_PREVIEW_USAGE,
   THEME_PUBLISH_USAGE,
   THEME_USAGE,
+  UPGRADE_USAGE,
   usageLine,
 } from '../usage.ts';
 
@@ -79,6 +80,7 @@ const USAGE: Record<string, string> = {
   delete: DELETE_USAGE,
   login: LOGIN_USAGE,
   logout: LOGOUT_USAGE,
+  upgrade: UPGRADE_USAGE,
   completion: COMPLETION_USAGE,
 };
 

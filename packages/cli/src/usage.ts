@@ -23,6 +23,7 @@ commands:
   pin <slug> <n|live>     serve version n, or live for the newest
   delete <slug> [--version n] [--force] --yes
                           delete an artifact, or one version of it
+  upgrade [--check]       update rshow to the newest release
   login [--url u]         save the API token for this account
   logout [--url u]        remove the saved token for a server
   completion <shell>      print a completion script for bash, zsh or fish
@@ -321,6 +322,32 @@ A theme or a theme version also needs --force, because pages link to it.
 A pinned version and the only version of an artifact cannot be deleted.
 A public version can stay visible for up to 5 minutes after the delete, and a
 theme file for longer.`;
+
+export const UPGRADE_USAGE = `usage: rshow upgrade [--check] [--version <x.y.z>] [--force]
+
+Updates rshow to the newest release, or to the release --version names, which
+may be an older one.
+A single executable is replaced in place, and an npm global install runs
+npm install -g rshow@<version>.
+Any other install, such as a source checkout, an npx cache or a local
+dependency, is left alone and named with the tool that owns it.
+Running the command is the consent: there is no --yes.
+No config and no token are read, so it works before rshow init.
+
+--check prints the current and the newest version and changes nothing, and
+exits 0 either way; --json prints {current, latest, upgrade_available}.
+A run prints upgraded <old> -> <new>, or already at <version>. --json prints
+{previous, version, upgraded, kind}, where kind is binary or npm.
+--version takes x.y.z with an optional leading v; --force reinstalls the same
+version, which is how a broken binary comes back.
+Skills that rshow installed are refreshed by the new rshow, and a bash, zsh or
+fish completion that is already there is replaced; RSHOW_NO_COMPLETIONS=1
+leaves the completions alone.
+RSHOW_DOWNLOAD_BASE downloads from a mirror instead of the release, and takes
+an http or https url; it cannot be used with --check.
+
+A release older than this one has no upgrade command, so after a downgrade
+come back with curl -fsSL https://rslib.github.io/rshow/install.sh | sh.`;
 
 export const LOGIN_USAGE = `usage: rshow login [--url u]
 

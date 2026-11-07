@@ -28,6 +28,7 @@ This file is the whole surface, both config files and the exit codes.
 | `rshow config [dir] [--offline]` | print the merged config as JSON, with `theme` as `<name>@latest` and, with the network, `theme_resolved` as the version it resolves to |
 | `rshow init --url <admin-url> --art <viewer-url>` | write the global config file, with `--theme` and `--force` |
 | `rshow doctor [dir]` | check node, config, token, api, art, theme and skills, one `ok\|warn\|fail` line each |
+| `rshow upgrade [--check] [--version x.y.z] [--force]` | replace the single executable, or run `npm install -g` on an npm install, with another release |
 | `rshow list` | list artifacts you own or that are shared with you, with `--project`, `--tag` and `--q` filters |
 | `rshow show <slug>` | print the artifact, its versions, its shares, its project and its tags |
 | `rshow share <slug>` | set the mode, or add and remove shares |
@@ -50,6 +51,10 @@ This file is the whole surface, both config files and the exit codes.
 
 `--help` on its own prints the general usage, and `--help` after a command prints that command.
 `--json` is global and makes stdout the API reply, which is how a script reads a version number.
+
+`rshow upgrade` moves an installed rshow to the newest release, or to the one `--version` names, and `--check` prints both versions and changes nothing.
+It needs no config and no token, and a source checkout or an npx cache is named with the tool that owns it instead of being touched.
+Run `rshow upgrade` only when the person asks for it.
 
 Every flag takes `--flag value` or `--flag=value`.
 `--add`, `--editor`, `--remove` and `--tag` accept several values in a row after one flag.

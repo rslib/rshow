@@ -39,3 +39,4 @@ import './completion.test.ts';
 import './version.test.ts';
 import './binary.test.ts';
 import './skills.test.ts';
+import './upgrade.test.ts';
