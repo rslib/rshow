@@ -100,7 +100,7 @@ On `GET /api/artifacts/:slug/versions/:n`, `files` is the manifest itself, not t
 Paths in `files` use `/`, have no leading `/`, no `..` segment and no empty segment.
 At most 2000 files and 100 MiB per version.
 
-`DELETE /api/artifacts/:slug/versions/:n` needs the owner, with a signed-in session or a `full` token, and drops one version: its row and its file list. An editor or a `publish` token gets 403. It answers 409 `version <n> is pinned; pin another version first` when the artifact pins that version and 409 `this is the only version; delete the artifact instead` when it is the last one. The bytes stay in storage, because another version or another page can share them. A version number is never used again: the next publish takes the highest number ever used plus one, so a browser that holds `/<slug>/v5/` never reads a different page at that URL.
+`DELETE /api/artifacts/:slug/versions/:n` needs the owner, with a signed-in session or a `full` token, and drops one version: its row and its file list. An editor or a `publish` token gets 403. It answers 409 `version <n> is pinned; pin another version first` when the artifact pins that version and 409 `this is the only version; delete the artifact instead` when it is the last one. The bytes stay in storage, because another version or another page can share them. The edge can keep answering a public version URL for up to 5 minutes, and a theme file for longer. A version number is never used again: the next publish takes the highest number ever used plus one, so a browser that holds `/<slug>/v5/` never reads a different page at that URL.
 
 A `theme-` slug, either the whole artifact or one of its versions, needs `?force=1`, because pages link the theme and a delete would break them.
 

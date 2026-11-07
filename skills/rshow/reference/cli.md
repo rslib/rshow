@@ -177,6 +177,7 @@ Set the tags and the project in `rshow.json` when they are a fact about the fold
 `rshow delete <slug> --yes` deletes the artifact and every version, and `--version <n>` deletes only that version.
 It needs `--yes`, and it needs a yes from the person.
 A theme or a theme version also needs `--force`, because pages link to it.
+A public version can stay visible for up to 5 minutes after the delete, and a theme file for longer, so tell the person this when they delete to take something down.
 
 A preset is a small folder whose `theme.json` carries `"extends": "default"` and only token and font overrides.
 `rshow theme new <name> [--dir <parent>] [--from default]` writes it with both modes pre-filled with the base values of `--bg`, `--fg`, `--muted`, `--accent` and `--layer-01`, and prints the path plus `next: rshow theme check <dir>`.

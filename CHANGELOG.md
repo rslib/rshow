@@ -12,6 +12,7 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 ### Added
 
 - Add `rshow delete <slug> --version <n>` and a delete button on each version.
+  A public version can stay visible for up to 5 minutes after the delete.
 - Add `/_themes/<name>@latest/`, which follows the current theme version.
 
 ### Fixed

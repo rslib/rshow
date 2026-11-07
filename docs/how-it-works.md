@@ -25,10 +25,12 @@ The live URL, `/<slug>/`, serves the **served version**: the pinned one when the
 `rshow pin <slug> <n>` moves the pin and `rshow pin <slug> live` clears it, so a rollback is one command and leaves every version in place.
 
 A version number is never used twice.
-`rshow delete <slug> --version <n>` drops that version's row and its file list, so the URL stops answering and the next publish takes the highest number ever used plus one.
+`rshow delete <slug> --version <n>` drops that version's row and its file list, and the next publish takes the highest number ever used plus one.
 Deleting the newest version moves the live link back to the highest number left.
 The bytes stay in storage, because another version or another page can share them.
-A browser that already opened the version can keep showing it from its own cache until it asks again, which is why deleting a version is not a way to take a page away.
+Cloudflare's edge can keep answering a public version URL for up to 5 minutes after the delete, because the URL carries `s-maxage=300`.
+A theme file carries no `s-maxage`, so the edge can keep it much longer, and only a cache purge in the Cloudflare dashboard removes it sooner.
+A browser that already opened the version can keep showing it from its own cache, so deleting a version is not a way to take a page away.
 
 ## Blobs
 
