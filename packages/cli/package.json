@@ -1,6 +1,6 @@
 {
   "name": "rshow",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Publish static artifacts to rshow",
   "license": "MIT",
   "homepage": "https://rslib.github.io/rshow",

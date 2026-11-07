@@ -5,6 +5,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+## [0.0.9] - 2026-11-07
+
 ### Added
 
 - Add `rshow upgrade`, which moves rshow to the newest release or to the one `--version` names, and `--check`, which only compares the versions.
@@ -130,7 +132,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 - A publish of a folder that did not change adds no version: `publish` and `theme publish` name the version that is already live, and `--force` publishes anyway.
 - `rshow --version` prints the version, and `doctor` opens with it.
 
-[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.8...HEAD
+[Unreleased]: https://github.com/rslib/rshow/compare/v0.0.9...HEAD
+[0.0.9]: https://github.com/rslib/rshow/compare/v0.0.8...v0.0.9
 [0.0.8]: https://github.com/rslib/rshow/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/rslib/rshow/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/rslib/rshow/compare/v0.0.5...v0.0.6
