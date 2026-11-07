@@ -1,0 +1,3 @@
+ALTER TABLE artifacts ADD COLUMN last_n INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE artifacts ADD COLUMN version_gen INTEGER NOT NULL DEFAULT 0;
+UPDATE artifacts SET last_n = COALESCE(latest, 0);

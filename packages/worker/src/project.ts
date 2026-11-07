@@ -9,7 +9,6 @@ import { redirect } from "./http";
 import type { AppEnv, ArtifactRow, Env } from "./types";
 
 const THEME_SLUG = `${THEME_PREFIX}default`;
-const THEME_VERSION = 3;
 
 const MODE_WORDS: Record<Mode, string> = {
   private: "Private",
@@ -25,18 +24,18 @@ async function defaultThemeReady(env: Env): Promise<boolean> {
     .bind(THEME_SLUG)
     .first<{ mode: string }>();
   if (!artifact || artifact.mode !== MODE.public) return false;
-  const version = await env.DB.prepare("SELECT n FROM versions WHERE slug = ?1 AND n = ?2")
-    .bind(THEME_SLUG, THEME_VERSION)
+  const version = await env.DB.prepare("SELECT n FROM versions WHERE slug = ?1 LIMIT 1")
+    .bind(THEME_SLUG)
     .first<{ n: number }>();
   return version !== null;
 }
 
 function groupPage(title: string, description: string, artifacts: readonly ArtifactRow[], theme: boolean): Response {
   const links = theme
-    ? `<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/page.css">
-<script src="/_themes/default@3/mode.js"></script>`
+    ? `<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/page.css">
+<script src="/_themes/default@latest/mode.js"></script>`
     : `<style>${MINIMAL_STYLE}</style>`;
 
   const descriptionHtml =

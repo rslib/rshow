@@ -101,8 +101,13 @@ export class Client {
     return (await this.send('PATCH', `/api/artifacts/${encodeURIComponent(slug)}`, { json: patch })).body;
   }
 
-  async deleteArtifact(slug: string): Promise<void> {
-    await this.send('DELETE', `/api/artifacts/${encodeURIComponent(slug)}`);
+  async deleteArtifact(slug: string, force = false): Promise<void> {
+    await this.send('DELETE', `/api/artifacts/${encodeURIComponent(slug)}${force ? '?force=1' : ''}`);
+  }
+
+  async deleteVersion(slug: string, n: number, force = false): Promise<any> {
+    const pathname = `/api/artifacts/${encodeURIComponent(slug)}/versions/${n}${force ? '?force=1' : ''}`;
+    return (await this.send('DELETE', pathname)).body;
   }
 
   async putShare(slug: string, email: string, role: 'viewer' | 'editor'): Promise<any> {

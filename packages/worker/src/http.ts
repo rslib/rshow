@@ -24,8 +24,8 @@ export function htmlResponse(body: string, status = 200): Response {
   });
 }
 
-export function redirect(location: string, status = 301): Response {
-  return new Response(null, { status, headers: { location, "cache-control": "no-store" } });
+export function redirect(location: string, status = 301, cacheControl = "no-store"): Response {
+  return new Response(null, { status, headers: { location, "cache-control": cacheControl } });
 }
 
 export function notFoundText(): Response {

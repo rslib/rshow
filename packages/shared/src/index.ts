@@ -14,6 +14,7 @@ export const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,62}$/;
 export const TAG_PATTERN = /^[a-z0-9][a-z0-9-]{0,31}$/;
 export const THEME_NAME_PATTERN = /^[a-z0-9-]{1,40}$/;
 export const THEME_VERSION_PATTERN = /^([a-z0-9-]{1,40})@([0-9]{1,9})$/;
+export const THEME_LATEST_PATTERN = /^([a-z0-9-]{1,40})@latest$/;
 export const THEME_JSON_PATTERN = /^([a-z0-9-]{1,40})\.json$/;
 export const DATA_KEY_PATTERN = /^[A-Za-z0-9_.-]{1,128}$/;
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

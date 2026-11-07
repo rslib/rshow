@@ -11,8 +11,10 @@ usage error. --offline skips the theme version lookup on the art host.
 errors:
   no index.html at the root, unless theme.json makes the folder a theme
   a local href, src, poster, srcset, CSS url() or @import with no file behind it
-  a root-relative reference other than /_themes/<name>@<n>/<path>
-  a /_themes/<name>@<n>/ path whose version the art host does not have
+  a root-relative reference other than /_themes/<name>@<n>/<path> or
+    /_themes/<name>@latest/<path>
+  a /_themes/<name>@<n>/ path whose version the art host does not have, or an
+    @latest whose theme it does not have
   a script from a host other than cdnjs.cloudflare.com, cdn.jsdelivr.net,
     unpkg.com, or one of those without an exact version (@1.2.3, /1.2.3/ on cdnjs)
   a stylesheet from a host other than fonts.googleapis.com, cdn.jsdelivr.net,

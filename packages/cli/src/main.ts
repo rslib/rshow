@@ -97,10 +97,13 @@ function fail(err: unknown): ExitCode {
 async function main(argv: string[]): Promise<ExitCode> {
   const wantsJson = argv.includes('--json');
   const args = argv.filter((arg) => arg !== '--json');
-  const wantsVersion = args.includes('--version') || args.includes('-v');
   const wantsHelp = args.includes('--help') || args.includes('-h');
-  const name = args.find((arg) => !arg.startsWith('-'));
+  const commandAt = args.findIndex((arg) => !arg.startsWith('-'));
+  const name = commandAt < 0 ? undefined : (args[commandAt] as string);
   const spec = name === undefined ? undefined : COMMANDS[name];
+  const versionAt = args.findIndex((arg) => arg === '--version' || arg === '-v');
+  // A command may take --version itself, such as rshow delete --version 2.
+  const wantsVersion = versionAt >= 0 && (commandAt < 0 || versionAt < commandAt);
 
   if (wantsVersion) {
     const suffix = (await isBinary()) ? ' (binary)' : '';
@@ -119,8 +122,7 @@ async function main(argv: string[]): Promise<ExitCode> {
     throw new UsageError(`unknown command: ${name} (try: rshow --help)`);
   }
 
-  const index = args.indexOf(name);
-  const rest = [...args.slice(0, index), ...args.slice(index + 1)];
+  const rest = [...args.slice(0, commandAt), ...args.slice(commandAt + 1)];
 
   const configs = new Map<string, Promise<AppConfig>>();
   const clients = new Map<string, Client>();

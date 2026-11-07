@@ -32,8 +32,7 @@ A topic on its own is not a slide.
 
 ## 2. Skeleton
 
-Replace `<name>@<n>` with the `theme` value that `rshow config <dir>` prints, which the server resolves to the current version. Use `default@3` only when `rshow config` warns that it cannot resolve the theme.
-Math needs theme version 8 or newer, so a page on an older version moves up with `rshow config <dir>`.
+Link the theme at `@latest`, so a theme fix reaches the deck with no republish. Write a number only when the person asks to freeze a deck, such as a talk on the day it is given. A deck frozen on a number needs 8 or newer for math.
 
 ```html
 <!doctype html>
@@ -42,12 +41,12 @@ Math needs theme version 8 or newer, so a page on an older version moves up with
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Talk title</title>
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/deck.css">
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/deck.css">
 <!-- a deck that writes math links these two, and math.js goes before deck.js -->
-<link rel="stylesheet" href="/_themes/default@3/math.css">
-<script defer src="/_themes/default@3/math.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/math.css">
+<script defer src="/_themes/default@latest/math.js"></script>
 </head>
 <body>
 <main class="deck">
@@ -69,13 +68,12 @@ Math needs theme version 8 or newer, so a page on an older version moves up with
   </section>
 
 </main>
-<script src="/_themes/default@3/deck.js"></script>
+<script src="/_themes/default@latest/deck.js"></script>
 </body>
 </html>
 ```
 
-The three stylesheet links and the script carry the same `<n>` on purpose, because a mixed version renders somewhere between two designs.
-A fallback to `default@3` keeps the page readable but has no math, so a deck on that version links neither `math.css` nor `math.js`, and the `math.js` warning of `rshow check` is the sign to move up.
+The three stylesheet links and the script carry `@latest` on purpose, so a theme fix reaches every deck on the next open.
 The deck needs no `mode.js`, because `deck.js` reads the same key and `t` does the same work.
 Override a token in one `:root` block after the theme links when the deck needs its own accent, with no limit on the declarations.
 An inline `<style>` block after the theme links may also carry a layout of the deck's own, as section 3 says.

@@ -72,7 +72,7 @@ describe("group page", () => {
     expect(body).toContain("Public");
     // No theme published yet: the minimal inline style is the fallback.
     expect(body).toContain("<style>");
-    expect(body).not.toContain("/_themes/default@3/page.css");
+    expect(body).not.toContain("/_themes/default@latest/page.css");
   });
 
   it("uses the default theme look when the theme is published", async () => {
@@ -81,10 +81,10 @@ describe("group page", () => {
     await projectArtifact("themed-one", "themed-group", "public", "Themed one");
 
     const body = await (await viewer("/_p/themed-group/")).text();
-    expect(body).toContain('<link rel="stylesheet" href="/_themes/default@3/fonts.css">');
-    expect(body).toContain('<link rel="stylesheet" href="/_themes/default@3/tokens.css">');
-    expect(body).toContain('<link rel="stylesheet" href="/_themes/default@3/page.css">');
-    expect(body).toContain('<script src="/_themes/default@3/mode.js"></script>');
+    expect(body).toContain('<link rel="stylesheet" href="/_themes/default@latest/fonts.css">');
+    expect(body).toContain('<link rel="stylesheet" href="/_themes/default@latest/tokens.css">');
+    expect(body).toContain('<link rel="stylesheet" href="/_themes/default@latest/page.css">');
+    expect(body).toContain('<script src="/_themes/default@latest/mode.js"></script>');
     expect(body).toContain("Themed one");
   });
 
@@ -94,7 +94,7 @@ describe("group page", () => {
     await projectArtifact("unthemed-one", "unthemed-group", "public", "Unthemed one");
 
     const body = await (await viewer("/_p/unthemed-group/")).text();
-    expect(body).not.toContain("/_themes/default@3/page.css");
+    expect(body).not.toContain("/_themes/default@latest/page.css");
     expect(body).toContain("Unthemed one");
   });
 

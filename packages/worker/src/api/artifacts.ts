@@ -6,6 +6,7 @@ import {
   MODE,
   SLUG_PATTERN,
   TAG_PATTERN,
+  THEME_PREFIX,
   isMode,
   isShareRole,
   type Mode,
@@ -144,6 +145,8 @@ export function registerArtifactCreate(app: Hono<AppEnv>): void {
       mode: MODE.private,
       pinned: null,
       latest: null,
+      last_n: 0,
+      version_gen: 0,
       project,
       created_at: now,
       updated_at: now
@@ -302,6 +305,9 @@ export function registerArtifactItem(app: Hono<AppEnv>): void {
     if (!access) return jsonError("not found", 404);
     if (!canManage(access.artifact, access.shares, actorOf(c), access.project)) {
       return jsonError("owner access is required", 403);
+    }
+    if (access.artifact.slug.startsWith(THEME_PREFIX) && c.req.query("force") !== "1") {
+      return jsonError("pages link to this theme; pass force to delete it", 409);
     }
 
     const prefix = `manifests/${access.artifact.slug}/`;

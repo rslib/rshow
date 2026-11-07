@@ -12,6 +12,7 @@ built on top of its base theme, and the built folder is what gets published.
 When the newest version already holds the built folder's paths and hashes, it
 prints unchanged: theme-<name> is already v<n> and publishes nothing.
 --force publishes a new version anyway.
-Prints /_themes/<name>@<n>/.
+Prints /_themes/<name>@<n>/. Pages link /_themes/<name>@latest/ by default, so
+they follow every version you publish here.
 ```
 

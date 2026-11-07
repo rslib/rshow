@@ -77,7 +77,8 @@ Errors are `{"error": "<message>"}` with a 4xx or 5xx status.
 | GET | `/api/artifacts/:slug` | | `Artifact & {versions: [Version], shares: [Share]}` |
 | GET | `/api/artifacts/:slug/versions/:n` | | `Version & {files: {path: {hash, size, type}}}` (the manifest). 404 when the version does not exist. |
 | PATCH | `/api/artifacts/:slug` | `{title?, mode?, pinned?}` (`pinned`: number or null) | `Artifact` |
-| DELETE | `/api/artifacts/:slug` | | 204 |
+| DELETE | `/api/artifacts/:slug` | `?force=1` for a `theme-` slug | 204, or 409 `pages link to this theme; pass force to delete it` |
+| DELETE | `/api/artifacts/:slug/versions/:n` | `?force=1` for a `theme-` slug | `Artifact` (200). 404 when the version does not exist. 409 when it is pinned, is the only version, is a `theme-` version without `force`, or another change came first. |
 | PUT | `/api/artifacts/:slug/shares/:email` | `{role}` | `Share` |
 | DELETE | `/api/artifacts/:slug/shares/:email` | | 204 |
 | POST | `/api/blobs/missing` | `{hashes: [sha256]}` (at most 1000) | `{missing: [sha256]}` |
@@ -99,6 +100,10 @@ On `GET /api/artifacts/:slug/versions/:n`, `files` is the manifest itself, not t
 Paths in `files` use `/`, have no leading `/`, no `..` segment and no empty segment.
 At most 2000 files and 100 MiB per version.
 
+`DELETE /api/artifacts/:slug/versions/:n` needs the owner, with a signed-in session or a `full` token, and drops one version: its row and its file list. An editor or a `publish` token gets 403. It answers 409 `version <n> is pinned; pin another version first` when the artifact pins that version and 409 `this is the only version; delete the artifact instead` when it is the last one. The bytes stay in storage, because another version or another page can share them. A version number is never used again: the next publish takes the highest number ever used plus one, so a browser that holds `/<slug>/v5/` never reads a different page at that URL.
+
+A `theme-` slug, either the whole artifact or one of its versions, needs `?force=1`, because pages link the theme and a delete would break them.
+
 ## Publish flow (CLI)
 
 1. Walk the folder (or take the one file as `index.html`) and hash each file.
@@ -112,6 +117,7 @@ At most 2000 files and 100 MiB per version.
 A theme is a public artifact whose slug is `theme-<name>`. Its versions are served at a fixed, immutable URL:
 
 - `art.example.com/_themes/<name>@<n>/<path>` serves version n of artifact `theme-<name>`.
+- `art.example.com/_themes/<name>@latest/<path>` answers a 302 to the version that theme serves now, so a page links the name once and a theme fix reaches it with no republish. It redirects to the version that `/_themes/<name>.json` reports, so a pin wins over the newest one. The redirect answers `cache-control: public, max-age=60`. A theme that is missing, private or has no version is a 404.
 - These URLs are always public and cached for one year (`immutable`), so every deck shares one browser cache entry.
 - `art.example.com/_themes/<name>.json` returns `{name, version, url}` for the served version of a public theme, cached for 60 s and open to any origin (`access-control-allow-origin: *`). Anything else is a 404 `{"error": "not found"}`, so a private theme stays hidden.
 - `theme.json` names the theme and its files: `{name, description, defaultMode, modes, layouts, tokens, modeTokens}`. `layouts` maps a layout name to `{css: [...], js: [...], example: "example/<page>.html"}`, so a tool reads that map instead of a list of files.
@@ -121,17 +127,17 @@ A theme is a public artifact whose slug is `theme-<name>`. Its versions are serv
 - `skins/` holds the mockup skins as `css` and `js`: `wire`, `mac`, `material`, `fluent`, `adwaita`, `egui`, `sketch`, `custom`.
 - `example/` holds one example page per layout, the one `layouts` points at.
 - `rshow theme publish` publishes the folder as `theme-<name>` and sets the artifact public. Setting it public needs a full-scope token, but only when it is not public yet: a re-publish of an already public theme needs only `publish`. If the token is not full, the version is still published and stays private.
-- Pages link the theme with a root-relative URL, for example `/_themes/default@3/deck.css`, then override tokens in their own `<style>:root{...}</style>`.
+- Pages link the theme at `@latest`, for example `/_themes/default@latest/deck.css`, then override tokens in their own `<style>:root{...}</style>`.
 - Every custom property of the built-in theme, with both values and its role, is in [theme-tokens.md](reference/theme-tokens.md).
 
 ## Config
 
 Merged in this order, later wins:
 
-1. `~/.config/rshow/config.json`: `{"url": "https://artd.example.com", "art": "https://art.example.com", "theme": "default@3", "tokens": {"--accent": "#6EA8FF"}}`.
+1. `~/.config/rshow/config.json`: `{"url": "https://artd.example.com", "art": "https://art.example.com", "theme": "default@latest", "tokens": {"--accent": "#6EA8FF"}}`.
 2. `rshow.json` in the artifact folder: `{"slug", "title", "theme", "tokens", "build": "<shell command>", "out": "dist"}`.
 
-`rshow config [dir]` prints the merged config as JSON. It resolves `theme` to a fixed version: no theme means `default@latest`, and `<name>` or `<name>@latest` becomes `<name>@<n>` from `/_themes/<name>.json`. A fixed `<name>@<n>` is left as it is. If the lookup fails, it prints a warning and leaves the value as it was. `--offline` skips the lookup.
+`rshow config [dir]` prints the merged config as JSON. It keeps `theme` as `<name>@latest`: no theme means `default@latest`, and a bare `<name>` or `<name>@latest` stays that way. A fixed `<name>@<n>` is left as it is. With the network it also prints `theme_resolved` as the `<name>@<n>` from `/_themes/<name>.json`. If the lookup fails, it prints a warning and leaves `theme_resolved` out. `--offline` skips the lookup.
 
 The token comes from `RSHOW_TOKEN`, else from the macOS Keychain (service `rshow`, account = the API URL), the Linux keyring (same service and account), or `${XDG_CONFIG_HOME:-$HOME/.config}/rshow/credentials`, a JSON file `{"version": 1, "tokens": {"<url>": "<token>"}}` with mode 600. `rshow login` picks the first store the machine has and saves there, and `RSHOW_TOKEN_STORE` forces `keychain`, `keyring` or `file`.
 

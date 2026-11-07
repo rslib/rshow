@@ -137,6 +137,23 @@ test('preview serves a built-in theme from disk with no art host, and redirects 
   assert.equal(missingFile.status, 404);
 });
 
+test('preview serves a built-in theme through @latest', async (t) => {
+  const { url, running } = await preview({ 'index.html': '<h1>hi</h1>' });
+  t.after(() => running.stop());
+
+  const bare = await fetch(`${url}/_themes/default@latest`, { redirect: 'manual' });
+  assert.equal(bare.status, 301);
+  assert.equal(bare.headers.get('location'), '/_themes/default@latest/');
+
+  const tokens = await fetch(`${url}/_themes/default@latest/tokens.css`);
+  assert.equal(tokens.status, 200);
+  assert.equal(tokens.headers.get('x-rshow-source'), 'local');
+  assert.match(await tokens.text(), /--bg/);
+
+  const missingFile = await fetch(`${url}/_themes/default@latest/nope.css`);
+  assert.equal(missingFile.status, 404);
+});
+
 test('preview serves the --theme folder, and a preset wins over the built-in theme', async (t) => {
   const theme = await makeTempDir({
     'theme.json': JSON.stringify({

@@ -24,6 +24,12 @@ That is what makes a link safe to send: `/<slug>/v<n>/` is a fixed set of bytes 
 The live URL, `/<slug>/`, serves the **served version**: the pinned one when the artifact has a pin, the newest one otherwise.
 `rshow pin <slug> <n>` moves the pin and `rshow pin <slug> live` clears it, so a rollback is one command and leaves every version in place.
 
+A version number is never used twice.
+`rshow delete <slug> --version <n>` drops that version's row and its file list, so the URL stops answering and the next publish takes the highest number ever used plus one.
+Deleting the newest version moves the live link back to the highest number left.
+The bytes stay in storage, because another version or another page can share them.
+A browser that already opened the version can keep showing it from its own cache until it asks again, which is why deleting a version is not a way to take a page away.
+
 ## Blobs
 
 A file's bytes are stored once, as a blob under the lowercase hex SHA-256 of the bytes.
@@ -75,7 +81,7 @@ Reading follows the mode of the artifact, and writing needs a signed-in person w
 ## Caching
 
 A version URL serves the same bytes forever, so its files, its manifest and its theme CSS are cached for a year as `immutable`.
-That is why `/_themes/` links are pinned at a version: one copy in the browser cache serves every page on the host.
+`@latest` redirects to a numbered URL, so one copy in the browser cache still serves every page on the host.
 
 The live URL is not immutable, because a publish moves it.
 The access check behind a private or `people` artifact is cached for 15 seconds, so a change of mode or shares reaches every edge in about that time.
@@ -91,6 +97,7 @@ The **viewer host** serves readers:
 - `/<slug>/` and `/<slug>/<path>`, the served version.
 - `/<slug>/v<n>/` and `/<slug>/v<n>/<path>`, one version.
 - `/_themes/<name>@<n>/<path>`, a theme at one version, always public and cached for a year.
+- `/_themes/<name>@latest/<path>`, a 302 to the version that theme serves now, cached for a minute.
 - `/_themes/<name>.json`, the served version of a public theme, for `rshow config`.
 - `/_p/<project>/`, a group page.
 - `/<slug>/_data/<key>`, the data store.

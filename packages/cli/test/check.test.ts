@@ -150,7 +150,7 @@ test('check reports a root-relative reference outside /_themes', async () => {
   assert.equal(result.code, 6);
   assert.match(
     result.stdout,
-    /^index\.html:6: error: root-relative reference \/other\/page\.html \(only \/_themes\/<name>@<n>\/ paths may start with a slash\)$/m,
+    /^index\.html:6: error: root-relative reference \/other\/page\.html \(only \/_themes\/<name>@<n>\/ or \/_themes\/<name>@latest\/ paths may start with a slash\)$/m,
   );
 });
 
@@ -213,6 +213,64 @@ test('check accepts a theme version the art host has', async (t) => {
   assert.equal(result.code, 0);
   assert.match(result.stdout, /^check: ok /m);
   assert.equal(api.requests.length, 2);
+});
+
+test('check follows @latest on the art host', async (t) => {
+  const api = await startFakeApi((req: RecordedRequest): RouteReply | undefined => {
+    if (req.method === 'HEAD' && req.path === '/_themes/default@latest/tokens.css') return { status: 200 };
+    if (req.method === 'HEAD' && req.path === '/_themes/default@latest/page.css') return { status: 200 };
+    return undefined;
+  });
+  t.after(() => api.close());
+
+  const dir = await makeTempDir({
+    'rshow.json': JSON.stringify({ art: api.url }),
+    'index.html': [
+      '<!doctype html>',
+      '<head>',
+      VIEWPORT,
+      '<title>Theme</title>',
+      '<link rel="stylesheet" href="/_themes/default@latest/page.css">',
+      '</head>',
+      '<body></body>',
+      '</html>',
+    ].join('\n'),
+  });
+
+  const result = await runCli(['check', dir], {});
+  assert.equal(result.code, 0);
+  assert.match(result.stdout, /^check: ok /m);
+  assert.deepEqual(
+    api.requests.map((req: RecordedRequest) => `${req.method} ${req.path}`),
+    ['HEAD /_themes/default@latest/tokens.css', 'HEAD /_themes/default@latest/page.css'],
+  );
+});
+
+test('check reports an @latest theme the art host does not have', async (t) => {
+  const api = await startFakeApi(() => ({ status: 404, body: { error: 'not found' } }));
+  t.after(() => api.close());
+
+  const dir = await makeTempDir({
+    'rshow.json': JSON.stringify({ art: api.url }),
+    'index.html': [
+      '<!doctype html>',
+      '<head>',
+      VIEWPORT,
+      '<title>Theme</title>',
+      '<link rel="stylesheet" href="/_themes/default@latest/page.css">',
+      '</head>',
+      '<body></body>',
+      '</html>',
+    ].join('\n'),
+  });
+
+  const result = await runCli(['check', dir], {});
+  assert.equal(result.code, 6);
+  assert.match(
+    result.stdout,
+    /^index\.html:5: error: theme default@latest is not published \(http:\/\/127\.0\.0\.1:[0-9]+\/_themes\/default@latest\/tokens\.css\)$/m,
+  );
+  assert.equal(api.requests.length, 1);
 });
 
 test('check reports a theme file the published version lacks', async (t) => {

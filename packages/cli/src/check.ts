@@ -34,7 +34,7 @@ const VERSION_AT = /@[0-9]+\.[0-9]+\.[0-9]+/;
 const VERSION_PATH = /\/[0-9]+\.[0-9]+\.[0-9]+\//;
 const EXTERNAL = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
 const IGNORED = /^(?:#|data:|blob:|mailto:|tel:|javascript:)/i;
-const THEME_REF = /^\/_themes\/([a-z0-9][a-z0-9-]*)@([0-9]+)\//;
+const THEME_REF = /^\/_themes\/([a-z0-9][a-z0-9-]*)@(latest|[0-9]+)\//;
 const TAG_PATTERN = /<([a-zA-Z][a-zA-Z0-9:-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
 const ATTR_PATTERN = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
 const CSS_URL = /url\(\s*(?:"([^"]*)"|'([^']*)'|([^)'"\s]*))\s*\)/gi;
@@ -194,7 +194,7 @@ function resolveRef(scan: Scan, file: string, raw: string, line: number): void {
       file,
       line,
       'error',
-      `root-relative reference ${value} (only /_themes/<name>@<n>/ paths may start with a slash)`,
+      `root-relative reference ${value} (only /_themes/<name>@<n>/ or /_themes/<name>@latest/ paths may start with a slash)`,
     );
     return;
   }

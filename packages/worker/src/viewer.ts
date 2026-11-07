@@ -12,6 +12,7 @@ import {
   SLUG_PATTERN,
   THEMES_SEGMENT,
   THEME_JSON_PATTERN,
+  THEME_LATEST_PATTERN,
   THEME_NAME_PATTERN,
   THEME_PREFIX,
   THEME_VERSION_PATTERN,
@@ -31,7 +32,8 @@ const CACHE_CONTROL = {
   publicLive: "public, max-age=0, s-maxage=15, must-revalidate",
   publicVersion: "public, max-age=31536000, immutable, s-maxage=300",
   theme: "public, max-age=31536000, immutable",
-  themeJson: "public, max-age=60"
+  themeJson: "public, max-age=60",
+  themeLatest: "public, max-age=60"
 } as const;
 
 export function viewerCsp(env: Env): string {
@@ -181,7 +183,7 @@ export async function handleViewer(c: Context<AppEnv>): Promise<Response> {
       ? access.version
       : access.version && access.version.n === versionN
         ? access.version
-        : await versionFor(env, slug, versionN);
+        : await versionFor(env, artifact, versionN);
   if (!version) return notFoundPage("This artifact has no such version yet.");
 
   const relative = relativePath(parts);
@@ -225,6 +227,16 @@ async function handleTheme(c: Context<AppEnv>, rest: string[], url: URL): Promis
     );
   }
 
+  const latest = THEME_LATEST_PATTERN.exec(segment);
+  if (latest) {
+    const name = latest[1];
+    const access = await accessFor(env, `${THEME_PREFIX}${name}`);
+    if (!access || access.artifact.mode !== MODE.public || !access.version) return notFoundPage();
+    const path = rest.slice(1).map(encodeURIComponent).join("/");
+    const location = `/${THEMES_SEGMENT}/${name}@${access.version.n}/${path}${url.search}`;
+    return withoutBodyOnHead(c, redirect(location, 302, CACHE_CONTROL.themeLatest));
+  }
+
   const match = THEME_VERSION_PATTERN.exec(segment);
   if (!match) return notFoundPage();
   const name = match[1];
@@ -238,7 +250,8 @@ async function handleTheme(c: Context<AppEnv>, rest: string[], url: URL): Promis
   const parts = rest.slice(1);
   if (parts.length === 0) return redirect(`/${THEMES_SEGMENT}/${segment}/${url.search}`, 301);
 
-  const version = access.version && access.version.n === n ? access.version : await versionFor(env, slug, n);
+  const version =
+    access.version && access.version.n === n ? access.version : await versionFor(env, access.artifact, n);
   if (!version) return notFoundPage("This theme has no such version yet.");
 
   const relative = relativePath(parts);

@@ -231,6 +231,23 @@ describe("artifact page", () => {
     expect(body).not.toContain('aria-label="People"');
   });
 
+  it("shows delete on a version only when a second one exists, and never on a theme", async () => {
+    await createArtifact("two-versions");
+    await publishFiles("two-versions", [INDEX_HTML]);
+    const single = await (await api("GET", "/a/two-versions")).text();
+    expect(single).not.toContain('data-action="delete-version"');
+
+    await publishFiles("two-versions", [SECOND_HTML]);
+    const both = await (await api("GET", "/a/two-versions")).text();
+    expect(both).toContain('data-action="delete-version"');
+
+    await createArtifact("theme-mono");
+    await publishFiles("theme-mono", [INDEX_HTML]);
+    await publishFiles("theme-mono", [SECOND_HTML]);
+    const theme = await (await api("GET", "/a/theme-mono")).text();
+    expect(theme).not.toContain('data-action="delete-version"');
+  });
+
   it("renders a pinned artifact with a follow action", async () => {
     await createArtifact("pinned-doc");
     await publishFiles("pinned-doc", [INDEX_HTML]);

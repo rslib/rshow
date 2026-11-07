@@ -106,15 +106,23 @@ export type Section = { label: string; note: string; names: string[] };
 export type DocsResult = { commands: number; files: string[] };
 
 // The lines of the first list in a usage text: the command or subcommand, its
-// arguments, then the one-line summary that `--help` prints.
+// arguments, then the one-line summary that `--help` prints. A line indented
+// deeper than the list continues the text of the line above it.
 function listLines(usage: string): string[] {
   const lines = usage.split('\n');
   const start = lines.findIndex((line) => /^\s{2}\S/.test(line));
   if (start < 0) return [];
   const out: string[] = [];
   for (const line of lines.slice(start)) {
-    if (!/^\s{2}\S/.test(line)) break;
-    out.push(line);
+    if (/^\s{2}\S/.test(line)) {
+      out.push(line);
+      continue;
+    }
+    if (out.length > 0 && /^\s{3,}\S/.test(line)) {
+      out[out.length - 1] = `${(out[out.length - 1] as string).trimEnd()}  ${line.trim()}`;
+      continue;
+    }
+    break;
   }
   return out;
 }

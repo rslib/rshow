@@ -55,7 +55,7 @@ const EMOJI = /\p{Emoji_Presentation}/gu;
 const COLOR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?)\([^()]*\)/gi;
 const GOOGLE_URL = /fonts\.googleapis\.com\/[^"'\s)>]*/gi;
 const GOOGLE_FAMILY = /[?&]family=([^&"'\s]+)/gi;
-const THEME_LINK = /\/_themes\/[a-z0-9][a-z0-9-]*@[0-9]+\//i;
+const THEME_LINK = /\/_themes\/[a-z0-9][a-z0-9-]*@(?:[0-9]+|latest)\//i;
 
 type Hsl = { h: number; s: number; l: number };
 type Decl = { prop: string; value: string; index: number };

@@ -43,6 +43,55 @@ test('delete needs --yes', async (t) => {
   assert.equal(api.requests.length, 1);
 });
 
+test('delete --version sends the version path and still needs --yes', async (t) => {
+  const api = await startFakeApi((req): RouteReply | undefined => {
+    if (req.method === 'DELETE' && req.path === '/api/artifacts/site/versions/2') {
+      return { status: 200, body: artifact('site', { latest: 3, served: 3 }) };
+    }
+    if (req.method === 'DELETE' && req.path === '/api/artifacts/theme-mono/versions/2?force=1') {
+      return { status: 200, body: artifact('theme-mono', { latest: 1, served: 1 }) };
+    }
+    return undefined;
+  });
+  t.after(() => api.close());
+  const env = { RSHOW_URL: api.url, RSHOW_TOKEN: 'rsh_secret' };
+
+  const refused = await runCli(['delete', 'site', '--version', '2'], env);
+  assert.equal(refused.code, 2);
+  assert.match(refused.stderr, /^rshow: delete needs --yes/m);
+  assert.equal(api.requests.length, 0);
+
+  const done = await runCli(['delete', 'site', '--version', '2', '--yes'], env);
+  assert.equal(done.code, 0);
+  assert.equal(done.stdout, 'deleted: site v2\nserved: 3\n');
+  assert.equal((api.requests[0] as RecordedRequest).path, '/api/artifacts/site/versions/2');
+
+  const forced = await runCli(['delete', 'theme-mono', '--version', '2', '--force', '--yes'], env);
+  assert.equal(forced.code, 0);
+  assert.equal(forced.stdout, 'deleted: theme-mono v2\nserved: 1\n');
+  assert.equal((api.requests[1] as RecordedRequest).path, '/api/artifacts/theme-mono/versions/2?force=1');
+
+  const zero = await runCli(['delete', 'site', '--version', '0', '--yes'], env);
+  assert.equal(zero.code, 2);
+  assert.match(zero.stderr, /^rshow: expected a version number, got: 0$/m);
+  assert.equal(api.requests.length, 2);
+});
+
+test('delete --force sends force on the artifact path too', async (t) => {
+  const api = await startFakeApi((req): RouteReply | undefined => {
+    if (req.method === 'DELETE' && req.path === '/api/artifacts/theme-mono?force=1') return { status: 204 };
+    return undefined;
+  });
+  t.after(() => api.close());
+
+  const done = await runCli(['delete', 'theme-mono', '--force', '--yes'], {
+    RSHOW_URL: api.url,
+    RSHOW_TOKEN: 'rsh_secret',
+  });
+  assert.equal(done.code, 0);
+  assert.equal(done.stdout, 'deleted: theme-mono\n');
+});
+
 test('list prints one artifact per line', async (t) => {
   const api = await startFakeApi((req): RouteReply | undefined => {
     if (req.method === 'GET' && req.path === '/api/artifacts') {

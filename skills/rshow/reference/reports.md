@@ -35,11 +35,11 @@ Link `fonts.css`, `tokens.css` and `report.css`, then `mode.js` in the head and 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Publishing a folder as an immutable artifact</title>
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/report.css">
-<script src="/_themes/default@3/mode.js"></script>
-<script defer src="/_themes/default@3/report.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/report.css">
+<script src="/_themes/default@latest/mode.js"></script>
+<script defer src="/_themes/default@latest/report.js"></script>
 </head>
 <body>
 <div class="report">

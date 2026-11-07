@@ -23,11 +23,11 @@ A sketch is also the honest shape for a workshop, where a tidy drawing would end
 ## Markup
 
 ```html
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/sketch.css">
-<script src="/_themes/default@3/mode.js"></script>
-<script defer src="/_themes/default@3/sketch.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/sketch.css">
+<script src="/_themes/default@latest/mode.js"></script>
+<script defer src="/_themes/default@latest/sketch.js"></script>
 ...
 <div class="sketch" data-src="drawing.excalidraw" data-store="sketch-main"></div>
 ```

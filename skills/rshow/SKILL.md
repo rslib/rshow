@@ -20,7 +20,7 @@ Copy this checklist into the reply and tick it as you go.
 
 ```text
 - [ ] shape picked and outline or headings agreed
-- [ ] page written, theme linked at a pinned version
+- [ ] page written, theme linked at `@latest`
 - [ ] rshow check <dir> exits 0
 - [ ] rshow preview <dir> looked at 360px wide and at desktop width
 - [ ] audience confirmed with the person
@@ -30,7 +30,7 @@ Copy this checklist into the reply and tick it as you go.
 ```
 
 1. Pick the shape and say it back in one sentence, such as a page, a report, a poster, a project page, a dashboard, a mockup, a sketch, a terminal page or a prerendered Astro or Vite site.
-2. Write `index.html` in its own folder, link the theme at a pinned version and keep every other path relative.
+2. Write `index.html` in its own folder, link the theme at `@latest` and keep every other path relative.
 3. Run `rshow check <dir>`.
 4. Fix every error, then run `rshow check` again until it exits 0.
 5. Run `rshow preview <dir>` and open the printed `http://127.0.0.1:4321` link.
@@ -46,7 +46,10 @@ Copy this checklist into the reply and tick it as you go.
 - Every path inside the artifact is relative, with no leading slash.
   The only exceptions are `/_themes/...` and `/_data/...`.
 - Link the theme, never copy it.
-  The stylesheet links and `mode.js` in the head all carry the same `<name>@<n>` version.
+  The stylesheet links and `mode.js` in the head all carry the same `<name>@latest`.
+- Link `@latest`, so a theme fix reaches the page with no republish.
+  Write a number only when the person asks to freeze a page, such as a talk on the day it is given.
+  A page frozen on a number needs 8 or newer for math.
 - The theme is the base, not a cage.
   A page may carry one inline `<style>` block with its own classes and its own layouts when the content needs them.
   Own CSS takes colour, type and space from the theme tokens with `var(--...)`, so light, dark, print and a theme swap keep working.
@@ -63,7 +66,6 @@ Copy this checklist into the reply and tick it as you go.
 - A report links `report.css` and `report.js` in place of `page.css`, and `mode.js` still goes in the head.
   Read [reports](reference/reports.md) before you write one.
 - Math is LaTeX in the text of an element with the class `math`, and the page links `math.css` and `math.js` for it.
-  Math needs theme version 8 or newer, so a page on an older version moves up with `rshow config <dir>`.
   A `div.math` is display math and any other element is inline.
   A `$` in the prose is a price and is never read as math, so `$5` stays text.
   Read [reports](reference/reports.md) for the markup an equation takes.
@@ -154,4 +156,4 @@ The short list above is a hard rule.
   Write the LaTeX in an element with the class `math` and link `math.css` and `math.js`.
 - Never create a second artifact with a `-v2` slug.
   Publish the same slug again.
-- Never delete an artifact or drop a share without a yes from the person.
+- Never delete a version, a theme or an artifact, and never drop a share, unless the person asks for it.

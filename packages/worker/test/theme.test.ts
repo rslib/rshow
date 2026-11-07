@@ -130,6 +130,54 @@ describe("themes", () => {
     expect((await viewer("/_themes/default.json/x")).status).toBe(404);
   });
 
+  it("redirects @latest to the served version and keeps the query", async () => {
+    await publishTheme("live", [[INDEX_HTML, DECK_CSS], [INDEX_HTML, DECK_CSS_TWO]]);
+
+    const res = await viewer("/_themes/live@latest/deck.css?v=2&x=1");
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toBe("/_themes/live@2/deck.css?v=2&x=1");
+    expect(res.headers.get("cache-control")).toBe("public, max-age=60");
+
+    const bare = await viewer("/_themes/live@latest");
+    expect(bare.status).toBe(302);
+    expect(bare.headers.get("location")).toBe("/_themes/live@2/");
+
+    const head = await viewer("/_themes/live@latest/deck.css", null, { method: "HEAD" });
+    expect(head.status).toBe(302);
+    expect(head.headers.get("location")).toBe("/_themes/live@2/deck.css");
+
+    expect((await viewer("/_themes/live@2/deck.css")).status).toBe(200);
+  });
+
+  it("follows a pin through @latest and 404s a theme it cannot serve", async () => {
+    await publishTheme("pinned-live", [[INDEX_HTML, DECK_CSS], [INDEX_HTML, DECK_CSS_TWO]]);
+    expect((await viewer("/_themes/pinned-live@latest/deck.css")).headers.get("location")).toBe(
+      "/_themes/pinned-live@2/deck.css"
+    );
+
+    await api("PATCH", "/api/artifacts/theme-pinned-live", { body: { pinned: 1 } });
+    expect((await viewer("/_themes/pinned-live@latest/deck.css")).headers.get("location")).toBe(
+      "/_themes/pinned-live@1/deck.css"
+    );
+
+    await publishTheme("latest-hidden", [[INDEX_HTML, DECK_CSS]], "private");
+    expect((await viewer("/_themes/latest-hidden@latest/deck.css")).status).toBe(404);
+    expect((await viewer("/_themes/latest-unknown@latest/deck.css")).status).toBe(404);
+    await createArtifact("theme-latest-empty");
+    expect((await viewer("/_themes/latest-empty@latest/deck.css")).status).toBe(404);
+  });
+
+  it("encodes the path it redirects @latest to", async () => {
+    await publishTheme("encoded", [[INDEX_HTML, DECK_CSS]]);
+
+    const space = await viewer("/_themes/encoded@latest/a%20b.css");
+    expect(space.status).toBe(302);
+    expect(space.headers.get("location")).toBe("/_themes/encoded@1/a%20b.css");
+
+    const broken = await viewer("/_themes/encoded@latest/a%0d%0ab.css");
+    expect(broken.status).toBe(404);
+  });
+
   it("does not treat _themes as a slug", async () => {
     await createArtifact("_themes");
     expect((await viewer("/_themes")).status).toBe(404);

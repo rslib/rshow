@@ -25,7 +25,7 @@ This file is the whole surface, both config files and the exit codes.
 | `rshow check <file-or-dir>` | apply the page contract to the files a publish would upload |
 | `rshow preview <dir>` | serve a folder on `127.0.0.1` for a look, offline |
 | `rshow publish <file-or-dir>` | upload a folder, or one file as `index.html`, as a new version |
-| `rshow config [dir] [--offline]` | print the merged config as JSON, with `theme` resolved to its current version, such as `default@3` |
+| `rshow config [dir] [--offline]` | print the merged config as JSON, with `theme` as `<name>@latest` and, with the network, `theme_resolved` as the version it resolves to |
 | `rshow init --url <admin-url> --art <viewer-url>` | write the global config file, with `--theme` and `--force` |
 | `rshow doctor [dir]` | check node, config, token, api, art, theme and skills, one `ok\|warn\|fail` line each |
 | `rshow list` | list artifacts you own or that are shared with you, with `--project`, `--tag` and `--q` filters |
@@ -36,7 +36,7 @@ This file is the whole surface, both config files and the exit codes.
 | `rshow tag <slug>` | add or remove tags on an artifact |
 | `rshow handoff <slug>@v<n>` | write a design handoff folder from a published design |
 | `rshow compare --against <dir>` | compare an implementation with that handoff folder |
-| `rshow delete <slug> --yes` | delete an artifact |
+| `rshow delete <slug> [--version n] [--force] --yes` | delete an artifact, or one version of it |
 | `rshow theme new <name>` | write a preset folder that extends a built-in theme |
 | `rshow theme check <dir>` | check a theme or preset folder against the token contract |
 | `rshow theme preview <dir>` | build the theme, then serve its preview page on `127.0.0.1` |
@@ -77,7 +77,7 @@ They are never errors, because a person may have a reason.
 `--no-style` skips all of them, and `--json` prints the findings as data.
 
 `--offline` skips every request the check would make, so it works on a plane and it never waits on the host.
-A published page that links `/_themes/<name>@<n>/` needs the network to confirm that version exists, so a `--offline` run reports those links as unchecked rather than as a pass.
+A published page that links `/_themes/<name>@<n>/` or `/_themes/<name>@latest/` needs the network to confirm the theme exists, so a `--offline` run reports those links as unchecked rather than as a pass.
 
 `rshow publish` runs the check first and stops while there is an error, so a page that fails the contract does not go live.
 `--no-check` skips that step.
@@ -90,7 +90,7 @@ rshow preview <dir> [--theme <dir>] [--offline] [--no-reload] [--port 4321]
 ```
 
 It serves `<dir>` on `127.0.0.1`, prints `http://127.0.0.1:<port>` and keeps running until you stop it.
-It works offline: `/_themes/<name>@<n>/` comes from `--theme` when that folder is the theme, then from the built-in theme on disk, and only then from the art URL in the config, which `--offline` turns off.
+It works offline: `/_themes/<name>@<n>/` and `/_themes/<name>@latest/` come from `--theme` when that folder is the theme, then from the built-in theme on disk, and only then from the art URL in the config, which `--offline` turns off.
 A page that uses `<artifact>/_data/<key>` gets a local store for the session, and the page reloads by itself when a file changes, which `--no-reload` turns off.
 
 ## publish
@@ -174,8 +174,9 @@ Set the tags and the project in `rshow.json` when they are a fact about the fold
 `rshow theme publish <dir> [--label l] [--build cmd]` needs a `theme.json` with a `name`, publishes the folder as `theme-<name>`, sets it public and prints `/_themes/<name>@<n>/`.
 `rshow theme list` prints the theme artifacts and the version each one serves.
 `rshow show <slug>` prints the artifact, its versions, its shares, its pin and its URLs.
-`rshow delete <slug> --yes` deletes the artifact and every version.
+`rshow delete <slug> --yes` deletes the artifact and every version, and `--version <n>` deletes only that version.
 It needs `--yes`, and it needs a yes from the person.
+A theme or a theme version also needs `--force`, because pages link to it.
 
 A preset is a small folder whose `theme.json` carries `"extends": "default"` and only token and font overrides.
 `rshow theme new <name> [--dir <parent>] [--from default]` writes it with both modes pre-filled with the base values of `--bg`, `--fg`, `--muted`, `--accent` and `--layer-01`, and prints the path plus `next: rshow theme check <dir>`.
@@ -238,7 +239,7 @@ Later files win, and the environment beats both.
 | `art` | the art base the preview proxies `/_themes/` to, set by `rshow init` or `RSHOW_ART`; without it a theme lookup is skipped with a warning |
 | `slug` | the artifact to publish to, overridden by `--slug` |
 | `title` | the human title, overridden by `--title` |
-| `theme` | the theme a page should link: `<name>`, `<name>@latest` or a fixed `<name>@<n>`. `rshow config` prints it as `<name>@<n>` and you apply it by hand |
+| `theme` | the theme a page should link: `<name>`, `<name>@latest` or a fixed `<name>@<n>`. Agents link `<name>@latest` and `rshow config` keeps it that way, with `theme_resolved` beside it when the lookup works |
 | `tokens` | token overrides recorded and printed by `rshow config`. No command writes them into a page, so apply them by hand |
 | `build` | the command `publish` runs in the folder first |
 | `out` | the folder under `<dir>` to publish, default `dist` |

@@ -38,11 +38,11 @@ Link `fonts.css`, `tokens.css` and `project.css`, then `mode.js` in the head and
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Immutable artifacts for reproducible figures</title>
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/project.css">
-<script src="/_themes/default@3/mode.js"></script>
-<script defer src="/_themes/default@3/project.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/project.css">
+<script src="/_themes/default@latest/mode.js"></script>
+<script defer src="/_themes/default@latest/project.js"></script>
 </head>
 <body>
 <div class="project">

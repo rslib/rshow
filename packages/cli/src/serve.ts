@@ -13,6 +13,7 @@ import {
   MAX_DATA_KEYS,
   MAX_SKETCH_DATA_BYTES,
   SKETCH_DATA_KEY_PREFIX,
+  THEME_LATEST_PATTERN,
   THEME_VERSION_PATTERN,
 } from 'rshow-shared';
 import { ApiError } from './exit.ts';
@@ -247,7 +248,7 @@ async function handleTheme(
   const rest = pathname.slice(PROXY_PREFIX.length);
   const slash = rest.indexOf('/');
   const segment = slash < 0 ? rest : rest.slice(0, slash);
-  const match = THEME_VERSION_PATTERN.exec(segment);
+  const match = THEME_VERSION_PATTERN.exec(segment) ?? THEME_LATEST_PATTERN.exec(segment);
   if (match === null) {
     // /_themes/<name>.json and anything else stays a proxy concern.
     if (session.art !== '' && !session.offline) {

@@ -46,19 +46,25 @@ export async function resolvedTheme(art: string, theme: string): Promise<string>
   return `${ref.name}@${await fetchVersion(art, ref.name)}`;
 }
 
-async function resolveTheme(config: AppConfig): Promise<AppConfig> {
+type ShownConfig = AppConfig & { theme_resolved?: string };
+
+// A theme named with no version, or with @latest, is printed as <name>@latest
+// and its lookup adds theme_resolved, so a page that names the theme keeps
+// following new versions. A fixed <name>@<n> is printed as it is.
+async function resolveTheme(config: AppConfig): Promise<ShownConfig> {
   const theme = config.theme ?? 'default';
   const ref = themeRefOf(theme);
   if (ref.version !== undefined && ref.version !== 'latest') return config;
+  const latest: ShownConfig = { ...config, theme: `${ref.name}@latest` };
   if (config.art === undefined) {
     warn('no art host configured; skipping theme version lookup');
-    return config;
+    return config.theme === undefined ? config : latest;
   }
   try {
-    return { ...config, theme: await resolvedTheme(config.art, theme) };
+    return { ...latest, theme_resolved: await resolvedTheme(config.art, theme) };
   } catch (err) {
     warn(`cannot resolve theme ${ref.name}: ${messageOf(err)}`);
-    return config.theme === undefined ? config : { ...config, theme: ref.name };
+    return config.theme === undefined ? config : latest;
   }
 }
 

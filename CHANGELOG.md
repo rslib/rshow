@@ -5,6 +5,19 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Changed
+
+- Teach agents to link themes as `@latest`, so a theme fix reaches their pages with no republish.
+
+### Added
+
+- Add `rshow delete <slug> --version <n>` and a delete button on each version.
+- Add `/_themes/<name>@latest/`, which follows the current theme version.
+
+### Fixed
+
+- Stop `rshow delete` from removing a theme that pages link to, unless you pass `--force`.
+
 ## [0.0.7] - 2026-11-05
 
 ### Added

@@ -37,12 +37,12 @@ The status line beside the buttons always names the width and the height, so the
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Immutable artifacts for reproducible figures</title>
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/poster.css">
-<script src="/_themes/default@3/mode.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/poster.css">
+<script src="/_themes/default@latest/mode.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-<script defer src="/_themes/default@3/poster.js"></script>
+<script defer src="/_themes/default@latest/poster.js"></script>
 </head>
 <body>
 

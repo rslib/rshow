@@ -28,7 +28,8 @@ const VERSION_CACHE_CONTROL = "public, max-age=31536000, immutable";
 const JSON_CONTENT_TYPE = "application/json";
 const BLOB_CACHE_CONTROL = "public, max-age=31536000, immutable";
 
-const ARTIFACT_COLUMNS = "slug, title, owner, mode, pinned, latest, project, created_at, updated_at";
+const ARTIFACT_COLUMNS =
+  "slug, title, owner, mode, pinned, latest, last_n, version_gen, project, created_at, updated_at";
 const VERSION_COLUMNS = "slug, n, label, manifest_key, files, bytes, created_by, created_at";
 
 interface AccessEntry {
@@ -39,7 +40,7 @@ interface AccessEntry {
 const accessMemory = new Map<string, AccessEntry>();
 const manifestMemory = new Map<string, Manifest>();
 const versionMemory = new Map<string, VersionRow>();
-const versionNumbers = new Map<string, Set<number>>();
+const versionKeys = new Map<string, Set<string>>();
 const trackedKeys = new Set<string>();
 
 export function accessCacheKey(slug: string): string {
@@ -54,12 +55,14 @@ export function blobCacheKey(hash: string): string {
   return `${CACHE_ORIGIN}/blob/${hash}`;
 }
 
-export function versionCacheKey(slug: string, n: number): string {
-  return `${CACHE_ORIGIN}/version/${slug}/${n}`;
+// The generation is part of the key, so a delete retires every copy an older
+// isolate holds and a version number is never served from a stale cache.
+export function versionCacheKey(slug: string, n: number, gen: number): string {
+  return `${CACHE_ORIGIN}/version/${slug}/${n}/${gen}`;
 }
 
-function versionMemoryKey(slug: string, n: number): string {
-  return `${slug}/${n}`;
+function versionMemoryKey(slug: string, n: number, gen: number): string {
+  return `${slug}/${n}/${gen}`;
 }
 
 function rememberAccess(slug: string, value: AccessRecord | null, expires: number): void {
@@ -82,8 +85,8 @@ function rememberManifest(key: string, value: Manifest): void {
   }
 }
 
-function rememberVersion(slug: string, n: number, row: VersionRow): void {
-  const key = versionMemoryKey(slug, n);
+function rememberVersion(slug: string, n: number, gen: number, row: VersionRow): void {
+  const key = versionMemoryKey(slug, n, gen);
   versionMemory.delete(key);
   versionMemory.set(key, row);
   while (versionMemory.size > VERSION_MAX_ENTRIES) {
@@ -91,9 +94,9 @@ function rememberVersion(slug: string, n: number, row: VersionRow): void {
     if (oldest === undefined) break;
     versionMemory.delete(oldest);
   }
-  const numbers = versionNumbers.get(slug) ?? new Set<number>();
-  numbers.add(n);
-  versionNumbers.set(slug, numbers);
+  const keys = versionKeys.get(slug) ?? new Set<string>();
+  keys.add(versionCacheKey(slug, n, gen));
+  versionKeys.set(slug, keys);
 }
 
 function decodeVersion(text: string): VersionRow | null {
@@ -253,36 +256,40 @@ export async function invalidateProjectAccess(env: Env, project: string): Promis
   }
 }
 
-export async function versionFor(env: Env, slug: string, n: number): Promise<VersionRow | null> {
-  const memory = versionMemory.get(versionMemoryKey(slug, n));
+export async function versionFor(env: Env, artifact: ArtifactRow, n: number): Promise<VersionRow | null> {
+  const gen = artifact.version_gen;
+  const memory = versionMemory.get(versionMemoryKey(artifact.slug, n, gen));
   if (memory) {
-    rememberVersion(slug, n, memory);
+    rememberVersion(artifact.slug, n, gen, memory);
     return memory;
   }
 
-  const cached = await cacheGet(versionCacheKey(slug, n));
+  const key = versionCacheKey(artifact.slug, n, gen);
+  const cached = await cacheGet(key);
   if (cached) {
     const row = decodeVersion(await cached.text());
     if (row) {
-      rememberVersion(slug, n, row);
+      rememberVersion(artifact.slug, n, gen, row);
       return row;
     }
   }
 
-  const row = await getVersion(env, slug, n);
+  const row = await getVersion(env, artifact.slug, n);
   if (!row) return null;
-  rememberVersion(slug, n, row);
-  await cachePut(versionCacheKey(slug, n), JSON.stringify(row), VERSION_CACHE_CONTROL);
+  rememberVersion(artifact.slug, n, gen, row);
+  await cachePut(key, JSON.stringify(row), VERSION_CACHE_CONTROL);
   return row;
 }
 
 export async function invalidateVersions(slug: string): Promise<void> {
-  const numbers = versionNumbers.get(slug);
-  versionNumbers.delete(slug);
-  if (!numbers) return;
-  for (const n of numbers) {
-    versionMemory.delete(versionMemoryKey(slug, n));
-    const key = versionCacheKey(slug, n);
+  const prefix = `${slug}/`;
+  for (const key of [...versionMemory.keys()]) {
+    if (key.startsWith(prefix)) versionMemory.delete(key);
+  }
+  const keys = versionKeys.get(slug);
+  versionKeys.delete(slug);
+  if (!keys) return;
+  for (const key of keys) {
     trackedKeys.delete(key);
     try {
       await caches.default.delete(key);
@@ -347,7 +354,7 @@ export async function clearResponseCache(): Promise<void> {
   accessMemory.clear();
   manifestMemory.clear();
   versionMemory.clear();
-  versionNumbers.clear();
+  versionKeys.clear();
   const keys = [...trackedKeys];
   trackedKeys.clear();
   for (const key of keys) {

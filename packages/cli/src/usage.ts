@@ -21,7 +21,8 @@ commands:
   show <slug>             artifact, versions and shares
   share <slug>            set mode or change shares
   pin <slug> <n|live>     serve version n, or live for the newest
-  delete <slug> --yes     delete an artifact
+  delete <slug> [--version n] [--force] --yes
+                          delete an artifact, or one version of it
   login [--url u]         save the API token for this account
   logout [--url u]        remove the saved token for a server
   completion <shell>      print a completion script for bash, zsh or fish
@@ -73,8 +74,10 @@ usage error. --offline skips the theme version lookup on the art host.
 errors:
   no index.html at the root, unless theme.json makes the folder a theme
   a local href, src, poster, srcset, CSS url() or @import with no file behind it
-  a root-relative reference other than /_themes/<name>@<n>/<path>
-  a /_themes/<name>@<n>/ path whose version the art host does not have
+  a root-relative reference other than /_themes/<name>@<n>/<path> or
+    /_themes/<name>@latest/<path>
+  a /_themes/<name>@<n>/ path whose version the art host does not have, or an
+    @latest whose theme it does not have
   a script from a host other than cdnjs.cloudflare.com, cdn.jsdelivr.net,
     unpkg.com, or one of those without an exact version (@1.2.3, /1.2.3/ on cdnjs)
   a stylesheet from a host other than fonts.googleapis.com, cdn.jsdelivr.net,
@@ -134,9 +137,9 @@ Style warnings:
 export const PREVIEW_USAGE = `usage: rshow preview <dir> [--theme <dir>] [--offline] [--no-reload] [--port 4321]
 
 Serves <dir> on 127.0.0.1: index.html for a folder, content types for files.
-Works offline: /_themes/<name>@<n>/ is served from --theme when it names that
-theme, then from the built-in themes on disk, and only then proxied to the art
-URL from config, which --offline turns off.
+Works offline: /_themes/<name>@<n>/ and /_themes/<name>@latest/ are served
+from --theme when it names that theme, then from the built-in themes on disk,
+and only then proxied to the art URL from config, which --offline turns off.
 The page is reloaded on its own when a file changes; --no-reload turns that off.
 Scripts that use <artifact>/_data/<key> get a local store in that same session.`;
 
@@ -146,9 +149,10 @@ Prints the merged config as JSON: ~/.config/rshow/config.json first, then
 <dir>/rshow.json (default: the current folder). RSHOW_URL overrides url and
 RSHOW_ART overrides art. <dir>/rshow.json also takes project and tags; later
 files win. Run rshow init to write url and art.
-A theme with no version, or @latest, is looked up on the art host and printed
-as <name>@<n>; when that fails a warning goes to stderr. --offline skips it, and
-so does a config with no art host.
+A theme with no version, or @latest, prints as <name>@latest, and with the
+network its lookup adds theme_resolved as <name>@<n>; when the lookup fails a
+warning goes to stderr and the key is left out. --offline prints the loaded
+config as it is, and so does a config with no art host.
 The token is RSHOW_TOKEN, else the token rshow login saved in the macOS
 Keychain, the Linux keyring or a file with mode 600.`;
 
@@ -214,11 +218,11 @@ export const THEME_PREVIEW_USAGE = `usage: rshow theme preview <dir> [--offline]
 
 Builds the theme folder into a temporary folder, serves that on 127.0.0.1 and
 prints the URL of index.html, the preview page that shows every layout. The
-built folder answers /_themes/<name>@<n>/ and is rebuilt, and the page reloaded,
-when the folder changes; --no-reload turns the reload off. A /_themes/ path for
-another theme comes from the built-in themes on disk, then from the art URL
-from config, which --offline turns off. The temporary folder goes when the
-server stops.`;
+built folder answers /_themes/<name>@<n>/ and /_themes/<name>@latest/ and is
+rebuilt, and the page reloaded, when the folder changes; --no-reload turns the
+reload off. A /_themes/ path for another theme comes from the built-in themes
+on disk, then from the art URL from config, which --offline turns off. The
+temporary folder goes when the server stops.`;
 
 export const THEME_PUBLISH_USAGE = `usage: rshow theme publish <dir> [--label l] [--build cmd] [--no-check] [--force]
 
@@ -231,7 +235,8 @@ built on top of its base theme, and the built folder is what gets published.
 When the newest version already holds the built folder's paths and hashes, it
 prints unchanged: theme-<name> is already v<n> and publishes nothing.
 --force publishes a new version anyway.
-Prints /_themes/<name>@<n>/.`;
+Prints /_themes/<name>@<n>/. Pages link /_themes/<name>@latest/ by default, so
+they follow every version you publish here.`;
 
 export const THEME_LIST_USAGE = `usage: rshow theme list
 
@@ -309,9 +314,11 @@ export const PIN_USAGE = `usage: rshow pin <slug> <n|live>
 
 Pins version n, or live to serve the newest version again.`;
 
-export const DELETE_USAGE = `usage: rshow delete <slug> --yes
+export const DELETE_USAGE = `usage: rshow delete <slug> [--version n] [--force] --yes
 
-Deletes the artifact and needs --yes.`;
+Deletes the artifact, or with --version n only that version, and needs --yes.
+A theme or a theme version also needs --force, because pages link to it.
+A pinned version and the only version of an artifact cannot be deleted.`;
 
 export const LOGIN_USAGE = `usage: rshow login [--url u]
 

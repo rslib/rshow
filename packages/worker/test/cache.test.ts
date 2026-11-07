@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { env } from "cloudflare:test";
+import { versionCacheKey } from "../src/cache";
 import {
   addProjectMember,
   api,
@@ -74,7 +75,7 @@ describe("viewer cache", () => {
     await setMode("drop-versions", "public");
     expect((await viewer("/drop-versions/v1/")).status).toBe(200);
 
-    const key = "https://rshow.internal/version/drop-versions/1";
+    const key = versionCacheKey("drop-versions", 1, 0);
     expect((await caches.default.match(key)) ?? null).not.toBeNull();
 
     await api("DELETE", "/api/artifacts/drop-versions", { email: OWNER });

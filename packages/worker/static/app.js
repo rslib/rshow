@@ -84,10 +84,14 @@
         var el = closest(event, "[data-action]");
         if (!el || !root.contains(el)) return;
         var action = el.getAttribute("data-action");
-        if (action !== "pin" && action !== "set-live" && action !== "newest") return;
+        if (action !== "pin" && action !== "set-live" && action !== "newest" && action !== "delete-version") return;
         event.preventDefault();
         if (action === "newest") {
           api("PATCH", "/api/artifacts/" + encodeURIComponent(props.slug), { pinned: null }).then(reload, fail);
+        } else if (action === "delete-version") {
+          var version = Number(el.getAttribute("data-n"));
+          if (!window.confirm("Delete v" + version + "? This cannot be undone.")) return;
+          api("DELETE", "/api/artifacts/" + encodeURIComponent(props.slug) + "/versions/" + version).then(reload, fail);
         } else {
           api("PATCH", "/api/artifacts/" + encodeURIComponent(props.slug), {
             pinned: Number(el.getAttribute("data-n"))

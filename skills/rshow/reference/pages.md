@@ -27,8 +27,8 @@ A single file published on its own becomes `index.html` and nothing else is uplo
 
 ## The skeleton
 
-Replace `<name>@<n>` with the `theme` value that `rshow config <dir>` prints, which the server resolves to the current version. Use `default@3` only when `rshow config` warns that it cannot resolve the theme.
-Every link carries the same version on purpose, because a mixed version renders somewhere between two designs.
+Link the theme at `@latest`, so a theme fix reaches the page with no republish. Write a number only when the person asks to freeze a page, such as a talk on the day it is given. A page frozen on a number needs 8 or newer for math.
+Every link names the same theme on purpose, and all of them use `@latest` or all use the same number, because a mix of two versions renders somewhere between two designs.
 
 ```html
 <!doctype html>
@@ -37,10 +37,10 @@ Every link carries the same version on purpose, because a mixed version renders 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Q3 latency report</title>
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/page.css">
-<script src="/_themes/default@3/mode.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/page.css">
+<script src="/_themes/default@latest/mode.js"></script>
 <style>:root{--accent: #0f62fe;}</style>
 </head>
 <body>
@@ -164,7 +164,7 @@ Put the same thing in `rshow.json` when it should not be retyped:
 {
   "slug": "status",
   "title": "Cluster status",
-  "theme": "default@3",
+  "theme": "default@latest",
   "build": "npm run build",
   "out": "dist"
 }

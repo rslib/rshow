@@ -1,8 +1,10 @@
 # rshow delete
 
 ```sh
-usage: rshow delete <slug> --yes
+usage: rshow delete <slug> [--version n] [--force] --yes
 
-Deletes the artifact and needs --yes.
+Deletes the artifact, or with --version n only that version, and needs --yes.
+A theme or a theme version also needs --force, because pages link to it.
+A pinned version and the only version of an artifact cannot be deleted.
 ```
 

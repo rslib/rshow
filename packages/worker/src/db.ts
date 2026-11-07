@@ -10,7 +10,8 @@ import type {
   VersionRow
 } from "./types";
 
-const ARTIFACT_COLUMNS = "slug, title, owner, mode, pinned, latest, project, created_at, updated_at";
+const ARTIFACT_COLUMNS =
+  "slug, title, owner, mode, pinned, latest, last_n, version_gen, project, created_at, updated_at";
 const PROJECT_COLUMNS = "slug, title, description, owner, created_at, updated_at";
 
 export interface ArtifactFilter {
@@ -71,6 +72,13 @@ export async function listVersions(env: Env, slug: string): Promise<VersionRow[]
     .bind(slug)
     .all<VersionRow>();
   return result.results ?? [];
+}
+
+export async function countVersions(env: Env, slug: string): Promise<number> {
+  const row = await env.DB.prepare("SELECT COUNT(*) AS total FROM versions WHERE slug = ?1")
+    .bind(slug)
+    .first<{ total: number }>();
+  return row?.total ?? 0;
 }
 
 export async function servedVersion(env: Env, artifact: ArtifactRow): Promise<VersionRow | null> {

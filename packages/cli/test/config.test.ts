@@ -213,7 +213,8 @@ test('config resolves a missing theme to default@latest', async (t) => {
     art: api.url,
     out: 'dist',
     slug: 'deck',
-    theme: 'default@3',
+    theme: 'default@latest',
+    theme_resolved: 'default@3',
   });
 });
 
@@ -225,7 +226,9 @@ test('config resolves name@latest to the served version', async (t) => {
   const result = await runCli(['config', dir], { HOME: await makeTempDir({}) });
   assert.equal(result.code, 0);
   assert.equal(result.stderr, '');
-  assert.equal(JSON.parse(result.stdout).theme, 'mono@7');
+  const printed = JSON.parse(result.stdout);
+  assert.equal(printed.theme, 'mono@latest');
+  assert.equal(printed.theme_resolved, 'mono@7');
 });
 
 test('config leaves name@n alone and makes no request', async (t) => {
@@ -254,7 +257,8 @@ test('an unknown theme keeps the value and warns', async (t) => {
   const named = await makeTempDir({ 'rshow.json': JSON.stringify({ art: api.url, theme: 'mono@latest' }) });
   const kept = await runCli(['config', named], { HOME: home });
   assert.equal(kept.code, 0);
-  assert.equal(JSON.parse(kept.stdout).theme, 'mono');
+  assert.equal(JSON.parse(kept.stdout).theme, 'mono@latest');
+  assert.equal(JSON.parse(kept.stdout).theme_resolved, undefined);
   assert.match(kept.stderr, /^rshow: warning: cannot resolve theme mono: /);
 });
 
@@ -265,7 +269,8 @@ test('config rejects a theme name it cannot ask for', async (t) => {
 
   const result = await runCli(['config', dir], { HOME: await makeTempDir({}) });
   assert.equal(result.code, 0);
-  assert.equal(JSON.parse(result.stdout).theme, 'Mon_o');
+  assert.equal(JSON.parse(result.stdout).theme, 'Mon_o@latest');
+  assert.equal(JSON.parse(result.stdout).theme_resolved, undefined);
   assert.equal(api.requests.length, 0);
   assert.match(result.stderr, /^rshow: warning: cannot resolve theme Mon_o: theme name is not valid$/m);
 });
@@ -283,7 +288,8 @@ test('config --offline skips the theme lookup', async (t) => {
 
   const bare = await makeTempDir({ 'rshow.json': JSON.stringify({ art: api.url }) });
   const online = await runCli(['config', bare], { HOME: home });
-  assert.equal(JSON.parse(online.stdout).theme, 'default@3');
+  assert.equal(JSON.parse(online.stdout).theme, 'default@latest');
+  assert.equal(JSON.parse(online.stdout).theme_resolved, 'default@3');
   assert.equal(api.requests.length, 1);
 
   const offline = await runCli(['config', bare, '--offline'], { HOME: home });

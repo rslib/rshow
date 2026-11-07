@@ -18,6 +18,8 @@ export interface ArtifactRow {
   mode: Mode;
   pinned: number | null;
   latest: number | null;
+  last_n: number;
+  version_gen: number;
   project: string | null;
   created_at: string;
   updated_at: string;

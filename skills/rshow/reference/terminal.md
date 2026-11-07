@@ -26,11 +26,11 @@ The viewer and the TUI kit are the theme's, and both are guided kits: the frame 
 ## The viewer
 
 ```html
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/terminal.css">
-<script src="/_themes/default@3/mode.js"></script>
-<script defer src="/_themes/default@3/terminal.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/terminal.css">
+<script src="/_themes/default@latest/mode.js"></script>
+<script defer src="/_themes/default@latest/terminal.js"></script>
 ...
 <figure class="terminal" data-mode="ansi" data-src="capture.ans"
         data-cols="100" data-rows="30" data-title="procview" data-palette="default"></figure>

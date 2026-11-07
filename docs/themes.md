@@ -11,30 +11,44 @@ Print is always light.
 
 Every custom property of that theme, with both values and its role, is in [reference/theme-tokens.md](reference/theme-tokens.md).
 
-A page links the theme with root-relative URLs at one version:
+A page links the theme with root-relative URLs at `@latest`:
 
 ```html
-<link rel="stylesheet" href="/_themes/default@3/page.css">
-<script src="/_themes/default@3/mode.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/page.css">
+<script src="/_themes/default@latest/mode.js"></script>
 ```
 
 A deck links `deck.css` where a page links `page.css`, and a report links `report.css`.
-Every URL carries the same `<name>@<n>`, and `/_themes/<name>@<n>/` serves that version for one year as `immutable`, so every page on the host shares one browser cache entry.
+Every URL names the same theme.
+A mix is possible for a short time after a theme publish, because each file has its own 60 second redirect.
+`/_themes/<name>@<n>/` serves one version for a year as `immutable`, so every page on that version shares one browser cache entry.
 An override goes in one `:root` block in the page, and a page may also carry one inline `<style>` block with its own classes and its own layouts.
 Own CSS takes colour, type and space from the tokens with `var(--...)`, so both modes, print and a theme swap keep working, and it never restyles a theme class globally.
 
 `rshow theme list` prints the themes you can see and the version each one serves.
+
+## Following the newest version
+
+`/_themes/<name>@latest/<path>` answers a 302 to `/_themes/<name>@<served>/<path>`, so a page links the name once and every view reads the version the theme serves now.
+`<served>` is the same version `/_themes/<name>.json` reports, so a pin wins over the newest one.
+That redirect is the one moving link a page may carry, and `rshow check` accepts it.
+A theme fix then reaches a page with no republish, and it reaches the page's old versions too, because each of those versions carries the link.
+Freeze a page by writing the number instead, such as `/_themes/default@8/page.css`, and it stops moving.
+Roll a theme back with `rshow pin theme-<name> <n>`, which moves `@latest` for every page at once, and `rshow pin theme-<name> live` follows the newest version again.
+The redirect answers `cache-control: public, max-age=60`, so a change takes up to about 2 minutes to reach a page.
+A page that already opened keeps what it has until it reloads.
 
 ## Math
 
 Math is an addon of the theme rather than a layout: `math.css` and `math.js` in the theme folder, and `theme.json` names them under `addons`.
 
 ```html
-<link rel="stylesheet" href="/_themes/default@8/math.css">
-<script defer src="/_themes/default@8/math.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/math.css">
+<script defer src="/_themes/default@latest/math.js"></script>
 ```
 
-Math needs `default@8` or newer, and `rshow check` reports a missing file when the theme a page names has no `math.js` or no `math.css`.
+Math ships with the current theme, and `rshow check` reports a missing file when the theme a page names has no `math.js` or no `math.css`.
+A page frozen on a number needs 8 or newer for math.
 A page links the two only when it writes math, and `math.js` goes before `deck.js` in a deck.
 The LaTeX is the text of an element with the class `math`: a `div.math` is display math and any other element is inline.
 `$...$` in the prose is text and is never scanned, so a price such as `$5` stays a price.
@@ -85,9 +99,10 @@ A page takes the theme from two config files, and the later one wins:
 - `~/.config/rshow/config.json`, which `rshow init --theme acme` writes.
 - `rshow.json` in the page folder: `{"slug", "title", "theme", "tokens", "project", "tags", "build", "out"}`.
 
-`rshow config [dir]` prints the merged config and resolves the version.
-No theme means `default@latest`, and `<name>` or `<name>@latest` becomes `<name>@<n>` from `/_themes/<name>.json`.
+`rshow config [dir]` prints the merged config with `theme` as `<name>@latest`.
+No theme means `default@latest`, and a bare `<name>` or `<name>@latest` stays that way.
+With the network it also prints `theme_resolved` as the `<name>@<n>` the art host serves now.
 A fixed `<name>@<n>` is printed as it is, with no request.
-When the lookup fails it prints a warning and leaves the name alone, and `--offline` skips it.
+When the lookup fails it prints a warning and leaves `theme_resolved` out, and `--offline` skips it.
 
-Pin the version you tested in a page you publish, and let `rshow config` do the lookup when you are starting one.
+Link `@latest` in every page, and write a number only when the person asks to freeze one, such as a talk on the day it is given.

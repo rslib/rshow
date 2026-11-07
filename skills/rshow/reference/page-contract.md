@@ -8,7 +8,7 @@ It reads the files a publish would upload, so for a prerendered site it reads th
 
 - One `index.html` at the root of the folder you publish.
 - Every other path inside the artifact is relative and has no leading slash, such as `chart.svg`.
-- The two root-relative prefixes are `/_themes/<name>@<n>/` and `/_data/`, and both point at the host on purpose.
+- The root-relative prefixes are `/_themes/<name>@latest/`, `/_themes/<name>@<n>/` and `/_data/`, and all point at the host on purpose.
 - At most 2000 files and 100 MiB per version, and at most 25 MiB per file.
 - No theme file in the artifact.
   No `deck.css`, no `page.css`, no font file, no `assets/` copy of a theme.
@@ -34,6 +34,7 @@ The theme files under `/_themes/` count as `'self'`, so a linked theme needs no 
 ## CDN builds, pinned
 
 Pin the exact version in the URL and never write `@latest` or a moving tag, which `rshow check` counts as an error.
+A theme link is the one moving link that is allowed, so `/_themes/<name>@latest/` is right and a number is for a frozen page.
 
 | Library | Pinned URL |
 |---|---|

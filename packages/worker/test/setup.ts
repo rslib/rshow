@@ -4,6 +4,7 @@ import { clearResponseCache } from "../src/cache";
 import { resetCallCounts } from "../src/metrics";
 import blobsMigration from "../migrations/0002_blobs.sql?raw";
 import pageDataBlobMigration from "../migrations/0004_page_data_blob.sql?raw";
+import versionCountersMigration from "../migrations/0005_version_counters.sql?raw";
 import projectsMigration from "../migrations/0003_projects.sql?raw";
 import initMigration from "../migrations/0001_init.sql?raw";
 
@@ -25,7 +26,8 @@ const STATEMENTS = [
   ...statementsOf(initMigration),
   ...statementsOf(blobsMigration),
   ...statementsOf(projectsMigration),
-  ...statementsOf(pageDataBlobMigration)
+  ...statementsOf(pageDataBlobMigration),
+  ...statementsOf(versionCountersMigration)
 ];
 
 const DROPS = [

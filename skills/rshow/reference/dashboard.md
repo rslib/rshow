@@ -30,11 +30,11 @@ A dashboard that nobody filters is a report with extra steps.
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Write-ahead log, results per run</title>
-<link rel="stylesheet" href="/_themes/default@3/fonts.css">
-<link rel="stylesheet" href="/_themes/default@3/tokens.css">
-<link rel="stylesheet" href="/_themes/default@3/dashboard.css">
-<script src="/_themes/default@3/mode.js"></script>
-<script defer src="/_themes/default@3/dashboard.js"></script>
+<link rel="stylesheet" href="/_themes/default@latest/fonts.css">
+<link rel="stylesheet" href="/_themes/default@latest/tokens.css">
+<link rel="stylesheet" href="/_themes/default@latest/dashboard.css">
+<script src="/_themes/default@latest/mode.js"></script>
+<script defer src="/_themes/default@latest/dashboard.js"></script>
 </head>
 <body>
 <div class="dashboard" data-src="results.csv" data-facet="workload"

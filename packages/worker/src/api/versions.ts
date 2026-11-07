@@ -1,13 +1,13 @@
 import type { Hono } from "hono";
 import { randomHex } from "../auth";
-import { canPublish } from "../authz";
-import { invalidateAccess, manifestFor } from "../cache";
+import { canManage, canPublish } from "../authz";
+import { invalidateAccess, invalidateVersions, manifestFor } from "../cache";
 import { MAX_VERSION_BYTES, MAX_VERSION_FILES, THEME_PREFIX, type Version, type VersionDetail } from "../constants";
-import { blobSizes, getVersion } from "../db";
+import { blobSizes, countVersions, getArtifact, getArtifactTags, getVersion } from "../db";
 import { json, jsonError } from "../http";
 import { isManifestEntry, isValidManifestPath, manifestKey } from "../manifest";
 import type { AppEnv, ArtifactRow, Env, Manifest, VersionRow } from "../types";
-import { actorOf, loadAccessible, readBody, type JsonObject } from "./common";
+import { actorOf, loadAccessible, readBody, toArtifact, type JsonObject } from "./common";
 
 export interface VersionInput {
   label: string;
@@ -65,7 +65,7 @@ export async function storeVersion(env: Env, artifact: ArtifactRow, input: Versi
       env.DB.prepare(
         "INSERT INTO versions (slug, n, label, manifest_key, files, bytes, created_by, created_at) SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8 WHERE (SELECT latest FROM artifacts WHERE slug = ?1) IS ?9"
       ).bind(artifact.slug, input.n, input.label, key, input.files, input.bytes, input.createdBy, input.now, input.base),
-      env.DB.prepare("UPDATE artifacts SET latest = ?2, updated_at = ?3 WHERE slug = ?1 AND latest IS ?4").bind(
+      env.DB.prepare("UPDATE artifacts SET latest = ?2, last_n = ?2, updated_at = ?3 WHERE slug = ?1 AND latest IS ?4").bind(
         artifact.slug,
         input.n,
         input.now,
@@ -115,6 +115,59 @@ export function registerVersions(app: Hono<AppEnv>): void {
     return json(toVersionDetail(c.env, access.artifact.slug, version, manifest));
   });
 
+  app.delete("/api/artifacts/:slug/versions/:n", async (c) => {
+    const email = c.get("identity").email as string;
+    const access = await loadAccessible(c.env, c.req.param("slug"), email);
+    if (!access) return jsonError("not found", 404);
+    if (!canManage(access.artifact, access.shares, actorOf(c), access.project)) {
+      return jsonError("owner access is required", 403);
+    }
+
+    const raw = c.req.param("n");
+    if (!/^[1-9][0-9]{0,8}$/.test(raw)) return jsonError("no such version", 404);
+    const n = Number(raw);
+    const slug = access.artifact.slug;
+
+    if (slug.startsWith(THEME_PREFIX) && c.req.query("force") !== "1") {
+      return jsonError("pages link to theme versions; pass force to delete it", 409);
+    }
+
+    const version = await getVersion(c.env, slug, n);
+    if (!version) return jsonError("no such version", 404);
+    if (access.artifact.pinned === n) {
+      return jsonError(`version ${n} is pinned; pin another version first`, 409);
+    }
+    if ((await countVersions(c.env, slug)) <= 1) {
+      return jsonError("this is the only version; delete the artifact instead", 409);
+    }
+
+    const now = new Date().toISOString();
+    let deletedChanges = 0;
+    try {
+      const [deleted] = await c.env.DB.batch([
+        c.env.DB.prepare(
+          "DELETE FROM versions WHERE slug = ?1 AND n = ?2 AND (SELECT pinned FROM artifacts WHERE slug = ?1) IS NOT ?2 AND (SELECT COUNT(*) FROM versions WHERE slug = ?1) > 1"
+        ).bind(slug, n),
+        c.env.DB.prepare(
+          "UPDATE artifacts SET latest = (SELECT MAX(n) FROM versions WHERE slug = ?1), version_gen = version_gen + 1, updated_at = ?2 WHERE slug = ?1"
+        ).bind(slug, now)
+      ]);
+      deletedChanges = deleted?.meta?.changes ?? 0;
+    } catch {
+      return jsonError("could not delete the version", 500);
+    }
+    if (deletedChanges !== 1) return jsonError("another change came first, retry", 409);
+
+    await discardManifest(c.env, version.manifest_key);
+    await invalidateVersions(slug);
+    await invalidateAccess(slug);
+
+    const updated = await getArtifact(c.env, slug);
+    if (!updated) return jsonError("not found", 404);
+    const tags = await getArtifactTags(c.env, slug);
+    return json(toArtifact(c.env, updated, access.role, tags));
+  });
+
   app.post("/api/artifacts/:slug/versions", async (c) => {
     const body = await readBody(c);
     if (!body.ok) return body.response;
@@ -161,7 +214,7 @@ export function registerVersions(app: Hono<AppEnv>): void {
 
     const label = typeof body.body.label === "string" ? body.body.label.trim().slice(0, 200) : "";
     const base = access.artifact.latest;
-    const n = (base ?? 0) + 1;
+    const n = Math.max(access.artifact.last_n, base ?? 0) + 1;
     const now = new Date().toISOString();
     const stored = await storeVersion(c.env, access.artifact, {
       label,

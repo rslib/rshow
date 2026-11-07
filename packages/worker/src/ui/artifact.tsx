@@ -1,3 +1,4 @@
+import { THEME_PREFIX } from "../constants";
 import { formatBytes } from "../html";
 import type { Env, ShareRow, VersionRow } from "../types";
 import {
@@ -33,10 +34,12 @@ function sharingSummary(artifact: UiArtifact, project: UiProjectAccess | null, s
   return base;
 }
 
-function VersionRowView(props: { artifact: UiArtifact; version: VersionRow; owner: boolean }) {
+function VersionRowView(props: { artifact: UiArtifact; version: VersionRow; owner: boolean; count: number }) {
   const version = props.version;
   const served = props.artifact.served === version.n;
   const pinned = props.artifact.pinned === version.n;
+  const deletable =
+    props.owner && !props.artifact.slug.startsWith(THEME_PREFIX) && !pinned && props.count > 1;
   return (
     <li class={served ? "version-row is-served" : "version-row"}>
       <span class="version-n mono">v{version.n}</span>
@@ -54,6 +57,11 @@ function VersionRowView(props: { artifact: UiArtifact; version: VersionRow; owne
       {props.owner && !served ? (
         <button type="button" class="btn-link" data-action="pin" data-n={version.n}>
           Pin here
+        </button>
+      ) : null}
+      {deletable ? (
+        <button type="button" class="btn-link" data-action="delete-version" data-n={version.n}>
+          Delete
         </button>
       ) : null}
     </li>
@@ -258,7 +266,7 @@ export function artifactPage(
             ) : (
               <ul class="version-list">
                 {versions.map((version) => (
-                  <VersionRowView artifact={artifact} version={version} owner={owner} />
+                  <VersionRowView artifact={artifact} version={version} owner={owner} count={versions.length} />
                 ))}
               </ul>
             )}
@@ -366,15 +374,19 @@ export function artifactPage(
           {owner ? (
             <div class="danger-zone">
               <h2>Danger zone</h2>
-              <button
-                type="button"
-                class="btn btn-danger"
-                data-island={ISLAND.delete}
-                data-props={islandProps({ slug: artifact.slug })}
-                data-action="delete-artifact"
-              >
-                Delete artifact
-              </button>
+              {artifact.slug.startsWith(THEME_PREFIX) ? (
+                <p class="side-text">Pages link to this theme. Delete it with rshow delete --force.</p>
+              ) : (
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  data-island={ISLAND.delete}
+                  data-props={islandProps({ slug: artifact.slug })}
+                  data-action="delete-artifact"
+                >
+                  Delete artifact
+                </button>
+              )}
             </div>
           ) : null}
         </aside>
