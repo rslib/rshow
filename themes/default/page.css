@@ -15,6 +15,13 @@
  * rest.
  */
 
+/* --wide is the measure a .wide block in main takes, such as a table of many
+   columns: the width of the dashboard. */
+:root {
+  --wide: 1180px;
+  --gutter: var(--space-06);
+}
+
 *,
 *::before,
 *::after {
@@ -28,7 +35,7 @@ html {
 
 body {
   margin: 0;
-  padding: var(--space-11) var(--space-06) var(--space-13);
+  padding: var(--space-11) var(--gutter) var(--space-13);
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
@@ -44,6 +51,24 @@ main {
      hold on one line. */
   max-width: 56ch;
   margin: 0 auto;
+}
+
+/* A wide block stays centred on the text column and stops at the gutter. */
+main .wide {
+  --wide-width: min(var(--wide), calc(100vw - 2 * var(--gutter)));
+  width: var(--wide-width);
+  margin-left: calc(50% - var(--wide-width) / 2);
+  margin-right: 0;
+}
+
+/* main.full drops the measure and takes the whole width between the gutters. */
+main.full {
+  max-width: none;
+}
+
+main.full .wide {
+  width: auto;
+  margin-left: 0;
 }
 
 :focus-visible {
@@ -246,9 +271,17 @@ tbody tr:last-child td {
   border-bottom: 0;
 }
 
+/* A wide table keeps every cell on one line and scrolls when it is still
+   too wide, so a value such as "394 +- 13" never breaks in two. */
+.table.wide th,
+.table.wide td {
+  white-space: nowrap;
+}
+
 td.num-cell,
 th.num-cell {
   text-align: right;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
@@ -290,8 +323,12 @@ footer a {
 /* --------------------------------------------------------- small screens */
 
 @media (max-width: 640px) {
+  :root {
+    --gutter: var(--space-05);
+  }
+
   body {
-    padding: var(--space-08) var(--space-05) var(--space-11);
+    padding: var(--space-08) var(--gutter) var(--space-11);
     font-size: var(--text-xs);
   }
 

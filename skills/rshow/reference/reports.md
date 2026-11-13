@@ -107,6 +107,8 @@ Numbering is generated, so never type a number into a heading.
 </figure>
 ```
 
+`<div class="report full">` drops the measure: the text column takes all the width between the contents and the notes.
+A table of many columns is `<figure class="table wide">`: on a wide screen it also takes the note column, `report.js` moves a side note below it, every cell stays on one line and the table scrolls when it still does not fit.
 `report.js` puts `Figure 1.` or `Table 1.` in front of the caption and counts in document order, so give every one an `id`.
 Draw the figure as inline `<svg>` with the colours from tokens, and give it a `viewBox` so it scales.
 An equation is `<div class="equation" id="eq-bytes">` with a `<div class="math">` of LaTeX inside it, and `report.js` adds `(1)` at the end of the line.

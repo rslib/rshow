@@ -248,6 +248,22 @@
       return best;
     }
 
+    // A .wide block in main spans the note column, so a note that would
+    // overlap one moves down to the line below it.
+    var wideNodes = main ? main.querySelectorAll('.wide') : [];
+
+    function clearWide(top, height, columnTop) {
+      for (var w = 0; w < wideNodes.length; w += 1) {
+        var rect = wideNodes[w].getBoundingClientRect();
+        var wideTop = rect.top + window.pageYOffset - columnTop;
+        var wideBottom = wideTop + rect.height;
+        if (top < wideBottom + GAP && top + height + GAP > wideTop) {
+          top = wideBottom + GAP;
+        }
+      }
+      return top;
+    }
+
     function placeNotes() {
       var n;
       if (!wide || !wide.matches) {
@@ -275,6 +291,7 @@
         if (top < floor) {
           top = floor;
         }
+        top = clearWide(top, note.offsetHeight, columnTop);
         note.style.top = Math.round(top) + 'px';
         floor = top + note.offsetHeight + GAP;
       }

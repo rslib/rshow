@@ -5,6 +5,15 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Added
+
+- Add the `wide` class to the default theme, so a table of many columns can pass the text column and keep each value on one line.
+- Add `<div class="report full">` and `<main class="full">`, which let a report or a page use the full width of the screen.
+
+### Fixed
+
+- Fix a wide table in a report that squeezed its cells and did not scroll.
+
 ## [0.0.9] - 2026-11-07
 
 ### Added

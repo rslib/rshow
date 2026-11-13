@@ -28,6 +28,8 @@
   --measure: 55ch;
   --toc-col: 200px;
   --note-col: 208px;
+  --wide: 1180px;
+  --gutter: var(--space-05);
 }
 
 *,
@@ -65,13 +67,17 @@ body {
   gap: var(--space-09);
   max-width: 1584px;
   margin: 0 auto;
-  padding: var(--space-09) var(--space-05) var(--space-13);
+  padding: var(--space-09) var(--gutter) var(--space-13);
 }
 
 /* Carbon md: a wider gutter, still one column. */
 @media (min-width: 672px) {
+  :root {
+    --gutter: var(--space-07);
+  }
+
   .report {
-    padding: var(--space-11) var(--space-07) var(--space-13);
+    padding: var(--space-11) var(--gutter) var(--space-13);
   }
 }
 
@@ -122,6 +128,55 @@ body {
 main {
   min-width: 0;
   max-width: var(--measure);
+}
+
+/* A .wide block, such as a table of many columns, may pass the measure up to
+   --wide. It runs to the right gutter, over the note column on a wide screen,
+   and report.js moves a note below it. The centred grid puts the text column's
+   left edge at 50vw - (measure + note-col - toc-col) / 2. */
+main .wide {
+  width: min(var(--wide), calc(100vw - 2 * var(--gutter)));
+}
+
+@media (min-width: 1056px) {
+  main .wide {
+    width: max(
+      calc(100% + var(--space-07) + var(--note-col)),
+      min(var(--wide), calc(50vw - var(--gutter) + (100% + var(--note-col) - var(--toc-col)) / 2))
+    );
+  }
+}
+
+/* .report.full drops the measure: the text column takes every pixel between
+   the contents and the notes, and a wide block adds the note column. */
+.report.full {
+  max-width: none;
+}
+
+.report.full main {
+  max-width: none;
+}
+
+.report.full main .wide {
+  width: auto;
+}
+
+@media (min-width: 1056px) {
+  .report.full {
+    grid-template-columns: var(--toc-col) minmax(0, 1fr) var(--note-col);
+  }
+
+  .report.full main .wide {
+    width: calc(100% + var(--space-07) + var(--note-col));
+  }
+
+  .report.full:not(:has(> .notes)) {
+    grid-template-columns: var(--toc-col) minmax(0, 1fr);
+  }
+
+  .report.full:not(:has(> .notes)) main .wide {
+    width: auto;
+  }
 }
 
 /* ----------------------------------------------------------- title block -- */
@@ -353,8 +408,20 @@ caption .label {
   font-weight: 600;
 }
 
-.figure.table {
+.table {
   overflow-x: auto;
+}
+
+/* A wide table keeps every cell on one line and scrolls when it is still
+   too wide, so a value such as "394 +- 13" never breaks in two. */
+.table.wide th,
+.table.wide td {
+  white-space: nowrap;
+}
+
+/* A number cell has no right padding, so on one line it needs a left gap. */
+.table.wide .num-cell {
+  padding-left: var(--space-05);
 }
 
 table {
@@ -384,6 +451,7 @@ tbody tr:last-child td {
 
 .num-cell {
   text-align: right;
+  white-space: nowrap;
   padding-right: 0;
   font-variant-numeric: tabular-nums;
 }
@@ -664,6 +732,11 @@ tbody tr:last-child td {
      reading rhythm as the screen, with the rest of the paper left as air. */
   main {
     max-width: 150mm;
+  }
+
+  main .wide,
+  .report.full main .wide {
+    width: auto;
   }
 
   .toc,

@@ -275,6 +275,13 @@ figcaption {
   overflow-x: auto;
 }
 
+/* A wide table keeps every cell on one line and scrolls when it is still
+   too wide, so a value such as "394 +- 13" never breaks in two. */
+.table.wide th,
+.table.wide td {
+  white-space: nowrap;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -311,6 +318,7 @@ tbody tr:last-child td {
 }
 
 .num-cell {
+  white-space: nowrap;
   text-align: right;
   padding-right: 0;
   font-variant-numeric: tabular-nums;

@@ -70,7 +70,10 @@ Every link names the same theme on purpose, and all of them use `@latest` or all
 </html>
 ```
 
-`page.css` gives you `lede`, `table`, `num-cell`, `muted`, `small` and `mono`, plus the heading, list, figure, table and code rules.
+`page.css` gives you `lede`, `table`, `wide`, `num-cell`, `muted`, `small` and `mono`, plus the heading, list, figure, table and code rules.
+A block in `main` marked `wide` passes the prose measure up to 1180px, still centred on the text.
+`<main class="full">` drops the measure, so the text and every table take the whole width between the gutters.
+Use `<div class="table wide">` for a table of many columns: every cell stays on one line and the table scrolls when the screen is narrower.
 The theme is the base, not a cage.
 Use these classes first, and add a class of your own in one inline `<style>` block when the page needs a part the theme does not carry.
 Own CSS takes colour, type and space from the tokens with `var(--...)`, and it never restyles a theme class globally.

@@ -71,6 +71,7 @@ The page is read on a phone more often than on a projector.
 
 - `page.css` goes single column below 640px, so do not fight it with a fixed width.
 - Wrap every table in `<div class="table">`, which scrolls sideways instead of squeezing.
+- A table of many columns is `<div class="table wide">`. It passes the prose measure, keeps each cell on one line and scrolls when the screen is narrower.
 - Body text stays at 16px or more, and an input stays at 16px or more so Safari does not zoom.
 - A tap target is at least 40px tall.
 - Look at the page at 360x640 before you publish.
