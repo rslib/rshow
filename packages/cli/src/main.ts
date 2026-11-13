@@ -21,6 +21,7 @@ import {
   SKILLS_USAGE,
   LIST_USAGE,
   SHOW_USAGE,
+  PULL_USAGE,
   SHARE_USAGE,
   PIN_USAGE,
   DELETE_USAGE,
@@ -45,6 +46,7 @@ import { run as theme } from './commands/theme.ts';
 import { run as skills } from './commands/skills.ts';
 import { run as list } from './commands/list.ts';
 import { run as show } from './commands/show.ts';
+import { run as pull } from './commands/pull.ts';
 import { run as share } from './commands/share.ts';
 import { run as pin } from './commands/pin.ts';
 import { run as remove } from './commands/delete.ts';
@@ -75,6 +77,7 @@ const COMMANDS: Record<string, Command> = {
   tag: { usage: TAG_USAGE, run: tag },
   list: { usage: LIST_USAGE, run: list },
   show: { usage: SHOW_USAGE, run: show },
+  pull: { usage: PULL_USAGE, run: pull },
   share: { usage: SHARE_USAGE, run: share },
   pin: { usage: PIN_USAGE, run: pin },
   delete: { usage: DELETE_USAGE, run: remove },

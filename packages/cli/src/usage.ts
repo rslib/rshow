@@ -19,6 +19,8 @@ commands:
   tag <slug>              add or remove tags on an artifact
   list [filters]          list artifacts you own or share
   show <slug>             artifact, versions and shares
+  pull <slug>[@v<n>] [dir]
+                          download the files of a published version
   share <slug>            set mode or change shares
   pin <slug> <n|live>     serve version n, or live for the newest
   delete <slug> [--version n] [--force] --yes
@@ -304,6 +306,13 @@ Lists artifacts you own or that are shared with you.
 export const SHOW_USAGE = `usage: rshow show <slug>
 
 Prints the artifact, its versions and its shares.`;
+
+export const PULL_USAGE = `usage: rshow pull <slug>[@v<n>] [dir] [--force]
+
+Downloads every file of the served version, or of version n, into dir
+(default ./<slug>) and checks each file against its hash. The data store is
+not downloaded. dir must be empty or missing unless --force is given.
+Publish the folder back with: rshow publish <dir> --slug <slug>`;
 
 export const SHARE_USAGE = `usage: rshow share <slug> [--mode private|people|public] [--add email ...] [--editor email ...] [--remove email ...]
 

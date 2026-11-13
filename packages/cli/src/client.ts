@@ -171,4 +171,17 @@ export class Client {
     const pathname = `/api/artifacts/${encodeURIComponent(slug)}/versions/${n}`;
     return (await this.send('GET', pathname)).body;
   }
+
+  async fileBytes(slug: string, n: number, filePath: string): Promise<Uint8Array> {
+    const encoded = filePath.split('/').map((segment) => encodeURIComponent(segment)).join('/');
+    const url = `${this.baseUrl}/api/artifacts/${encodeURIComponent(slug)}/versions/${n}/files/${encoded}`;
+    const res = await sendRequest(this.fetchImpl, url, {
+      method: 'GET',
+      headers: { authorization: `Bearer ${this.token}`, 'user-agent': `rshow/${VERSION}` },
+    });
+    if (res.status >= 200 && res.status <= 299) return new Uint8Array(await res.arrayBuffer());
+    const parsed = parseBody(await res.text());
+    if (res.status === 401 || res.status === 403) throw new AuthError(errorText(parsed, res.status), res.status);
+    throw new ApiError(`${filePath}: ${errorText(parsed, res.status)}`, res.status);
+  }
 }

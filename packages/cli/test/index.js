@@ -16,6 +16,7 @@ import './blobs.test.ts';
 import './preview.test.ts';
 import './theme.test.ts';
 import './share.test.ts';
+import './pull.test.ts';
 import './project.test.ts';
 import './tags.test.ts';
 import './commands.test.ts';

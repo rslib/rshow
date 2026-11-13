@@ -7,6 +7,8 @@ The format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/
 
 ### Added
 
+- Add `rshow pull <slug>[@v<n>] [dir]`, which downloads every file of a published version and checks each one against its hash.
+  Edit the folder, then send it back with `rshow publish <dir> --slug <slug>`.
 - Add the `wide` class to the default theme, so a table of many columns can pass the text column and keep each value on one line.
 - Add `<div class="report full">` and `<main class="full">`, which let a report or a page use the full width of the screen.
 

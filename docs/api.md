@@ -78,6 +78,7 @@ Errors are `{"error": "<message>"}` with a 4xx or 5xx status.
 | GET | `/api/artifacts/:slug/versions/:n` | | `Version & {files: {path: {hash, size, type}}}` (the manifest). 404 when the version does not exist. |
 | PATCH | `/api/artifacts/:slug` | `{title?, mode?, pinned?}` (`pinned`: number or null) | `Artifact` |
 | DELETE | `/api/artifacts/:slug` | `?force=1` for a `theme-` slug | 204, or 409 `pages link to this theme; pass force to delete it` |
+| GET | `/api/artifacts/:slug/versions/:n/files/<path>` | | The raw bytes of one file, as `application/octet-stream` with `content-disposition: attachment`, a sandbox CSP and the hash in `x-rshow-hash`. Each path segment is percent-encoded. 404 when the version or the path does not exist. |
 | DELETE | `/api/artifacts/:slug/versions/:n` | `?force=1` for a `theme-` slug | `Artifact` (200). 404 when the version does not exist. 409 when it is pinned, is the only version, is a `theme-` version without `force`, or another change came first. |
 | PUT | `/api/artifacts/:slug/shares/:email` | `{role}` | `Share` |
 | DELETE | `/api/artifacts/:slug/shares/:email` | | 204 |
@@ -97,6 +98,8 @@ type Share = { email: string; role: "viewer" | "editor" };
 
 `url` is the viewer URL on `art.example.com`.
 On `GET /api/artifacts/:slug/versions/:n`, `files` is the manifest itself, not the count that a `Version` carries elsewhere.
+
+`GET /api/artifacts/:slug/versions/:n/files/<path>` needs the same view access as the manifest, with a session or any token. It answers with the bytes and never with the file's own type, because the API host must not render a published page. `rshow pull` uses it.
 Paths in `files` use `/`, have no leading `/`, no `..` segment and no empty segment.
 At most 2000 files and 100 MiB per version.
 

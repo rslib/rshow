@@ -31,6 +31,7 @@ Every rshow command and subcommand. Each page holds the text that `rshow <comman
 | [`rshow tag`](tag.md) | add or remove tags on an artifact |
 | [`rshow list`](list.md) | list artifacts you own or share |
 | [`rshow show`](show.md) | artifact, versions and shares |
+| [`rshow pull`](pull.md) | download the files of a published version |
 | [`rshow share`](share.md) | set mode or change shares |
 | [`rshow pin`](pin.md) | serve version n, or live for the newest |
 | [`rshow delete`](delete.md) | delete an artifact, or one version of it |

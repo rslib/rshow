@@ -2,10 +2,10 @@ import type { Hono } from "hono";
 import { randomHex } from "../auth";
 import { canManage, canPublish } from "../authz";
 import { invalidateAccess, invalidateVersions, manifestFor } from "../cache";
-import { MAX_VERSION_BYTES, MAX_VERSION_FILES, THEME_PREFIX, type Version, type VersionDetail } from "../constants";
+import { HASH_PATTERN, MAX_VERSION_BYTES, MAX_VERSION_FILES, THEME_PREFIX, type Version, type VersionDetail } from "../constants";
 import { blobSizes, countVersions, getArtifact, getArtifactTags, getVersion } from "../db";
 import { json, jsonError } from "../http";
-import { isManifestEntry, isValidManifestPath, manifestKey } from "../manifest";
+import { blobKey, isManifestEntry, isValidManifestPath, manifestKey } from "../manifest";
 import type { AppEnv, ArtifactRow, Env, Manifest, VersionRow } from "../types";
 import { actorOf, loadAccessible, readBody, toArtifact, type JsonObject } from "./common";
 
@@ -113,6 +113,53 @@ export function registerVersions(app: Hono<AppEnv>): void {
     if (!manifest) return jsonError("no such version", 404);
 
     return json(toVersionDetail(c.env, access.artifact.slug, version, manifest));
+  });
+
+  // The bytes go out as an attachment under a sandbox CSP: this is the admin
+  // host, and a published page must never run here with its cookies.
+  app.get("/api/artifacts/:slug/versions/:n/files/*", async (c) => {
+    const email = c.get("identity").email as string;
+    const access = await loadAccessible(c.env, c.req.param("slug"), email);
+    if (!access) return jsonError("not found", 404);
+
+    const raw = c.req.param("n");
+    if (!/^[1-9][0-9]{0,8}$/.test(raw)) return jsonError("no such version", 404);
+    const version = await getVersion(c.env, access.artifact.slug, Number(raw));
+    if (!version) return jsonError("no such version", 404);
+    const manifest = await manifestFor(c.env, version.manifest_key);
+    if (!manifest) return jsonError("no such version", 404);
+
+    const prefix = `/api/artifacts/${c.req.param("slug")}/versions/${raw}/files/`;
+    const encoded = new URL(c.req.url).pathname;
+    if (!encoded.startsWith(prefix)) return jsonError("no such file", 404);
+    let path: string;
+    try {
+      path = encoded
+        .slice(prefix.length)
+        .split("/")
+        .map((segment) => decodeURIComponent(segment))
+        .join("/");
+    } catch {
+      return jsonError("no such file", 404);
+    }
+    if (!isValidManifestPath(path)) return jsonError("no such file", 404);
+    const entry = Object.hasOwn(manifest, path) ? manifest[path] : undefined;
+    if (!entry || !HASH_PATTERN.test(entry.hash)) return jsonError("no such file", 404);
+
+    const object = await c.env.BUCKET.get(blobKey(entry.hash));
+    if (!object) return jsonError("the file is missing from storage", 500);
+    return new Response(object.body, {
+      status: 200,
+      headers: {
+        "content-type": "application/octet-stream",
+        "content-disposition": "attachment",
+        "content-length": String(object.size),
+        "cache-control": "private, no-store",
+        "x-content-type-options": "nosniff",
+        "content-security-policy": "sandbox; default-src 'none'",
+        "x-rshow-hash": entry.hash
+      }
+    });
   });
 
   app.delete("/api/artifacts/:slug/versions/:n", async (c) => {

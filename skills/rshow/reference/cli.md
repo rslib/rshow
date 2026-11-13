@@ -31,6 +31,7 @@ This file is the whole surface, both config files and the exit codes.
 | `rshow upgrade [--check] [--version x.y.z] [--force]` | replace the single executable, or run `npm install -g` on an npm install, with another release |
 | `rshow list` | list artifacts you own or that are shared with you, with `--project`, `--tag` and `--q` filters |
 | `rshow show <slug>` | print the artifact, its versions, its shares, its project and its tags |
+| `rshow pull <slug>[@v<n>] [dir] [--force]` | download every file of the served version, or of version `n`, into `dir` (default `./<slug>`), each checked against its hash; edit, then `rshow publish <dir> --slug <slug>` |
 | `rshow share <slug>` | set the mode, or add and remove shares |
 | `rshow pin <slug> <n\|live>` | serve version `n`, or `live` for the newest |
 | `rshow project <cmd>` | create, list, show, share or delete a project |
